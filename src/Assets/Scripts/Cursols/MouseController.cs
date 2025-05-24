@@ -1,0 +1,113 @@
+using System;
+using System.Data.Common;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+public class MouseController : MonoBehaviour
+{
+    public event Action<Vector3> LeftDownEvent;
+    public event Action<Vector3> RightDownEvent;
+
+    public event Action<Vector3> LeftClickEvent;
+    public event Action<Vector3> RightClickEvent;
+
+    [SerializeField]
+    float MousePos_z = 0f;
+
+    float UIwidthMax = Screen.width;
+    float UIheightMax = Screen.height;
+
+    const int ClampMin = 0;
+    const int LeftInputNum = 0;
+    const int RightInputNum = 1;
+
+    struct MouseParameter
+    {
+        public Vector3 mouseUIPos;
+        public Vector3 mouseUIDownPos;
+        public Vector3 mouseWorldPos;
+        public Vector3 mouseWorldDownPos;
+
+        public void ResetMousePos()
+        {
+            mouseUIPos = Vector3.zero;
+            mouseUIDownPos = Vector3.zero;
+            mouseWorldPos = Vector3.zero;
+            mouseWorldDownPos = Vector3.zero;     
+        }
+    }
+
+    MouseParameter LeftParameter;
+    MouseParameter RightParameter;
+
+    void ClickDownInvoke(int num, Vector3 worldDownPos) 
+    {
+        if(num == LeftInputNum)
+            LeftDownEvent?.Invoke(worldDownPos);
+        if (num == RightInputNum)
+            RightDownEvent?.Invoke(worldDownPos);
+    }
+
+    void ClickInvoke(int num, Vector3 worldPos)
+    {
+        if (num == LeftInputNum)
+            LeftClickEvent?.Invoke(worldPos);
+        if (num == RightInputNum)
+            RightClickEvent?.Invoke(worldPos);
+    }
+
+    Vector3 GetWorldPoint(Vector3 UIPos)
+    {
+        Vector3 point = UIPos + Vector3.forward * MousePos_z;
+        return Camera.main.ScreenToWorldPoint(point);
+    }
+
+    void MouseInputParameter(int num, MouseParameter parameter)
+    {
+        if (Input.GetMouseButtonDown(num))
+        {
+            parameter.mouseUIDownPos = GetTouchClamp();
+            parameter.mouseWorldDownPos = GetWorldPoint(parameter.mouseUIDownPos);
+
+            ClickDownInvoke(num,parameter.mouseWorldDownPos);
+        }
+
+        if (Input.GetMouseButton(num))
+        {
+            parameter.mouseUIPos = GetTouchClamp();
+            parameter.mouseWorldPos = GetWorldPoint(parameter.mouseUIPos);
+
+            ClickInvoke(num,parameter.mouseWorldPos);
+        }
+
+        if (Input.GetMouseButtonUp(num))
+        {
+            parameter.ResetMousePos();
+        }
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        LeftParameter.ResetMousePos();
+        RightParameter.ResetMousePos();
+    }
+
+    
+    // Update is called once per frame
+    void Update()
+    {
+        MouseInputParameter(LeftInputNum, LeftParameter);
+        MouseInputParameter(RightInputNum, RightParameter);
+    }
+
+    Vector3 GetTouchClamp()
+    {
+        Vector3 ClampPosition = Input.mousePosition;
+
+        ClampPosition.y = Mathf.Clamp(ClampPosition.y, ClampMin, UIheightMax);
+        ClampPosition.x = Mathf.Clamp(ClampPosition.x, ClampMin, UIwidthMax);
+
+        return ClampPosition;
+    }
+}
