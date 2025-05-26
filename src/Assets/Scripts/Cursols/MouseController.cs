@@ -11,6 +11,9 @@ public class MouseController : MonoBehaviour
     public event Action<Vector3> LeftClickEvent;
     public event Action<Vector3> RightClickEvent;
 
+    public event Action<Vector3> LeftUpEvent;
+    public event Action<Vector3> RightUpEvent;
+
     [SerializeField]
     float MousePos_z = 0f;
 
