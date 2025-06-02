@@ -5,9 +5,9 @@ public class TargetCursol : MonoBehaviour
     [SerializeField]
     Transform targetTransform;
 
-    [SerializeField]
-    Vector2Int maxMapSize = new(59, 59);
+    Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
 
+    float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
     const int ClampMin = 0;
 
     //範囲外の場合にカメラ外に移動させるための数値
@@ -20,10 +20,12 @@ public class TargetCursol : MonoBehaviour
 
     bool IsInGridMap(Vector3 mouseWorldDownPos)
     {
-        if (mouseWorldDownPos.x < 0 || maxMapSize.x < mouseWorldDownPos.x)
+        if (mouseWorldDownPos.x < -GridAdjustScale ||
+            maxMapSize.x - GridAdjustScale < mouseWorldDownPos.x)
             return false;
 
-        if (mouseWorldDownPos.y < 0 || maxMapSize.y < mouseWorldDownPos.y)
+        if (mouseWorldDownPos.y < -GridAdjustScale ||
+            maxMapSize.y - GridAdjustScale < mouseWorldDownPos.y)
             return false;
 
         return true;
@@ -34,10 +36,12 @@ public class TargetCursol : MonoBehaviour
         Vector3Int mapPos;
         if (IsInGridMap(mouseWorldDownPos))
         {
+            // インデックスからの取得のため -1 をしている
+            Vector2Int maxMapIndex = maxMapSize - Vector2Int.one;
             mapPos = new()
             {
-                x = Mathf.Clamp(Mathf.RoundToInt(mouseWorldDownPos.x), ClampMin, maxMapSize.x),
-                y = Mathf.Clamp(Mathf.RoundToInt(mouseWorldDownPos.y), ClampMin, maxMapSize.y),
+                x = Mathf.Clamp(Mathf.RoundToInt(mouseWorldDownPos.x), ClampMin, maxMapIndex.x),
+                y = Mathf.Clamp(Mathf.RoundToInt(mouseWorldDownPos.y), ClampMin, maxMapIndex.y),
                 z = 0,
             };
         }

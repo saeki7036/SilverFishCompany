@@ -9,15 +9,19 @@ using UnityEngine;
 public class BeltDrawing : MonoBehaviour
 {
     [SerializeField]
-    Vector2Int maxMapSize = new(59, 59);
+    LineRenderer lineRenderer;
 
     [SerializeField]
-    LineRenderer lineRenderer;
+    GameObject BeltPrehab;
 
     const int ClampMin = 0;
 
+    Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
+
+    float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
+
     List<Vector3Int> SelectedPosList = new List<Vector3Int>();
-    Dictionary<Vector3Int,int> posIndexMap = new Dictionary<Vector3Int, int>();
+    Dictionary<Vector3Int, int> posIndexMap = new Dictionary<Vector3Int, int>();
 
     bool OnGridMap;
 
@@ -27,15 +31,21 @@ public class BeltDrawing : MonoBehaviour
     {
         input.LeftDownEvent += BeltDrawSetup;
         input.LeftClickEvent += DrawingBelt;
-        input.LeftUpEvent += OnMouseUp;
+        input.LeftUpEvent += DrowBeltGenerate;
     }
 
-    Vector3Int GetMapPosInt(Vector3 mouseWorldPos) => new()
+    Vector3Int GetMapGridInt(Vector3 mouseWorldPos)
     {
-        x = Mathf.Clamp(Mathf.RoundToInt(mouseWorldPos.x), ClampMin, maxMapSize.x),
-        y = Mathf.Clamp(Mathf.RoundToInt(mouseWorldPos.y), ClampMin, maxMapSize.y),
-        z = 0,
-    };
+        // インデックスからの取得のため -1 をしている
+        Vector2Int maxMapIndex = maxMapSize - Vector2Int.one;
+
+        return new()
+        {
+            x = Mathf.Clamp(Mathf.RoundToInt(mouseWorldPos.x), ClampMin, maxMapIndex.x),
+            y = Mathf.Clamp(Mathf.RoundToInt(mouseWorldPos.y), ClampMin, maxMapIndex.y),
+            z = 0,
+        };
+    }
 
     int ManhattanDistance2D(Vector3Int gridPos, Vector3Int targetPos)
     {
@@ -47,10 +57,12 @@ public class BeltDrawing : MonoBehaviour
 
     bool IsInGridMap(Vector3 mouseWorldDownPos)
     {
-        if(mouseWorldDownPos.x < 0 || maxMapSize.x < mouseWorldDownPos.x)
+        if(mouseWorldDownPos.x < -GridAdjustScale || 
+            maxMapSize.x - GridAdjustScale < mouseWorldDownPos.x)
             return false;
 
-        if(mouseWorldDownPos.y < 0 || maxMapSize.y < mouseWorldDownPos.y)
+        if(mouseWorldDownPos.y < -GridAdjustScale || 
+            maxMapSize.y - GridAdjustScale < mouseWorldDownPos.y)
             return false;
 
         return true;
@@ -145,7 +157,7 @@ public class BeltDrawing : MonoBehaviour
 
         if (OnGridMap)
         {
-            Vector3Int gridPos = GetMapPosInt(mouseWorldDownPos);
+            Vector3Int gridPos = GetMapGridInt(mouseWorldDownPos);
 
             posIndexMap.Add(gridPos, SelectedPosList.Count);
             SelectedPosList.Add(gridPos);
@@ -160,7 +172,7 @@ public class BeltDrawing : MonoBehaviour
             return;
         
         // マウスのワールド座標をグリッド座標（整数）に変換
-        Vector3Int gridPos = GetMapPosInt(mouseWorldPos);
+        Vector3Int gridPos = GetMapGridInt(mouseWorldPos);
 
         // すでに何らかの位置が選択されてる場合に処理を実行
         if (SelectedPosList.Count != 0)
@@ -204,9 +216,23 @@ public class BeltDrawing : MonoBehaviour
         }   
     }
 
-    void OnMouseUp(Vector3 mouseWorldUpPos)
+    void DrowBeltGenerate(Vector3 mouseWorldUpPos)
     {
+        if (BeltPrehab == null)
+            return;
 
+        List<GameObject> BeltList = new List<GameObject>();
+
+        foreach (Vector3Int posInt in SelectedPosList)
+        {
+            GameObject BeltObject = Instantiate(BeltPrehab,posInt,Quaternion.identity);
+            BeltList.Add(BeltObject);
+        }
+
+        GridMapManager.Instance.BeltSetting(SelectedPosList, BeltList);
+
+        // LineRendererの描画を初期化
+        lineRenderer.positionCount = 0;
     }
 
     // ラインレンダラーを更新して描画をする処理

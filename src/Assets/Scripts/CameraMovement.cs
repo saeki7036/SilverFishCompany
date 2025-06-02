@@ -9,8 +9,8 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]
     Vector2 ThresholdValue = new(5f, 3f);
 
-    [SerializeField]
-    Vector2Int MaxMapSize = new(59, 59);
+    
+    Vector2Int MaxMapSize => GridMapManager.Instance.MaxMapSize;
 
     const float ClampMin = 0f;
     
@@ -22,7 +22,7 @@ public class CameraMovement : MonoBehaviour
 
     int GetMoveDirectionAxis(float thisPos,float mousePos,float thresholdValue)
     {
-        Debug.Log(thisPos - mousePos);
+        //Debug.Log(thisPos - mousePos);
         //Mathf.RoundToInt(thisPos - mousePos)
 
         if (thisPos - mousePos > thresholdValue)

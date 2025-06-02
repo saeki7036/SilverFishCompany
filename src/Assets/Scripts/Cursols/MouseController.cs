@@ -59,6 +59,14 @@ public class MouseController : MonoBehaviour
             RightClickEvent?.Invoke(worldPos);
     }
 
+    void ClickUpInvoke(int num, Vector3 worldUpPos)
+    {
+        if (num == LeftInputNum)
+            LeftUpEvent?.Invoke(worldUpPos);
+        if (num == RightInputNum)
+            RightUpEvent?.Invoke(worldUpPos);
+    }
+
     Vector3 GetWorldPoint(Vector3 UIPos)
     {
         Vector3 point = UIPos + Vector3.forward * MousePos_z;
@@ -85,6 +93,8 @@ public class MouseController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(num))
         {
+            ClickUpInvoke(num, parameter.mouseWorldPos);
+
             parameter.ResetMousePos();
         }
     }
