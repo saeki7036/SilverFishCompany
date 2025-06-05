@@ -3,7 +3,7 @@ using UnityEngine;
 public class GridContent : MonoBehaviour
 {
     [SerializeField]
-    GridCell cell;
+    MapContent content;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -13,7 +13,7 @@ public class GridContent : MonoBehaviour
 
     void GridSetting()
     {
-        GridMapManager.Instance.SetCell(cell);
+        GridMapManager.Instance.StartSetContent(content);
     }
 
 

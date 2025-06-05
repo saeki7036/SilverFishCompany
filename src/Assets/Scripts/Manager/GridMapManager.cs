@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -23,6 +22,45 @@ public class GridMapManager : MonoBehaviour
 
     private static GridMapManager instance;
     public static GridMapManager Instance => instance;
+
+    public void StartSetContent(MapContent content)
+    {
+        if(!IsInBounds(content.minGridPos) ||! IsInBounds(content.maxGridPos))
+        {
+            Debug.LogError(content + "範囲外です。");
+            return;
+        }
+
+        if (content.GridCellType == CellType.None)
+        {
+            Debug.LogError(content + "CellTypeを設定してください。");
+            return;
+        }
+
+        List<Vector2Int> SetCellList = new List<Vector2Int>();
+
+        for(int x = content.minGridPos.x; x <= content.maxGridPos.x; x++)
+        {
+            for (int y = content.minGridPos.y; y <= content.maxGridPos.y; y++)
+            {
+                Vector2Int currentPos = new Vector2Int(x, y);
+
+                if (GetCell(currentPos).GridCellType != CellType.None)
+                {
+                    Debug.LogError("Cellが重複しています=>" + GetCell(currentPos).GridCellType);
+                    return;
+                }
+
+                SetCellList.Add(currentPos);
+            }
+        }
+
+        foreach(Vector2Int cell in SetCellList)
+        {
+            GridCell settingCell = new GridCell(cell, content.GridCellType, content.GridObject);
+            SetCell(settingCell);
+        }
+    }
 
     void Awake()
     {

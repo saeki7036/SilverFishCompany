@@ -113,7 +113,7 @@ Transform:
   m_GameObject: {fileID: 6115697733839987888}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4, y: 4, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -132,7 +132,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbf400658c98b7d42b18fc21e931916f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cell:
-    GridPos: {x: 4, y: 4}
+  content:
+    GridPos: {x: 0, y: 0}
+    GridSize: {x: 4, y: 4}
     GridCellType: 1
     GridObject: {fileID: 362863754512035592}

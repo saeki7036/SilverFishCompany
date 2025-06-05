@@ -23,9 +23,11 @@ public class BeltDrawing : MonoBehaviour
     List<Vector3Int> SelectedPosList = new List<Vector3Int>();
     Dictionary<Vector3Int, int> posIndexMap = new Dictionary<Vector3Int, int>();
 
+    // 左クリックした場所がグリッドマップ内かのフラグ
     bool OnGridMap;
 
-    Vector3Int currentPos = new(-1, -1, 0);
+    // 触ったグリッドの場所
+    Vector3Int currentPos;
 
     public void InputRegister(MouseController input)
     {
@@ -67,8 +69,6 @@ public class BeltDrawing : MonoBehaviour
 
         return true;
     }
-
-
 
     // 2つのグリッド座標を縦横の動きのみで対角線に近づけながら繋ぐ経路を生成する処理
     List<Vector3Int> CorrectionBeltLine(Vector3Int endPos, Vector3Int startPos)
@@ -140,9 +140,6 @@ public class BeltDrawing : MonoBehaviour
 
         return path;
     }
-
-
-
 
 
     void BeltDrawSetup(Vector3 mouseWorldDownPos)
@@ -252,6 +249,7 @@ public class BeltDrawing : MonoBehaviour
     void Start()
     {
         OnGridMap = false;
+        currentPos = new(-1, -1, 0);
         // lineRenderer = GetComponent<LineRenderer>();
 
         // LineRendererの初期設定（任意）

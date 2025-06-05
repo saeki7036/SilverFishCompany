@@ -113,4 +113,24 @@ public struct GridCell
         GridObject = gameObject;
         GridPos = vector2Int;
     }
+
+    public Vector3 GetGridObjectScale()
+    {
+        if(GridObject == null)
+            return Vector3.one;
+
+        return GridObject.transform.localScale;
+    }  
+}
+
+[System.Serializable]
+public struct MapContent
+{
+    public Vector2Int minGridPos;
+    public Vector2Int GridSize;
+    public CellType GridCellType;
+    public GameObject GridObject;
+
+
+    public Vector2Int maxGridPos => minGridPos + GridSize - Vector2Int.one; 
 }
