@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class TargetCursol : MonoBehaviour
 {
@@ -11,10 +11,10 @@ public class TargetCursol : MonoBehaviour
 
     const int ClampMin = 0;
 
-    //”ÍˆÍŠO‚Ìê‡‚ÉƒJƒƒ‰ŠO‚ÉˆÚ“®‚³‚¹‚é‚½‚ß‚Ì”’l
+    //ç¯„å›²å¤–ã®å ´åˆã«ã‚«ãƒ¡ãƒ©å¤–ã«ç§»å‹•ã•ã›ã‚‹ãŸã‚ã®æ•°å€¤
     static readonly Vector3Int OutRangePos = new(9999, 9999, 0);
 
-    // ƒCƒ“ƒfƒbƒNƒX‚©‚ç‚ÌŽæ“¾‚Ì‚½‚ß -1 ‚ð‚µ‚Ä‚¢‚é
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰ã®å–å¾—ã®ãŸã‚ -1 ã‚’ã—ã¦ã„ã‚‹
     Vector2Int MaxMapIndex => maxMapSize - Vector2Int.one;
 
     Vector3 StartCorsolScale;
@@ -62,6 +62,7 @@ public class TargetCursol : MonoBehaviour
                 z = 0
             };
 
+            targetTransform.localScale = StartCorsolScale;
             return;
         }
 

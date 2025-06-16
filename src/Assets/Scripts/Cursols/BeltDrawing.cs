@@ -1,7 +1,4 @@
-using NUnit;
-using NUnit.Framework;
-using System.Collections.Generic;
-using System.IO;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,7 +9,25 @@ public class BeltDrawing : MonoBehaviour
     LineRenderer lineRenderer;
 
     [SerializeField]
+    Gradient scsessGradient;
+
+    [SerializeField]
+    Gradient failedGradient;
+
+    [SerializeField]
     GameObject BeltPrehab;
+
+    [SerializeField]
+    GameObject StratPosIcon;
+
+    [SerializeField]
+    SpriteRenderer StratIconSprite;
+
+    [SerializeField]
+    GameObject EndPosIcon;
+
+    [SerializeField]
+    SpriteRenderer EndIconSprite;
 
     const int ClampMin = 0;
 
@@ -23,10 +38,13 @@ public class BeltDrawing : MonoBehaviour
     List<Vector3Int> SelectedPosList = new List<Vector3Int>();
     Dictionary<Vector3Int, int> posIndexMap = new Dictionary<Vector3Int, int>();
 
-    // ¶ƒNƒŠƒbƒN‚µ‚½êŠ‚ªƒOƒŠƒbƒhƒ}ƒbƒv“à‚©‚Ìƒtƒ‰ƒO
+    // å·¦ã‚¯ãƒªãƒƒã‚¯ã—ãŸå ´æ‰€ãŒã‚°ãƒªãƒƒãƒ‰ãƒãƒƒãƒ—å†…ã‹ã®ãƒ•ãƒ©ã‚°
     bool OnGridMap;
 
-    // G‚Á‚½ƒOƒŠƒbƒh‚ÌêŠ
+    // çµŒè·¯ãŒã™ã§ã«ã‚ã‚‹å»ºç‰©ã¨å¹²æ¸‰ã—ã¦ã„ãªã„ã‹
+    bool IsNoProblemRoute;
+
+    // è§¦ã£ãŸã‚°ãƒªãƒƒãƒ‰ã®å ´æ‰€
     Vector3Int currentPos;
 
     public void InputRegister(MouseController input)
@@ -38,7 +56,7 @@ public class BeltDrawing : MonoBehaviour
 
     Vector3Int GetMapGridInt(Vector3 mouseWorldPos)
     {
-        // ƒCƒ“ƒfƒbƒNƒX‚©‚ç‚Ìæ“¾‚Ì‚½‚ß -1 ‚ğ‚µ‚Ä‚¢‚é
+        // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰ã®å–å¾—ã®ãŸã‚ -1 ã‚’ã—ã¦ã„ã‚‹
         Vector2Int maxMapIndex = maxMapSize - Vector2Int.one;
 
         return new()
@@ -70,70 +88,70 @@ public class BeltDrawing : MonoBehaviour
         return true;
     }
 
-    // 2‚Â‚ÌƒOƒŠƒbƒhÀ•W‚ğc‰¡‚Ì“®‚«‚Ì‚İ‚Å‘ÎŠpü‚É‹ß‚Ã‚¯‚È‚ª‚çŒq‚®Œo˜H‚ğ¶¬‚·‚éˆ—
+    // 2ã¤ã®ã‚°ãƒªãƒƒãƒ‰åº§æ¨™ã‚’ç¸¦æ¨ªã®å‹•ãã®ã¿ã§å¯¾è§’ç·šã«è¿‘ã¥ã‘ãªãŒã‚‰ç¹‹ãçµŒè·¯ã‚’ç”Ÿæˆã™ã‚‹å‡¦ç†
     List<Vector3Int> CorrectionBeltLine(Vector3Int endPos, Vector3Int startPos)
     {
-        // ƒuƒŒƒ[ƒ“ƒnƒ€‚Ìü•ªƒAƒ‹ƒSƒŠƒYƒ€(Bresenham's Line Algorithm)‚ğÎ‚ßˆÚ“®‹Ö~‚ÅÀ‘•
+        // ãƒ–ãƒ¬ã‚¼ãƒ³ãƒãƒ ã®ç·šåˆ†ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ (Bresenham's Line Algorithm)ã‚’æ–œã‚ç§»å‹•ç¦æ­¢ã§å®Ÿè£…
         List<Vector3Int> path = new List<Vector3Int>();
 
-        // ˆÚ“®—Ê‚Ìâ‘Î’li‹——£j
+        // ç§»å‹•é‡ã®çµ¶å¯¾å€¤ï¼ˆè·é›¢ï¼‰
         int distance_x = Mathf.Abs(endPos.x - startPos.x);
         int distance_y = Mathf.Abs(endPos.y - startPos.y);
 
-        // x•ûŒüEy•ûŒü‚Éi‚Ş‚×‚«Œü‚«i+1 or -1j
+        // xæ–¹å‘ãƒ»yæ–¹å‘ã«é€²ã‚€ã¹ãå‘ãï¼ˆ+1 or -1ï¼‰
         int step_x = startPos.x < endPos.x ? 1 : -1;
         int step_y = startPos.y < endPos.y ? 1 : -1;
 
-        // ŠJnÀ•W‚ÌƒRƒs[
+        // é–‹å§‹åº§æ¨™ã®ã‚³ãƒ”ãƒ¼
         int current_x = startPos.x;
         int current_y = startPos.y;
 
-        // Œë·‚Ì‰Šú’lix•ûŒü‚Æy•ûŒü‚Ì‹——£·‚ğg‚¤j
+        // èª¤å·®ã®åˆæœŸå€¤ï¼ˆxæ–¹å‘ã¨yæ–¹å‘ã®è·é›¢å·®ã‚’ä½¿ã†ï¼‰
         int errorValue = distance_x - distance_y;
 
-        // I“_‚É“’B‚·‚é‚Ü‚Åƒ‹[ƒv
+        // çµ‚ç‚¹ã«åˆ°é”ã™ã‚‹ã¾ã§ãƒ«ãƒ¼ãƒ—
         while (current_x != endPos.x || current_y != endPos.y)
         {          
-            // Œë·‚ğ2”{‚µ‚Ä”äŠri®”‚ÅÎ‚ß‚ÌŒX‚«‚ğ‹ß—j
+            // èª¤å·®ã‚’2å€ã—ã¦æ¯”è¼ƒï¼ˆæ•´æ•°ã§æ–œã‚ã®å‚¾ãã‚’è¿‘ä¼¼ï¼‰
             int errorDouble = errorValue * 2;
 
-            // Œ»İ’n‚É1ƒ}ƒX‚¸‚Â’Ç‰Áic‚Ü‚½‚Í‰¡‚Ì‚¢‚¸‚ê‚©j
+            // ç¾åœ¨åœ°ã«1ãƒã‚¹ãšã¤è¿½åŠ ï¼ˆç¸¦ã¾ãŸã¯æ¨ªã®ã„ãšã‚Œã‹ï¼‰
             // ----------------------------------------
-            // 1ƒ}ƒXi‚ŞğŒ
+            // 1ãƒã‚¹é€²ã‚€æ¡ä»¶
             // ----------------------------------------
-            // uŒë· ~ 2v‚ª -distance_y –”‚Í distance_x ‚Æ”äŠr‚µ‚Ä
-            // •Ê•ûŒü‚Éi‚Ş‚×‚«ŒX‚«‚É‘Î‚µ‚ÄAi‚Ş•ûŒü‚ÌƒYƒŒ‚ª‚Ü‚¾‹–—e”ÍˆÍ“à‚È‚Ì‚ÅA
-            // i‚Ş•ûŒü‚Éi‚ñ‚Å‚àÎ‚ß‚Ìü‚É‹ß‚Ã‚¯‚é‚Æ”»’f‚·‚éB
+            // ã€Œèª¤å·® Ã— 2ã€ãŒ -distance_y åˆã¯ distance_x ã¨æ¯”è¼ƒã—ã¦
+            // åˆ¥æ–¹å‘ã«é€²ã‚€ã¹ãå‚¾ãã«å¯¾ã—ã¦ã€é€²ã‚€æ–¹å‘ã®ã‚ºãƒ¬ãŒã¾ã è¨±å®¹ç¯„å›²å†…ãªã®ã§ã€
+            // é€²ã‚€æ–¹å‘ã«é€²ã‚“ã§ã‚‚æ–œã‚ã®ç·šã«è¿‘ã¥ã‘ã‚‹ã¨åˆ¤æ–­ã™ã‚‹ã€‚
             //
-            // ‚Â‚Ü‚èF
-            //  - Œë·‚ª‘å‚«‚­‚È‚é‘O‚Éi‚Ş
-            //  - ¡‚Í•Êi‚Ş•ûŒü‚æ‚èi‚Ş•ûŒü‚ğ—Dæ‚·‚×‚«’iŠK
+            // ã¤ã¾ã‚Šï¼š
+            //  - èª¤å·®ãŒå¤§ãããªã‚‹å‰ã«é€²ã‚€
+            //  - ä»Šã¯åˆ¥é€²ã‚€æ–¹å‘ã‚ˆã‚Šé€²ã‚€æ–¹å‘ã‚’å„ªå…ˆã™ã¹ãæ®µéš
             //
-            // ¨ 1ƒ}ƒXˆÚ“®‚µ‚ÄAŒë·‚©‚ç”½‘Î•ûŒü•ª‚ğ·‚µˆø‚­
+            // â†’ 1ãƒã‚¹ç§»å‹•ã—ã¦ã€èª¤å·®ã‹ã‚‰åå¯¾æ–¹å‘åˆ†ã‚’å·®ã—å¼•ã
             if (errorDouble > -distance_y)
             {
-                // x•ûŒü‚É1ƒ}ƒXˆÚ“®
+                // xæ–¹å‘ã«1ãƒã‚¹ç§»å‹•
 
-                // Y¬•ª‚ğˆø‚¢‚ÄŒë·‚ğXViX‚Öi‚ñ‚¾•ªƒYƒŒ‚éj
+                // Yæˆåˆ†ã‚’å¼•ã„ã¦èª¤å·®ã‚’æ›´æ–°ï¼ˆXã¸é€²ã‚“ã åˆ†ã‚ºãƒ¬ã‚‹ï¼‰
                 errorValue -= distance_y;
 
-                // XÀ•W‚ğ1ƒ}ƒXi‚ß‚éi¶‚©‰Ej
+                // Xåº§æ¨™ã‚’1ãƒã‚¹é€²ã‚ã‚‹ï¼ˆå·¦ã‹å³ï¼‰
                 current_x += step_x;
 
-                // V‚µ‚¢ˆÊ’u‚ğƒŠƒXƒg‚É’Ç‰Á
+                // æ–°ã—ã„ä½ç½®ã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
                 path.Add(new Vector3Int(current_x, current_y, 0));
             }
             else if (errorDouble < distance_x)
             {
-                // y•ûŒü‚É1ƒ}ƒXˆÚ“®
+                // yæ–¹å‘ã«1ãƒã‚¹ç§»å‹•
 
-                // X¬•ª‚ğ‰Á‚¦‚ÄŒë·‚ğXViY‚Öi‚ñ‚¾•ªƒYƒŒ‚éj
+                // Xæˆåˆ†ã‚’åŠ ãˆã¦èª¤å·®ã‚’æ›´æ–°ï¼ˆYã¸é€²ã‚“ã åˆ†ã‚ºãƒ¬ã‚‹ï¼‰
                 errorValue += distance_x;
 
-                // YÀ•W‚ğ1ƒ}ƒXi‚ß‚éiã‚©‰ºj
+                // Yåº§æ¨™ã‚’1ãƒã‚¹é€²ã‚ã‚‹ï¼ˆä¸Šã‹ä¸‹ï¼‰
                 current_y += step_y;
 
-                // V‚µ‚¢ˆÊ’u‚ğƒŠƒXƒg‚É’Ç‰Á
+                // æ–°ã—ã„ä½ç½®ã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
                 path.Add(new Vector3Int(current_x, current_y, 0));
             }
         }
@@ -147,14 +165,20 @@ public class BeltDrawing : MonoBehaviour
         SelectedPosList = new List<Vector3Int>();
         posIndexMap = new Dictionary<Vector3Int, int>();
 
-        // ƒ‰ƒCƒ“ƒŒƒ“ƒ_ƒ‰[‚ğ‘SÁ‹i•`‰æ‚ğƒŠƒZƒbƒgj
+        // ãƒ©ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã‚’å…¨æ¶ˆå»ï¼ˆæç”»ã‚’ãƒªã‚»ãƒƒãƒˆï¼‰
         lineRenderer.positionCount = 0;
 
         OnGridMap = IsInGridMap(mouseWorldDownPos);
 
         if (OnGridMap)
         {
+            StratPosIcon.SetActive(true);
+            EndPosIcon.SetActive(true);
+
             Vector3Int gridPos = GetMapGridInt(mouseWorldDownPos);
+
+            StratPosIcon.transform.position = gridPos;
+            EndPosIcon.transform.position = gridPos;
 
             posIndexMap.Add(gridPos, SelectedPosList.Count);
             SelectedPosList.Add(gridPos);
@@ -162,32 +186,32 @@ public class BeltDrawing : MonoBehaviour
         } 
     }
 
-    // ƒxƒ‹ƒgi‘I‘ğƒ‰ƒCƒ“j‚ğ•`‰æ‚·‚éˆ—Bƒ}ƒEƒX‚Ìƒ[ƒ‹ƒhÀ•W‚ğŒ³‚É‘I‘ğƒ‰ƒCƒ“‚ÌXV‚ğs‚¤B
+    // ãƒ™ãƒ«ãƒˆï¼ˆé¸æŠãƒ©ã‚¤ãƒ³ï¼‰ã‚’æç”»ã™ã‚‹å‡¦ç†ã€‚ãƒã‚¦ã‚¹ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…ƒã«é¸æŠãƒ©ã‚¤ãƒ³ã®æ›´æ–°ã‚’è¡Œã†ã€‚
     void DrawingBelt(Vector3 mouseWorldPos)
     {
         if(!OnGridMap)     
             return;
         
-        // ƒ}ƒEƒX‚Ìƒ[ƒ‹ƒhÀ•W‚ğƒOƒŠƒbƒhÀ•Wi®”j‚É•ÏŠ·
+        // ãƒã‚¦ã‚¹ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’ã‚°ãƒªãƒƒãƒ‰åº§æ¨™ï¼ˆæ•´æ•°ï¼‰ã«å¤‰æ›
         Vector3Int gridPos = GetMapGridInt(mouseWorldPos);
 
-        // ‚·‚Å‚É‰½‚ç‚©‚ÌˆÊ’u‚ª‘I‘ğ‚³‚ê‚Ä‚éê‡‚Éˆ—‚ğÀs
+        // ã™ã§ã«ä½•ã‚‰ã‹ã®ä½ç½®ãŒé¸æŠã•ã‚Œã¦ã‚‹å ´åˆã«å‡¦ç†ã‚’å®Ÿè¡Œ
         if (SelectedPosList.Count != 0)
         {
-            // ¡‰ñ‚ÌˆÊ’u‚ª‘O‰ñ‚ÌˆÊ’u‚Æ“¯‚¶ê‡‚Éˆ—‚ğI—¹
+            // ä»Šå›ã®ä½ç½®ãŒå‰å›ã®ä½ç½®ã¨åŒã˜å ´åˆã«å‡¦ç†ã‚’çµ‚äº†
             if (gridPos == currentPos)       
                 return;
 
-            // ¡‰ñ‚ÌˆÊ’u‚©‚ç‘ÎŠpü‚ğƒWƒOƒUƒO‚É•â³‚µ‚½Œo˜H‚ğæ“¾
+            // ä»Šå›ã®ä½ç½®ã‹ã‚‰å¯¾è§’ç·šã‚’ã‚¸ã‚°ã‚¶ã‚°ã«è£œæ­£ã—ãŸçµŒè·¯ã‚’å–å¾—
             List<Vector3Int> correctionPathList = CorrectionBeltLine(gridPos, currentPos);
 
-            // Œo˜H1ƒ}ƒX‚²‚Æ‚É‚ÉƒOƒŠƒbƒhÀ•W‚ğˆ—
+            // çµŒè·¯1ãƒã‚¹ã”ã¨ã«ã«ã‚°ãƒªãƒƒãƒ‰åº§æ¨™ã‚’å‡¦ç†
             foreach (Vector3Int nextPos in correctionPathList)
             {
-                // ‚·‚Å‚É‘I‘ğƒŠƒXƒgã‚É‚±‚ÌƒOƒŠƒbƒhÀ•W‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½ê‡iƒ‹[ƒg‚ğŠª‚«–ß‚·‚æ‚¤‚È‘€ìj
+                // ã™ã§ã«é¸æŠãƒªã‚¹ãƒˆä¸Šã«ã“ã®ã‚°ãƒªãƒƒãƒ‰åº§æ¨™ãŒå«ã¾ã‚Œã¦ã„ãŸå ´åˆï¼ˆãƒ«ãƒ¼ãƒˆã‚’å·»ãæˆ»ã™ã‚ˆã†ãªæ“ä½œï¼‰
                 if (posIndexMap.TryGetValue(nextPos, out int count))
                 {
-                    // ŠY“–ˆÊ’uˆÈ~‚Ìƒf[ƒ^‚ğ‚·‚×‚Äíœ‚·‚éiŠª‚«–ß‚µj
+                    // è©²å½“ä½ç½®ä»¥é™ã®ãƒ‡ãƒ¼ã‚¿ã‚’ã™ã¹ã¦å‰Šé™¤ã™ã‚‹ï¼ˆå·»ãæˆ»ã—ï¼‰
                     for (int i = SelectedPosList.Count - 1; i >= count && i >= 0; i--)
                     {
                         Vector3Int removalTargetPos = SelectedPosList[i];
@@ -196,20 +220,25 @@ public class BeltDrawing : MonoBehaviour
                     }
                 }
 
-                // ‚Ü‚¾‘I‘ğƒŠƒXƒg‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢À•W‚Ìê‡AV‚½‚É’Ç‰Á
+                // ã¾ã é¸æŠãƒªã‚¹ãƒˆã«å«ã¾ã‚Œã¦ã„ãªã„åº§æ¨™ã®å ´åˆã€æ–°ãŸã«è¿½åŠ 
                 if (!posIndexMap.ContainsKey(nextPos))
                 {
-                    // À•W‚ğƒ}ƒbƒv‚É“o˜^‚µA‘I‘ğƒŠƒXƒg‚É‚à’Ç‰Á
+                    // åº§æ¨™ã‚’ãƒãƒƒãƒ—ã«ç™»éŒ²ã—ã€é¸æŠãƒªã‚¹ãƒˆã«ã‚‚è¿½åŠ 
                     posIndexMap.Add(nextPos, SelectedPosList.Count);
                     SelectedPosList.Add(nextPos);
 
-                    // Œ»İˆÊ’u‚ğXV
+                    // ç¾åœ¨ä½ç½®ã‚’æ›´æ–°
                     currentPos = nextPos;
                 }
             }
+            // çµŒè·¯ãŒå•é¡Œãªã„ã‹ç¢ºèª
+            IsNoProblemRoute = RouteProblemCheck();
 
-            // ƒ‰ƒCƒ“ƒŒƒ“ƒ_ƒ‰[‚ğXV‚µ‚Ä•`‰æ‚ğ”½‰f
+            // ãƒ©ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã‚’æ›´æ–°ã—ã¦æç”»ã‚’åæ˜ 
             UpdateLineRenderer();
+
+            // çµ‚ç‚¹ã®ä½ç½®ã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç§»å‹•ã™ã‚‹
+            EndPosIcon.transform.position = gridPos;
         }   
     }
 
@@ -218,7 +247,33 @@ public class BeltDrawing : MonoBehaviour
         if (BeltPrehab == null)
             return;
 
+        // LineRendererã®æç”»ã‚’åˆæœŸåŒ–
+        lineRenderer.positionCount = 0;
+
+        StratPosIcon.SetActive(false);
+        EndPosIcon.SetActive(false);
+
+        // çµŒè·¯ã«æ—¢ã«å»ºç‰©ãŒã‚ã‚‹ãªã‚‰ç”Ÿæˆã›ãšã«çµ‚äº†
+        if(!IsNoProblemRoute)
+        {
+            return;
+        }
+
+        // å…ˆé ­ä½ç½®ã¨çµ‚ç‚¹ä½ç½®ã‚’é™¤ããŸã‚è¦ç´ æ•°3ä»¥ä¸Šãªã‘ã‚Œã°å‡¦ç†ã‚’çµ‚äº†ã•ã›ã‚‹
+        if (SelectedPosList.Count <= 2)
+        {
+            Debug.Log("é¸æŠã‚»ãƒ«ï¼š" + SelectedPosList.Count);
+            return;
+        }
+
         List<GameObject> BeltList = new List<GameObject>();
+
+        Vector3Int StratPos = SelectedPosList.First();
+        Vector3Int EndPos = SelectedPosList.Last();
+
+        // çµ‚ç‚¹ã‹ã‚‰å‰Šé™¤
+        SelectedPosList.RemoveAt(SelectedPosList.Count - 1); // çµ‚ç‚¹ã‚’å‰Šé™¤
+        SelectedPosList.RemoveAt(0); // å…ˆé ­ã‚’å‰Šé™¤
 
         foreach (Vector3Int posInt in SelectedPosList)
         {
@@ -226,33 +281,73 @@ public class BeltDrawing : MonoBehaviour
             BeltList.Add(BeltObject);
         }
 
-        GridMapManager.Instance.BeltSetting(SelectedPosList, BeltList);
-
-        // LineRenderer‚Ì•`‰æ‚ğ‰Šú‰»
-        lineRenderer.positionCount = 0;
+        GridMapManager.Instance.BeltSetting(SelectedPosList, BeltList, StratPos, EndPos);
     }
 
-    // ƒ‰ƒCƒ“ƒŒƒ“ƒ_ƒ‰[‚ğXV‚µ‚Ä•`‰æ‚ğ‚·‚éˆ—
+
+    bool RouteProblemCheck()
+    {
+        // å…ˆé ­è¦ç´ ã¨çµ‚ç‚¹è¦ç´ ã‚’é™¤ã„ã¦æ—¢ã«å»ºç‰©ãŒã‚ã‚‹ã‹ç¢ºèª
+        for (int i = 1; i < SelectedPosList.Count - 1; i++)
+        {
+            Vector2Int vector2Int = new Vector2Int()
+            {
+                x = SelectedPosList[i].x,
+                y = SelectedPosList[i].y,
+            };
+
+            if (GridMapManager.Instance.GetCell(vector2Int).IsNoneCelltype())
+            {
+                continue;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    // ãƒ©ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã‚’æ›´æ–°ã—ã¦æç”»ã‚’ã™ã‚‹å‡¦ç†
     void UpdateLineRenderer()
     {
         lineRenderer.positionCount = SelectedPosList.Count;
 
-        // Vector3Int ¨ Vector3 •ÏŠ·‚µ‚Â‚Âİ’è
+        // Vector3Int â†’ Vector3 å¤‰æ›ã—ã¤ã¤è¨­å®š
         for (int i = 0; i < SelectedPosList.Count; i++)
         {
-            // ‚‚³’²®‚µ‚½‚¢ê‡‚ÍZ‚É+0.5f‚È‚Ç‚·‚é
+            // é«˜ã•èª¿æ•´ã—ãŸã„å ´åˆã¯Zã«+0.5fãªã©ã™ã‚‹
             lineRenderer.SetPosition(i, SelectedPosList[i]);
         }
+
+        //çµŒè·¯ã®å•é¡Œãªã„ã‹ã§è‰²å¤‰æ›´
+        GradientSetting();
+    }
+    void GradientSetting()
+    {
+        float GradientFirstTime = 0f;
+        float GradientLastTime = 1f;
+
+        Gradient gradient = IsNoProblemRoute ? scsessGradient : failedGradient;
+
+        lineRenderer.colorGradient = gradient;
+        StratIconSprite.color = gradient.Evaluate(GradientFirstTime);
+        EndIconSprite.color = gradient.Evaluate(GradientLastTime);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         OnGridMap = false;
+        IsNoProblemRoute = true;
         currentPos = new(-1, -1, 0);
-        // lineRenderer = GetComponent<LineRenderer>();
 
-        // LineRenderer‚Ì‰Šúİ’èi”CˆÓj
+        StratPosIcon.SetActive(false);
+        EndPosIcon.SetActive(false);
+
+        // LineRendererã®åˆæœŸè¨­å®šï¼ˆä»»æ„ï¼‰
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));

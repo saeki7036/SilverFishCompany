@@ -46,8 +46,7 @@ public class CameraMovement : MonoBehaviour
             x = GetMoveDirectionAxis(transform.position.x, mouseWorldPos.x,ThresholdValue.x),
             y = GetMoveDirectionAxis(transform.position.y, mouseWorldPos.y,ThresholdValue.y),
         };
-        Debug.Log(moveDirection);
-
+        
         Vector2 moveSpeed = new()
         {
             x = GetMoveSpeedAxis(transform.position.x, mouseWorldPos.x),

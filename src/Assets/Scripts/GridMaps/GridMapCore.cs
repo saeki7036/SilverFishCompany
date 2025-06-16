@@ -1,6 +1,9 @@
+﻿using System.Collections.Generic;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
+using static UnityEditor.Progress;
 
 public class GridMap
 {
@@ -32,9 +35,9 @@ public class GridMap
             return gridCell[pos.x, pos.y];
         else
         {
-            Debug.LogError("�͈͊O");
-            // �������ŕԂ�
-            return new();
+            Debug.LogError("範囲外");
+            // ヌル用コンストラクタで初期化したもので返す
+            return new GridCell(CellType.NULLTYPE);
         }
     }
 
@@ -44,25 +47,23 @@ public class GridMap
             gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
         else
         {
-            Debug.LogError("�͈͊O");
+            Debug.LogError("範囲外");
         }
     }
 
-
-    // �v���p�e�B
+    // プロパティ
     public GridCell[,] GridCells
     {
         get => gridCell; 
         set => gridCell = value;
     }
 
-
     void InitializeGrid()
     {
-        // �S�Ă�������
+        // 全てを初期化
         gridCell = new GridCell[mapSize.x, mapSize.y];
 
-        // ���[�v����Vector2Int��new�̐錾�������Ȃ��̂ōŏ��Ɉ��
+        // ループ内でVector2Intのnewの宣言したくないので最初に一回
         Vector2Int forIndex =new(0,0);
         
         for (; forIndex.x < mapSize.x; forIndex.x++)
@@ -75,15 +76,17 @@ public class GridMap
     }
 }
 
-// 3�����_���W�����̃Z����ނ��`����enum
+// セル種類を定義するenum
 public enum CellType
 {
-    None,      // ����
-    BaseCamp,  // ���_�{��
-    Belt,      // �x���g�R���x�A
-    Production,// ���Y���_
-    Room,      // ����
-    Corridor   // �ʘH
+    None,      // 無し
+    BaseCamp,  // 拠点本体
+    Belt,      // ベルトコンベア
+    Production,// 生産拠点
+    processing,// 加工施設
+    Room,      // 部屋
+    Corridor,  // 通路
+    NULLTYPE,  //エラー処理用
 }
 
 [System.Serializable]
@@ -92,28 +95,52 @@ public struct GridCell
     public Vector2Int GridPos;
     public CellType GridCellType;
     public GameObject GridObject;
+    public GridBuilding Building;
 
+    // 最初にすべて初期化するコンストラクタ
     public GridCell(Vector2Int vector2Int)
     {
-        GridCellType = CellType.None;
-        GridObject = null;
         GridPos = vector2Int;
+        GridCellType = CellType.None;
+        GridObject = null;      
+        Building = null;
     }
 
-    public GridCell(GridCell gridCell)
+    // エラー参照用コンストラクタ
+    public GridCell(CellType NULLTYPE)
     {
-        GridCellType = gridCell.GridCellType;
-        GridObject = gridCell.GridObject;
-        GridPos = gridCell.GridPos;              
+        GridPos = new(-1, -1);
+        GridCellType = NULLTYPE;
+        GridObject = null;
+        Building = null;
+
+        Debug.LogError("何かしら良くないので要デバッグ");
     }
 
-    public GridCell(Vector2Int vector2Int, CellType cellType, GameObject gameObject)
+    //　施設の建設に使うコンストラクタ
+    public GridCell(Vector2Int vector2Int, CellType cellType, GameObject gameObject, GridBuilding gridBuilding)
     {
         GridCellType = cellType;
         GridObject = gameObject;
         GridPos = vector2Int;
+        Building = gridBuilding;
     }
 
+    public bool IsNoneCelltype() => GridCellType == CellType.None;
+
+    public Vector3 GetBuildingSize()
+    {
+        if (Building == null)
+            return Vector3.one;
+
+        return new()
+        {
+            x = Building.MinBuildingPos.x,
+            y = Building.MaxBuildingPos.y,
+            z = 0
+        };
+    }
+            
     public Vector3 GetGridObjectScale()
     {
         if(GridObject == null)
@@ -126,11 +153,55 @@ public struct GridCell
 [System.Serializable]
 public struct MapContent
 {
-    public Vector2Int minGridPos;
-    public Vector2Int GridSize;
-    public CellType GridCellType;
-    public GameObject GridObject;
+    [SerializeField] Vector2Int minGridPos;
+    [SerializeField] Vector2Int gridSize;
+    [SerializeField] CellType gridCellType;
+    [SerializeField] GameObject gridObject;
+    [SerializeField] List<Transform> importTransforms;
+    [SerializeField] List<Transform> exportTransforms;
 
+    /// <summary>
+    /// [HideInInspector]を設定して
+    /// フィールド非表示時も値を保持し続けるようにする
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    ItemInformation item;
 
-    public Vector2Int maxGridPos => minGridPos + GridSize - Vector2Int.one; 
+    // プロパティ(Editor拡張を使うため)
+    public ItemInformation Iteminfo
+    {
+        get => item;
+        set => item = value;
+    }
+
+    // Public getter
+    public Vector2Int MinGridPos => minGridPos;
+    public Vector2Int GridSize => gridSize;
+    public CellType GridCellType => gridCellType;
+    public GameObject GridObject => gridObject;
+    
+    public  Vector2Int maxGridPos => minGridPos + GridSize - Vector2Int.one;
+
+    public readonly HashSet<Vector2Int> IｍportGridPos() => ConvertVector2Int(importTransforms);
+    public readonly HashSet<Vector2Int> ExportGridPos() => ConvertVector2Int(exportTransforms);
+
+    readonly HashSet<Vector2Int> ConvertVector2Int(List<Transform> transforms)
+    {
+        HashSet<Vector2Int> vec2Int = new HashSet<Vector2Int>();
+
+        foreach (Transform t in transforms)
+        {
+            Vector3 pos = t.position;
+            Vector2Int rounded = new Vector2Int
+            {
+                x = Mathf.RoundToInt(pos.x),
+                y = Mathf.RoundToInt(pos.y) 
+            };
+            vec2Int.Add(rounded);
+        }
+
+        return vec2Int;
+    }
+   
 }
