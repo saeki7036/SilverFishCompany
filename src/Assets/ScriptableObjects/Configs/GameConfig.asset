@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c23f2488a45448b40b1e6fac9c9513c1, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: 
+  itemConfig:
+    addCountValue: 0.02
+    maxCountValue: 1
+  buildingConfig:
+    addOperatCountValue: 0.02
+    useCellTypes:
+    - type: 1
+      startupTime: 0
+    - type: 2
+      startupTime: 2
+    - type: 3
+      startupTime: 1
+    - type: 4
+      startupTime: 2

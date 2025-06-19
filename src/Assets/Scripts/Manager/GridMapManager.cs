@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
@@ -188,8 +189,6 @@ public class GridMapManager : MonoBehaviour
     }
 
     
-
-
     public void BeltSetting(List<Vector3Int> vector3Ints, List<GameObject> objects, Vector3Int startInportPos , Vector3Int endExportPos)
     {
         if(vector3Ints.Count != objects.Count)
@@ -220,6 +219,8 @@ public class GridMapManager : MonoBehaviour
                 Conversion2D(i + 1 == vector3Ints.Count ? endExportPos : vector3Ints[i + 1])
             };
 
+            //Debug.Log("this:" + vector2Int + "import:" + inportPos.First() + "export:" + exportPos.First()); 
+
             BeltBuilding beltBuilding = new BeltBuilding(
                 vector2Int,
                 vector2Int,
@@ -233,8 +234,4 @@ public class GridMapManager : MonoBehaviour
             BeltCellList.Add(cell);
         }
     }
-
-    
-
-    
 }

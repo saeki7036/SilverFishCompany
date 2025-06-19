@@ -36,7 +36,13 @@ public class ProductionBuilding : GridBuilding
         }
 
         if (Item == null)
-            Item = new ProductItem(itemInfo, ImportPos.First());
+        {
+            var instance = ItemManager.Instance;
+
+            Item = new ProductItem(itemInfo, ImportPos.First(), instance.GetMaxTimeCount());
+
+            instance.AddListItem(Item);
+        } 
     }
 
     public override void ImportItem()

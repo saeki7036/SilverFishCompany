@@ -1,58 +1,71 @@
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
+
 using UnityEngine;
 
 public class ProductManager : MonoBehaviour
 {
-    [SerializeField]
-    BuildingTimeConfig buildingTime;
-
-    [SerializeField]
     float addTimeCountValue = 0.02f;
-
     bool AddTimeCountFlag = true;
 
-    float GetOperatTime(CellType cellType) => buildingTime.GetStartupTime(cellType);
+    BuildingConfig GetConfig() => ConfigManager.Instance.GetBuildingConfig();
+
+    float GetOperatTime(CellType cellType) => GetConfig().GetStartupTime(cellType);
 
     private Dictionary<CellType, ProductTimer> ProductOperater;
 
-    public class ProductTimer
+    class ProductTimer
     {
-        public CellType cellType;
-        public float timeCount;
+        CellType cellType;
+        float timeCount;
+        float operatCount;
 
-        public bool IsOperat(float operatTime) => timeCount >= operatTime;
+        public ProductTimer(CellType cellType, float operatCount)
+        {
+            this.cellType = cellType;
+            this.operatCount = operatCount;
+
+            timeCount = 0f;
+        }
+
+        public CellType GetCellType() => cellType; 
+
+        public void AddCount(float count) => timeCount += count;
+
+        public void CountReset() => timeCount = 0f;
+
+        public bool IsOperat() => timeCount >= operatCount;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        var config = GetConfig();
+
+        addTimeCountValue = config.GetOperatCount();
+           
         ProductOperater = new Dictionary<CellType, ProductTimer>();
 
-        foreach (var config in buildingTime.startupConfigs)
+        foreach (CellType type in config.GetCellTypes())
         {
-            ProductOperater[config.type] = new ProductTimer
-            {
-                cellType = config.type,
-                timeCount = 0,
-            };
+            ProductOperater[type] = new ProductTimer(type,GetOperatTime(type));
         }
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        if (!AddTimeCountFlag) 
+            return;
+
         AddTimeCount();
         OperatCheck();
     }
 
     void AddTimeCount()
     {
-        if (!AddTimeCountFlag) return;
-
         foreach (ProductTimer product in ProductOperater.Values)
         {
-            product.timeCount += addTimeCountValue;
+            product.AddCount(addTimeCountValue);
         }
     }
 
@@ -60,10 +73,10 @@ public class ProductManager : MonoBehaviour
     {
         foreach (ProductTimer product in ProductOperater.Values)
         {
-            if (product.IsOperat(GetOperatTime(product.cellType)))
+            if (product.IsOperat())
             {
-                product.timeCount = 0f;
-                GridMapManager.Instance.OperatBuilding(product.cellType);
+                product.CountReset();
+                GridMapManager.Instance.OperatBuilding(product.GetCellType());
             }
         }
     }

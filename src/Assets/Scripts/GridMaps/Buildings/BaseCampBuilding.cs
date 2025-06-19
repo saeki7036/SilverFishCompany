@@ -24,6 +24,7 @@ public class BaseCampBuilding : GridBuilding
 
     public override void OperatFacility()
     {
+        // Removeを扱うので逆順ループ
         for (int i = productItems.Count - 1; i >= 0; i--)
         {
             if (!productItems[i].IsItemMove())
@@ -48,6 +49,15 @@ public class BaseCampBuilding : GridBuilding
         return;
     }
 
+    GridBuilding GetValidBuilding(Vector2Int pos)
+    {
+        var cell = GridMapManager.Instance.GetCell(pos);
+        var cellType = cell.GridCellType;
+
+        if (cellType == CellType.None || cellType == CellType.NULLTYPE) return null;
+        return cell.Building;
+    }
+
     void ImportSearch()
     {
         HashSet<GridBuilding> searchedHash = new HashSet<GridBuilding>();
@@ -56,19 +66,12 @@ public class BaseCampBuilding : GridBuilding
 
         foreach (Vector2Int pos in ImportPos)
         {
-            GridCell cell = GridMapManager.Instance.GetCell(pos);
-
-            CellType cellType = cell.GridCellType;
-
-            if (cellType == CellType.None || cellType  == CellType.NULLTYPE)
-                continue;
-
-            GridBuilding gridBuilding = cell.Building;
+            GridBuilding gridBuilding = GetValidBuilding(pos);
 
             if (gridBuilding == null)
                 continue;
 
-            Vector3 TargetPos = GetMoveTargetPos(gridBuilding);
+            Vector3 TargetPos = GetMoveTargetPos(this,gridBuilding);
 
             if (TargetPos == NoTargetPos)
                 continue;
@@ -80,27 +83,20 @@ public class BaseCampBuilding : GridBuilding
 
         while (buildingQueue.Count > 0)
         {
-            GridBuilding building = buildingQueue.Dequeue();
+            GridBuilding currntBuilding = buildingQueue.Dequeue();
 
-            searchedHash.Add(building);
+            searchedHash.Add(currntBuilding);
 
-            building.ImportItem();
+            currntBuilding.ImportItem();
 
-            foreach (Vector2Int pos in building.ImportPos)
+            foreach (Vector2Int pos in currntBuilding.ImportPos)
             {
-                var cell = GridMapManager.Instance.GetCell(pos);
-
-                CellType cellType = cell.GridCellType;
-
-                if (cellType == CellType.None || cellType == CellType.NULLTYPE)
-                    continue;
-
-                GridBuilding gridBuilding = cell.Building;
+                GridBuilding gridBuilding = GetValidBuilding(pos);
 
                 if (gridBuilding == null)
                     continue;
 
-                Vector3 TargetPos = GetMoveTargetPos(gridBuilding);
+                Vector3 TargetPos = GetMoveTargetPos(currntBuilding,gridBuilding);
 
                 if (TargetPos == NoTargetPos)
                     continue;
@@ -120,23 +116,29 @@ public class BaseCampBuilding : GridBuilding
 
         productItems.Add(gridBuilding.Item);
 
-        gridBuilding.RemoveProductItem();
+        gridBuilding.RemoveItem();
     }
 
-    Vector3 GetMoveTargetPos(GridBuilding gridBuilding)
+    Vector3 GetMoveTargetPos(GridBuilding currentBuilding, GridBuilding importBuilding)
     {
-        foreach(Vector2Int pos in gridBuilding.ExportPos)
+        foreach(Vector2Int pos in importBuilding.ExportPos)
         {
-            CellType cellType = GridMapManager.Instance.GetCell(pos).GridCellType;
+            GridBuilding exportBuilding = GetValidBuilding(pos);
 
-            if(cellType == CellType.BaseCamp || cellType == CellType.NULLTYPE)
+            //CellType cellType = GridMapManager.Instance.GetCell(pos).GridCellType;
+            //Debug.Log(cellType + ":" + pos);
+
+            //if(cellType == CellType.None || cellType == CellType.NULLTYPE)
+            if (exportBuilding == null ||  currentBuilding != exportBuilding)
             {
-                Vector2 targetPos = pos;
-                return targetPos;
+                continue;
             }
+
+            Vector2 targetPos = pos;
+            return targetPos;
         }
 
-        Debug.Log("target先にBaceCampにアクセス出来ない");
+        Debug.Log(importBuilding + "のExport先に" + currentBuilding + "は無かった");
 
         return NoTargetPos;
     }

@@ -6,7 +6,7 @@ using static UnityEditor.Progress;
 using Unity.VisualScripting;
 public abstract class GridBuilding
 {
-    HashSet<Vector2Int> importPos;// 作業を実行位置
+    HashSet<Vector2Int> importPos;// 作業の実行位置
     HashSet<Vector2Int> exportPos;// 排出位置
 
     //削除する際にgridmap側の情報を削除する際に必要な位置のキャッシュ
@@ -43,7 +43,9 @@ public abstract class GridBuilding
         set => item = value;
     }
 
-    public void RemoveProductItem()=> item = null;
+    public bool IsEmptyItem() => item == null;
+
+    public void RemoveItem()=> item = null;
 
     // コンストラクタ
     public GridBuilding(Vector2Int minBuildingPos, Vector2Int maxBuildingPos,
@@ -54,9 +56,9 @@ public abstract class GridBuilding
         this.importPos = new HashSet<Vector2Int>(importList);
         this.exportPos = new HashSet<Vector2Int>(exportList);
 
-        RemoveProductItem();
+        RemoveItem();
 
-        Debug.Log("コンストラクタ：抽象");
+        //Debug.Log("コンストラクタ：抽象");
     }
 
     public abstract void OperatFacility();

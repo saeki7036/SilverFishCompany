@@ -271,6 +271,8 @@ public class BeltDrawing : MonoBehaviour
         Vector3Int StratPos = SelectedPosList.First();
         Vector3Int EndPos = SelectedPosList.Last();
 
+        //Debug.Log(StratPos + " : " + EndPos);
+
         // 終点から削除
         SelectedPosList.RemoveAt(SelectedPosList.Count - 1); // 終点を削除
         SelectedPosList.RemoveAt(0); // 先頭を削除
