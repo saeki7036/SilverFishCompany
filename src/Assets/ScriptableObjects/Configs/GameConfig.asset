@@ -21,8 +21,8 @@ MonoBehaviour:
     - type: 1
       startupTime: 0
     - type: 2
-      startupTime: 2
-    - type: 3
       startupTime: 1
+    - type: 3
+      startupTime: 2
     - type: 4
       startupTime: 2

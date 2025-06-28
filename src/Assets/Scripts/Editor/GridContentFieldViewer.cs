@@ -21,8 +21,8 @@ public class GridContentFieldViewer : Editor
         GridContent instance = target as GridContent;
 
         // GridCellType が条件を満たすときのみ、[ItemInformation]のフィールド変数を表示する
-        if (instance.Content.GridCellType == CellType.Production || 
-            instance.Content.GridCellType == CellType.processing)
+        if (instance.Content.GridCellType == BuildType.Production || 
+            instance.Content.GridCellType == BuildType.Processing)
         {
             EditorGUILayout.PropertyField(itemInfoProperty, new GUIContent("Item Info"));
         }

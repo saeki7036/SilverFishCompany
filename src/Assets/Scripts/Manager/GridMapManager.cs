@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
@@ -13,9 +14,12 @@ public class GridMapManager : MonoBehaviour
     [SerializeField]
     float gridAdjustScale = 0.5f;
 
+    [SerializeField]
+    Tilemap tilemap = null;
+
     GridMap gridMap;
 
-    Dictionary<CellType, HashSet<GridBuilding>> BuildingDictionary;
+    Dictionary<BuildType, HashSet<GridBuilding>> BuildingDictionary;
 
     static GridMapManager instance;
     public static GridMapManager Instance => instance;
@@ -23,7 +27,10 @@ public class GridMapManager : MonoBehaviour
     public GridCell GetCell(Vector2Int pos) => gridMap.GetGridCell(pos);
 
     public void SetCell(GridCell cell) => gridMap.SetGridCell(cell);
-       
+
+    public void SetTile(Tilemap tilemap) => gridMap.SetTileType(tilemap);
+
+
     public Vector2Int MaxMapSize => mapSize;
 
     public float GridAdjustScale() => gridAdjustScale;
@@ -35,10 +42,10 @@ public class GridMapManager : MonoBehaviour
         return pos.x >= 0 && pos.y >= 0 && pos.x < mapSize.x && pos.y < mapSize.y;
     }
 
-    public void SetBuilding(CellType cellType, GridBuilding building)
+    public void SetBuilding(BuildType cellType, GridBuilding building)
     {
         // 例外処理
-        if(cellType == CellType.None || building == null)
+        if(cellType == BuildType.None || building == null)
         {
             Debug.LogAssertion("nullかどうか要確認");
             return;
@@ -49,7 +56,7 @@ public class GridMapManager : MonoBehaviour
             BuildingDictionary[cellType] = new HashSet<GridBuilding>();
         }
 
-        else if(cellType == CellType.Belt)
+        else if(cellType == BuildType.Belt)
         {
             Debug.Log("Belt除外");
             return;
@@ -59,14 +66,14 @@ public class GridMapManager : MonoBehaviour
     }
 
 
-    public void RemoveBuilding(CellType cellType, GridBuilding building)
+    public void RemoveBuilding(BuildType cellType, GridBuilding building)
     {
-        if (cellType == CellType.None || building == null)
+        if (cellType == BuildType.None || building == null)
         {
             Debug.LogAssertion("nullかどうか要確認");
             return;
         }
-        else if (cellType == CellType.BaseCamp)
+        else if (cellType == BuildType.BaseCamp)
         {
             Debug.Log("BaseCamp除外");
             return;
@@ -80,18 +87,18 @@ public class GridMapManager : MonoBehaviour
         //BuildingDictionary[cellType].Remove(building);
     }
 
-    public void OperatBuilding(CellType cellType)
+    public void OperatBuilding(BuildType cellType)
     {
         // CellType.Beltのみ別処理
-        if (cellType == CellType.Belt)
+        if (cellType == BuildType.Belt)
         {
-            if(BuildingDictionary[CellType.BaseCamp] == null)
+            if(BuildingDictionary[BuildType.BaseCamp] == null)
             {
                 Debug.Log("Beltタスクが実行されたがBaseCampが初期化されてない");
                 return;
             }
 
-            foreach (GridBuilding basecamp in BuildingDictionary[CellType.BaseCamp])
+            foreach (GridBuilding basecamp in BuildingDictionary[BuildType.BaseCamp])
             {
                 basecamp.ImportItem();
             }
@@ -108,7 +115,7 @@ public class GridMapManager : MonoBehaviour
         {
             foreach (GridBuilding building in BuildingDictionary[cellType])
             {
-                building.OperatFacility();
+                building.Operat();
             }
             return;
         } 
@@ -126,24 +133,25 @@ public class GridMapManager : MonoBehaviour
 
         InitializeGrid();
 
+        SetTile(tilemap);
     }
 
     void InitializeGrid()
     {
         gridMap = new GridMap(mapSize);
-        BuildingDictionary = new Dictionary<CellType, HashSet<GridBuilding>>();
+        BuildingDictionary = new Dictionary<BuildType, HashSet<GridBuilding>>();
     }
 
 
     public void StartSetContent(MapContent content)
     {
-        if(!IsInBounds(content.MinGridPos) ||! IsInBounds(content.maxGridPos))
+        if(!IsInBounds(content.MinGridPos) ||! IsInBounds(content.MaxGridPos()))
         {
             Debug.LogError(content + "範囲外です。");
             return;
         }
 
-        if (content.GridCellType == CellType.None)
+        if (content.GridCellType == BuildType.None)
         {
             Debug.LogError(content + "CellTypeを設定してください。");
             return;
@@ -151,13 +159,13 @@ public class GridMapManager : MonoBehaviour
 
         List<Vector2Int> SetCellList = new List<Vector2Int>();
 
-        for(int x = content.MinGridPos.x; x <= content.maxGridPos.x; x++)
+        for(int x = content.MinGridPos.x; x <= content.MaxGridPos().x; x++)
         {
-            for (int y = content.MinGridPos.y; y <= content.maxGridPos.y; y++)
+            for (int y = content.MinGridPos.y; y <= content.MaxGridPos().y; y++)
             {
                 Vector2Int currentPos = new Vector2Int(x, y);
 
-                if (GetCell(currentPos).GridCellType != CellType.None)
+                if (GetCell(currentPos).GridCellType != BuildType.None)
                 {
                     Debug.LogError("Cellが重複しています=>" + GetCell(currentPos).GridCellType);
                     return;
@@ -170,7 +178,7 @@ public class GridMapManager : MonoBehaviour
         GridBuilding gridBuilding = CreateBuildingFactory.CreateBuilding(
             content.GridCellType,
             content.MinGridPos,
-            content.maxGridPos,
+            content.MaxGridPos(),
             content.IｍportGridPos(),
             content.ExportGridPos(),
             content.Iteminfo
@@ -181,7 +189,7 @@ public class GridMapManager : MonoBehaviour
 
         foreach (Vector2Int cell in SetCellList)
         {
-            GridCell settingCell = new GridCell(cell, content.GridCellType, content.GridObject, gridBuilding);
+            GridCell settingCell = new GridCell(cell, content.GridCellType, content.GridObject(), gridBuilding);
             SetCell(settingCell);
         }
 
@@ -227,11 +235,16 @@ public class GridMapManager : MonoBehaviour
                 inportPos, 
                 exportPos);
 
-            GridCell cell = new GridCell(vector2Int, CellType.Belt, objects[i], beltBuilding);
+            GridCell cell = new GridCell(vector2Int, BuildType.Belt, objects[i], beltBuilding);
 
             SetCell(cell);
 
             BeltCellList.Add(cell);
         }
+    }
+
+    public void DestroyContent(Vector2Int point)
+    {
+        gridMap.SetEmptyGridCell(point);
     }
 }

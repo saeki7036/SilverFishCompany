@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 using static UnityEditor.Progress;
+using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 
 public class GridMap
 {
@@ -14,13 +16,6 @@ public class GridMap
     public GridMap(Vector2Int vector2Int)
     {
         this.mapSize = vector2Int;
-        InitializeGrid();
-    }
-
-    public GridMap (int width, int height)
-    {       
-        this.mapSize.x = width;
-        this.mapSize.y = height;
         InitializeGrid();
     }
 
@@ -37,7 +32,7 @@ public class GridMap
         {
             Debug.LogError("範囲外");
             // ヌル用コンストラクタで初期化したもので返す
-            return new GridCell(CellType.NULLTYPE);
+            return new GridCell(BuildType.NULLTYPE);
         }
     }
 
@@ -51,11 +46,46 @@ public class GridMap
         }
     }
 
-    // プロパティ
-    public GridCell[,] GridCells
+    public void SetEmptyGridCell(Vector2Int pos)
     {
-        get => gridCell; 
-        set => gridCell = value;
+        if (IsInBounds(pos))
+            gridCell[pos.x, pos.y].EmptyCell();
+        else
+        {
+            Debug.LogError("範囲外");
+        }
+    }
+
+    public void SetTileType(Tilemap tilemap)
+    {
+        if(gridCell == null)
+        {
+            Debug.LogError("未初期化");
+        }
+
+        //BoundsInt bounds = tilemap.cellBounds;
+        
+        for (int x = 0; x < mapSize.x; x++)
+        {
+            for (int y = 0; y < mapSize.y; y++)
+            {
+                Vector3Int vector3Int =  new Vector3Int()
+                {
+                    x = x,
+                    y = y,
+                    z = 0
+                };
+
+                if (tilemap.HasTile(vector3Int))
+                {
+                    var tile = tilemap.GetTile(vector3Int) as CustomTile;
+                    //Debug.Log($"Tile at {vector3Int}: {tile}");
+
+                    if (tile != null)
+                        gridCell[x, y].SetTileType(tile.tileType);
+                }
+            }
+        }
     }
 
     void InitializeGrid()
@@ -64,52 +94,65 @@ public class GridMap
         gridCell = new GridCell[mapSize.x, mapSize.y];
 
         // ループ内でVector2Intのnewの宣言したくないので最初に一回
-        Vector2Int forIndex =new(0,0);
+        Vector2Int forIndex =new Vector2Int(0,0);
         
         for (; forIndex.x < mapSize.x; forIndex.x++)
         {
+            forIndex.y = 0;
             for (; forIndex.y < mapSize.y; forIndex.y++)
             {  
                 gridCell[forIndex.x, forIndex.y] = new GridCell(forIndex);
+                //Debug.Log(gridCell[forIndex.x, forIndex.y]);
             }
         }
     }
 }
 
+public enum TileType
+{
+    None,
+    Tree,
+    Rock,
+}
+
 // セル種類を定義するenum
-public enum CellType
+public enum BuildType
 {
     None,      // 無し
     BaseCamp,  // 拠点本体
     Belt,      // ベルトコンベア
     Production,// 生産拠点
-    processing,// 加工施設
-    Room,      // 部屋
-    Corridor,  // 通路
+    Processing,// 加工施設
+    Turret,    // 攻撃施設
+    Wall,　　  // 防御施設
     NULLTYPE,  //エラー処理用
 }
 
 [System.Serializable]
-public struct GridCell
+public class GridCell
 {
     public Vector2Int GridPos;
-    public CellType GridCellType;
+    public BuildType GridCellType;
     public GameObject GridObject;
     public GridBuilding Building;
+
+    TileType tileType;
 
     // 最初にすべて初期化するコンストラクタ
     public GridCell(Vector2Int vector2Int)
     {
         GridPos = vector2Int;
-        GridCellType = CellType.None;
+        tileType = TileType.None;
+        GridCellType = BuildType.None;
         GridObject = null;      
         Building = null;
     }
 
     // エラー参照用コンストラクタ
-    public GridCell(CellType NULLTYPE)
+    public GridCell(BuildType NULLTYPE)
     {
         GridPos = new(-1, -1);
+        tileType = TileType.None;
         GridCellType = NULLTYPE;
         GridObject = null;
         Building = null;
@@ -118,7 +161,7 @@ public struct GridCell
     }
 
     //　施設の建設に使うコンストラクタ
-    public GridCell(Vector2Int vector2Int, CellType cellType, GameObject gameObject, GridBuilding gridBuilding)
+    public GridCell(Vector2Int vector2Int, BuildType cellType, GameObject gameObject, GridBuilding gridBuilding)
     {
         GridCellType = cellType;
         GridObject = gameObject;
@@ -126,7 +169,24 @@ public struct GridCell
         Building = gridBuilding;
     }
 
-    public bool IsNoneCelltype() => GridCellType == CellType.None;
+    public void EmptyCell()
+    {
+        GridCellType = BuildType.None;
+        GridObject = null;
+        Building = null;
+    }
+
+
+
+    public void SetTileType (TileType tileType) => this.tileType = tileType;
+
+    public bool IsNoneCelltype() => GridCellType == BuildType.None;
+
+    public bool SameTileType(TileType tiletype)
+    {
+        //Debug.Log(tileType + "==" + tiletype);
+        return this.tileType == tiletype;
+    }
 
     public Vector3 GetBuildingSize()
     {
@@ -155,7 +215,8 @@ public struct MapContent
 {
     [SerializeField] Vector2Int minGridPos;
     [SerializeField] Vector2Int gridSize;
-    [SerializeField] CellType gridCellType;
+    [SerializeField] BuildType gridCellType;
+    [SerializeField] TileType canCreateTileType;
     [SerializeField] GameObject gridObject;
     [SerializeField] List<Transform> importTransforms;
     [SerializeField] List<Transform> exportTransforms;
@@ -175,13 +236,17 @@ public struct MapContent
         set => item = value;
     }
 
+    public void SetMinGridPos(Vector2Int pos) => this.minGridPos = pos;
+
     // Public getter
     public Vector2Int MinGridPos => minGridPos;
     public Vector2Int GridSize => gridSize;
-    public CellType GridCellType => gridCellType;
-    public GameObject GridObject => gridObject;
+    public BuildType GridCellType => gridCellType;
+
+    public TileType CanCreateTileType() => canCreateTileType;
+    public GameObject GridObject() => gridObject;
     
-    public  Vector2Int maxGridPos => minGridPos + GridSize - Vector2Int.one;
+    public  Vector2Int MaxGridPos() => minGridPos + GridSize - Vector2Int.one;
 
     public readonly HashSet<Vector2Int> IｍportGridPos() => ConvertVector2Int(importTransforms);
     public readonly HashSet<Vector2Int> ExportGridPos() => ConvertVector2Int(exportTransforms);

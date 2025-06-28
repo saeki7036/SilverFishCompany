@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MainGameIventManager : MonoBehaviour
 {
@@ -13,10 +13,18 @@ public class MainGameIventManager : MonoBehaviour
 
     [SerializeField]
     BeltDrawing beltDrawing;
+
+    //[SerializeField]
+    //ProductUISetting productUISetting;
+
+    [SerializeField]
+    ProductUICreate productUICreate;
     void Start()
     {
         targetCursol.InputRegister(mouseController);
         cameraMovement.InputRegister(mouseController);
         beltDrawing.InputRegister(mouseController);
+        //productUISetting.InputRegister(mouseController);
+        productUICreate.InputRegister(mouseController);
     }
 }

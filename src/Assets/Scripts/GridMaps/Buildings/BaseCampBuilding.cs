@@ -22,7 +22,7 @@ public class BaseCampBuilding : GridBuilding
         Debug.Log("コンストラクタ：BaseCampBuilding");
     }
 
-    public override void OperatFacility()
+    public override void Operat()
     {
         // Removeを扱うので逆順ループ
         for (int i = productItems.Count - 1; i >= 0; i--)
@@ -47,15 +47,6 @@ public class BaseCampBuilding : GridBuilding
     {
         // アイテムの排出は行わないのでreturn。
         return;
-    }
-
-    GridBuilding GetValidBuilding(Vector2Int pos)
-    {
-        var cell = GridMapManager.Instance.GetCell(pos);
-        var cellType = cell.GridCellType;
-
-        if (cellType == CellType.None || cellType == CellType.NULLTYPE) return null;
-        return cell.Building;
     }
 
     void ImportSearch()
@@ -146,7 +137,7 @@ public class BaseCampBuilding : GridBuilding
 
     void ItemStock(ProductItem productItem)
     {
-        Debug.Log("アイテムカデゴリ" + productItem.GetCategory() + 
+        Debug.Log("アイテムカデゴリ：" + productItem.GetCategory() + 
                   "アイテムレベル："+ productItem.GetLevel().ToString());
     }
 }

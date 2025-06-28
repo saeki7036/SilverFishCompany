@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEditor.AssetImporters;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "ItemInformation", menuName = "Scriptable Objects/ItemInformation")]
 public class ItemInformation : ScriptableObject
@@ -10,25 +8,18 @@ public class ItemInformation : ScriptableObject
     public GameObject itemPrehab;
 
     // プロパティ
-    public ItemCategory ItemCategory
-    {
-        get => itemCategory;
-    }
+    public ItemCategory GetItemCategory() => itemCategory;
+    
 
-    public int ItemLevel
-    {
-        get => itemLevel;
-    }
+    public int GetItemLevel() => itemLevel;
+    
 
-    public GameObject ItemPrehab
-    {
-        get => itemPrehab;
-    }
+    public GameObject GetItemPrehab() => itemPrehab;
 }
 
 public enum ItemCategory
 {
     None,
     Wood,
-    storn,
+    Stone,
 }

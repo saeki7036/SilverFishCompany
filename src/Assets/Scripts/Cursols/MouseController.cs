@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Common;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -73,7 +73,7 @@ public class MouseController : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(point);
     }
 
-    void MouseInputParameter(int num, MouseParameter parameter)
+    void MouseInputParameter(int num,ref MouseParameter parameter)
     {
         if (Input.GetMouseButtonDown(num))
         {
@@ -90,7 +90,7 @@ public class MouseController : MonoBehaviour
 
             ClickInvoke(num,parameter.mouseWorldPos);
         }
-
+        
         if (Input.GetMouseButtonUp(num))
         {
             ClickUpInvoke(num, parameter.mouseWorldPos);
@@ -102,7 +102,10 @@ public class MouseController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        LeftParameter = new MouseParameter();
         LeftParameter.ResetMousePos();
+
+        RightParameter = new MouseParameter();
         RightParameter.ResetMousePos();
     }
 
@@ -110,8 +113,11 @@ public class MouseController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MouseInputParameter(LeftInputNum, LeftParameter);
-        MouseInputParameter(RightInputNum, RightParameter);
+        MouseInputParameter(LeftInputNum,ref LeftParameter);
+
+        Debug.Log(LeftParameter.mouseWorldPos == Vector3.zero);
+
+        MouseInputParameter(RightInputNum,ref RightParameter);
     }
 
     Vector3 GetTouchClamp()

@@ -28,7 +28,7 @@ public class ProductionBuilding : GridBuilding
         }
     }
 
-    public override void OperatFacility()
+    public override void Operat()
     {
         if (ImportPos.Count != 1)
         {

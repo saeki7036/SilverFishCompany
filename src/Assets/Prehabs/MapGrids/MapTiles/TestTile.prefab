@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2475232956873164584}
   - component: {fileID: 1058243016981525290}
+  - component: {fileID: 4846704019115931921}
   m_Layer: 0
   m_Name: TestTile
   m_TagString: Untagged
@@ -76,8 +77,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -10
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.23529412, g: 0.627451, b: 0.23529412, a: 1}
+  m_Sprite: {fileID: -4478979879384282503, guid: 6b568d6a0daa54449bdc8fa79e2acb75, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -87,3 +88,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4846704019115931921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4974274196203042885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebf61fc7477cde849a866dc4d8cddf51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 1058243016981525290}
+  sprites:
+  - {fileID: -4478979879384282503, guid: 6b568d6a0daa54449bdc8fa79e2acb75, type: 3}
+  - {fileID: -5933483172608829356, guid: 550199b663cd48e49bc744728d3191a5, type: 3}
+  - {fileID: 3142086736756413594, guid: 9cf95c5522d5fb247ad2affa5220153c, type: 3}
+  - {fileID: -7434344796241877794, guid: b0c8683ab2f26534a8510239d4ee33e6, type: 3}
+  - {fileID: 549231820503022697, guid: c845242d8c48cef4a9c3bee5d62cba94, type: 3}
+  - {fileID: -6828211918321497255, guid: 687e5a8df4ea6da40b6b4483d9a770b7, type: 3}

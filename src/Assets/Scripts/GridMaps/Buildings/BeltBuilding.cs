@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BeltBuilding : GridBuilding
 {
+    BeltAnimation  beltAnimation;
+
     // コンストラクタ
     public BeltBuilding(Vector2Int minBuildingPos, Vector2Int maxBuildingPos,
                         HashSet<Vector2Int> importList, HashSet<Vector2Int> exportList)
@@ -13,7 +15,17 @@ public class BeltBuilding : GridBuilding
         // ここで再度設定しない
     }
 
-    public override void OperatFacility()
+    public void SetBeltAnimation(BeltAnimation animation)=> beltAnimation = animation;
+
+    public void BeltAnimPlay()
+    {
+        if (beltAnimation == null)
+            return;
+
+        beltAnimation.AnimationSetting(ImportPos, ExportPos);
+    }
+
+    public override void Operat()
     {
         // 呼び出しはBaceCamp側で行うのでreturn;
         return;
@@ -21,15 +33,18 @@ public class BeltBuilding : GridBuilding
 
     public override void ImportItem()
     {
+        if (Item != null)
+            return;
+
         List<Tuple<GridBuilding, Vector2Int>> possibleTupleList = new List<Tuple<GridBuilding, Vector2Int>>();
 
         foreach (Vector2Int import in ImportPos)
         {
             var importCell = GridMapManager.Instance.GetCell(import);
 
-            CellType importCellType = importCell.GridCellType;
+            BuildType importCellType = importCell.GridCellType;
 
-            if (importCellType == CellType.None || importCellType == CellType.NULLTYPE)
+            if (importCellType == BuildType.None || importCellType == BuildType.NULLTYPE)
                 continue;
 
             GridBuilding importBuilding = importCell.Building;
@@ -44,9 +59,9 @@ public class BeltBuilding : GridBuilding
             {
                 var exportCell = GridMapManager.Instance.GetCell(export);
 
-                CellType exportCellType = importCell.GridCellType;
+                BuildType exportCellType = importCell.GridCellType;
 
-                if (exportCellType == CellType.None || exportCellType == CellType.NULLTYPE)
+                if (exportCellType == BuildType.None || exportCellType == BuildType.NULLTYPE)
                     continue;
 
                 GridBuilding exportBuilding = exportCell.Building;

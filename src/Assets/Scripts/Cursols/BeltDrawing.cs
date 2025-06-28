@@ -2,6 +2,7 @@
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BeltDrawing : MonoBehaviour
 {
@@ -47,12 +48,17 @@ public class BeltDrawing : MonoBehaviour
     // 触ったグリッドの場所
     Vector3Int currentPos;
 
+    bool DrawFlag;
+
     public void InputRegister(MouseController input)
     {
         input.LeftDownEvent += BeltDrawSetup;
         input.LeftClickEvent += DrawingBelt;
         input.LeftUpEvent += DrowBeltGenerate;
     }
+
+    public bool GetDrawFlag() => DrawFlag;
+    public void SetDrawFlag(bool flag) => DrawFlag = flag;
 
     Vector3Int GetMapGridInt(Vector3 mouseWorldPos)
     {
@@ -170,7 +176,12 @@ public class BeltDrawing : MonoBehaviour
 
         OnGridMap = IsInGridMap(mouseWorldDownPos);
 
-        if (OnGridMap)
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        if (DrawFlag && OnGridMap)
         {
             StratPosIcon.SetActive(true);
             EndPosIcon.SetActive(true);
@@ -189,7 +200,9 @@ public class BeltDrawing : MonoBehaviour
     // ベルト（選択ライン）を描画する処理。マウスのワールド座標を元に選択ラインの更新を行う。
     void DrawingBelt(Vector3 mouseWorldPos)
     {
-        if(!OnGridMap)     
+        Debug.Log(mouseWorldPos == Vector3.zero);
+
+        if (!DrawFlag || !OnGridMap)     
             return;
         
         // マウスのワールド座標をグリッド座標（整数）に変換
@@ -239,11 +252,16 @@ public class BeltDrawing : MonoBehaviour
 
             // 終点の位置にオブジェクトを移動する
             EndPosIcon.transform.position = gridPos;
-        }   
+        }
+
+        Debug.Log(mouseWorldPos == Vector3.zero);
     }
 
     void DrowBeltGenerate(Vector3 mouseWorldUpPos)
     {
+        if (!DrawFlag)
+            return;
+
         if (BeltPrehab == null)
             return;
 
@@ -284,6 +302,8 @@ public class BeltDrawing : MonoBehaviour
         }
 
         GridMapManager.Instance.BeltSetting(SelectedPosList, BeltList, StratPos, EndPos);
+
+        DrawFlag = false;
     }
 
 
@@ -342,6 +362,7 @@ public class BeltDrawing : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        DrawFlag = false;
         OnGridMap = false;
         IsNoProblemRoute = true;
         currentPos = new(-1, -1, 0);

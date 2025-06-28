@@ -61,7 +61,16 @@ public abstract class GridBuilding
         //Debug.Log("コンストラクタ：抽象");
     }
 
-    public abstract void OperatFacility();
+    protected GridBuilding GetValidBuilding(Vector2Int pos)
+    {
+        var cell = GridMapManager.Instance.GetCell(pos);
+        var cellType = cell.GridCellType;
+
+        if (cellType == BuildType.None || cellType == BuildType.NULLTYPE) return null;
+        return cell.Building;
+    }
+
+    public abstract void Operat();
 
     public abstract void ImportItem();
 

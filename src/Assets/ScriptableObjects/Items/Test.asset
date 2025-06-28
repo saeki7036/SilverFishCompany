@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b37930b9551f8840b5c5b603afef34d, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: 
-  itemCategory: 1
+  itemCategory: 0
   itemLevel: 0
   itemPrehab: {fileID: 3238472746351875133, guid: 62286d1d535dd3541b8967e849e3fa4e, type: 3}

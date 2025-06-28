@@ -9,21 +9,25 @@ public class ProductItem
     ItemCategory category;
     GameObject itemObject;
 
-    bool isMoveFlag;
-
     Vector3 moveTargetPos;
     Vector3 moveBeforePos;
 
     float maxTimeCount;
     float currentTimeCount;
 
+    bool isMoveFlag;
+    bool isUpdateFlag;
+
+    ItemInformation nextLevelInfomation;
+
     // コンストラクタ
     public ProductItem(ItemInformation information, Vector2Int CreateObjectPos, float MaxTimeCount)
     {
-        level = information.ItemLevel;
-        category = information.ItemCategory;
+        level = information.GetItemLevel();
+        category = information.GetItemCategory();
         maxTimeCount = MaxTimeCount;
         isMoveFlag = false;
+        isUpdateFlag = false;
         currentTimeCount = 0f;
 
         Vector3 instantiatePos = new Vector3
@@ -35,23 +39,41 @@ public class ProductItem
 
         moveBeforePos = instantiatePos;
 
-        itemObject = GameObject.Instantiate(information.ItemPrehab, instantiatePos, Quaternion.identity);
-        Debug.Log(itemObject);
+        itemObject = GameObject.Instantiate(information.GetItemPrehab(), instantiatePos, Quaternion.identity);
+
+        //Debug.Log(itemObject);
+
+        nextLevelInfomation = null;
     }
   
     // Getter,プロパティ
+    
+    public ItemCategory GetCategory() => category;
+
+    public int GetLevel() => level;
+  
+    public void SetNextLevelInfo(ItemInformation info) => nextLevelInfomation = info; 
+
     public bool IsItemMove() => isMoveFlag;
 
-    public ItemCategory GetCategory() => category;
+    public bool IsItemUpdate() => isUpdateFlag;
+
+    public bool IsSetNextLevelInfo() => nextLevelInfomation != null;
 
     public bool IsEnptyItemObject() => itemObject == null;
 
-    public int GetLevel() => level;
+    public bool IsSameCategoryAndNearLevel(ItemInformation itemInformation, int difference = 1)
+    {
+        if (itemInformation == null)
+           return false;
+       
+        if (itemInformation.GetItemCategory() != category)
+            return false;
 
-    public void AddLevel() => level++;
-
-    public void SetItemEmpty() => itemObject = null;
-
+        //Debug.Log(itemInformation.GetItemLevel()+"=="+ level + "+" + difference);
+        return itemInformation.GetItemLevel() != level + difference;
+    }
+    
     public void ItemMovement(float addTimeCount)
     {
         if (isMoveFlag == false)
@@ -60,13 +82,17 @@ public class ProductItem
         currentTimeCount += addTimeCount;
 
         float Lerptime = Mathf.Clamp01(currentTimeCount / maxTimeCount);
+
         itemObject.transform.position = Vector3.Lerp(moveBeforePos, moveTargetPos, Lerptime);
 
         if (Lerptime >= 1f)
         {
-            currentTimeCount++;
             moveBeforePos = moveTargetPos;
-            isMoveFlag = false;           
+            
+            if (nextLevelInfomation == null)
+                isMoveFlag = false;
+            else
+                isUpdateFlag = true;
         }
     }
 
@@ -84,5 +110,21 @@ public class ProductItem
         currentTimeCount = 0f;
         moveTargetPos = targetPos;
         isMoveFlag = true;
+    }
+
+    public void NextLevelSetting()
+    {
+        Vector3 itemPos = itemObject.transform.position;
+
+        ItemObjectDestroy();
+
+        level = nextLevelInfomation.GetItemLevel();
+
+        itemObject = GameObject.Instantiate(nextLevelInfomation.GetItemPrehab(), itemPos, Quaternion.identity);
+
+        nextLevelInfomation = null;
+
+        isMoveFlag = false;
+        isUpdateFlag = false;
     }
 }

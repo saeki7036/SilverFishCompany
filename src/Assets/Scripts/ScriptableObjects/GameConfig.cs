@@ -39,16 +39,16 @@ public class BuildingConfig
     [SerializeField]
     List<BuildingParamater> useCellTypes;
 
-    public List<CellType> GetCellTypes() => useCellTypes.Select(p => p.type).ToList();
+    public List<BuildType> GetCellTypes() => useCellTypes.Select(p => p.type).ToList();
 
     // 起動時間を取得するヘルパー
-    private Dictionary<CellType, float> operatHelper;
+    private Dictionary<BuildType, float> operatHelper;
 
-    public float GetStartupTime(CellType type)
+    public float GetStartupTime(BuildType type)
     {
         if (operatHelper == null || operatHelper.Count == 0)
         {
-            operatHelper = new Dictionary<CellType, float>();
+            operatHelper = new Dictionary<BuildType, float>();
             foreach (var config in useCellTypes)
                 operatHelper[config.type] = config.startupTime;
         }
@@ -60,7 +60,7 @@ public class BuildingConfig
 [System.Serializable]
 public struct BuildingParamater
 {
-    public CellType type;
+    public BuildType type;
     public float startupTime;  // 起動にかかる時間や生産周期など
 }
 

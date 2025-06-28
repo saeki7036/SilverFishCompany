@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ItemManager : MonoBehaviour
 {
+    [SerializeField]
+    GamePogressManager gamePogressManager;
+
     static ItemManager instance;
 
     public static ItemManager Instance => instance;
@@ -38,7 +41,8 @@ public class ItemManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        ItemMovingCheck();
+        if(gamePogressManager.GetPogressFlag())
+            ItemMovingCheck();
     }
 
     void ItemMovingCheck()
