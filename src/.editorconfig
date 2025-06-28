@@ -1,0 +1,17 @@
+# ルートのeditorconfig設定ファイルであることを宣言
+root = true
+
+# すべてのファイルに対して共通設定
+[*]
+# 文字コードをUTF-8 BOM付きに指定（Unity推奨）
+charset = utf-8-bom
+
+# 改行コードをLFに統一
+end_of_line = lf
+
+# ファイルの末尾に必ず改行を入れる
+insert_final_newline = true
+
+# インデントはスペース4つ（好みでタブも可）
+indent_style = space
+indent_size = 4

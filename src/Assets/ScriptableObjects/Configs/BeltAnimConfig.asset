@@ -1,0 +1,186 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c6c0409a3e4594d9a621c16e36e020, type: 3}
+  m_Name: BeltAnimConfig
+  m_EditorClassIdentifier: 
+  animNameInfos:
+  - animType: 1
+    name: Straight
+  - animType: 2
+    name: LeftCurve
+  - animType: 3
+    name: RightCurve
+  - animType: 4
+    name: MultiBelt
+  animIndexInfos:
+  - index: 0000
+    animType: 0
+  - index: 1000
+    animType: 0
+  - index: 0100
+    animType: 0
+  - index: 0010
+    animType: 0
+  - index: 0001
+    animType: 0
+  - index: 1100
+    animType: 0
+  - index: 1010
+    animType: 0
+  - index: 1001
+    animType: 0
+  - index: 0110
+    animType: 0
+  - index: 0101
+    animType: 0
+  - index: 0011
+    animType: 0
+  - index: 1110
+    animType: 0
+  - index: 1101
+    animType: 0
+  - index: 1011
+    animType: 0
+  - index: 0111
+    animType: 0
+  - index: 1111
+    animType: 0
+  - index: 2000
+    animType: 0
+  - index: 0200
+    animType: 0
+  - index: 0020
+    animType: 0
+  - index: 0002
+    animType: 0
+  - index: 2200
+    animType: 0
+  - index: 2020
+    animType: 0
+  - index: 2002
+    animType: 0
+  - index: 0220
+    animType: 0
+  - index: 0202
+    animType: 0
+  - index: 0022
+    animType: 0
+  - index: 2220
+    animType: 0
+  - index: 2202
+    animType: 0
+  - index: 2022
+    animType: 0
+  - index: 0222
+    animType: 0
+  - index: 2222
+    animType: 0
+  - index: 1200
+    animType: 1
+  - index: 2100
+    animType: 1
+  - index: 0012
+    animType: 1
+  - index: 0021
+    animType: 1
+  - index: 0120
+    animType: 2
+  - index: 2010
+    animType: 2
+  - index: 1002
+    animType: 2
+  - index: 0201
+    animType: 2
+  - index: 0102
+    animType: 3
+  - index: 2001
+    animType: 3
+  - index: 1020
+    animType: 3
+  - index: 0210
+    animType: 3
+  - index: 0112
+    animType: 4
+  - index: 0121
+    animType: 4
+  - index: 0122
+    animType: 0
+  - index: 0211
+    animType: 4
+  - index: 0212
+    animType: 4
+  - index: 0221
+    animType: 4
+  - index: 1012
+    animType: 4
+  - index: 1021
+    animType: 4
+  - index: 1022
+    animType: 4
+  - index: 1102
+    animType: 4
+  - index: 1120
+    animType: 4
+  - index: 1112
+    animType: 4
+  - index: 1121
+    animType: 4
+  - index: 1122
+    animType: 4
+  - index: 1201
+    animType: 4
+  - index: 1202
+    animType: 4
+  - index: 1210
+    animType: 4
+  - index: 1211
+    animType: 4
+  - index: 1212
+    animType: 4
+  - index: 1220
+    animType: 4
+  - index: 1221
+    animType: 4
+  - index: 1222
+    animType: 4
+  - index: 2011
+    animType: 4
+  - index: 2012
+    animType: 4
+  - index: 2021
+    animType: 4
+  - index: 2101
+    animType: 4
+  - index: 2102
+    animType: 4
+  - index: 2110
+    animType: 4
+  - index: 2111
+    animType: 4
+  - index: 2112
+    animType: 4
+  - index: 2120
+    animType: 4
+  - index: 2121
+    animType: 4
+  - index: 2122
+    animType: 4
+  - index: 2201
+    animType: 4
+  - index: 2210
+    animType: 4
+  - index: 2211
+    animType: 4
+  - index: 2212
+    animType: 4
+  - index: 2221
+    animType: 4
