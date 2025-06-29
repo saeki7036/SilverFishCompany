@@ -24,6 +24,9 @@ public class TestTurret : MonoBehaviour
     [SerializeField]
     float Range = 4f;
 
+    [SerializeField]
+    AudioClip ShotClip;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -50,6 +53,8 @@ public class TestTurret : MonoBehaviour
 
             if (timecount > interval)
             {
+                AudioManager.instance.isPlaySE(ShotClip);
+
                 GameObject bullet = Instantiate(
                     BulletPrehab,
                     FirePosTransform.position, 

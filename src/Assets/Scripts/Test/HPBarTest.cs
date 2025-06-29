@@ -4,15 +4,25 @@ using static UnityEngine.GraphicsBuffer;
 
 public class HPBarTest : MonoBehaviour
 {
-    [SerializeField] Image fillImage;
+    [SerializeField] RectTransform backGround;
+    [SerializeField] RectTransform HPGreenBar;
 
     Transform target;
-    Vector2 offset = new Vector2(0, 1f);
 
-    public void Initialize(Transform targetTransform, float percent)
+    [SerializeField]
+    Vector2 offset = new Vector2(0, 100f);
+
+    float  BarScale = 1.0f;
+
+    public void Initialize(Transform targetTransform, float percent, float barScale)
     {
+
         target = targetTransform;
         UpdateBar(percent);
+
+        this.transform.localScale = target.localScale;
+
+        BarScale = barScale;
     }
 
     // Update is called once per frame
@@ -20,16 +30,26 @@ public class HPBarTest : MonoBehaviour
     {
         if (target != null)
         {
-            Vector2 point = (Vector2)target.position + offset;
+            Vector2 point = (Vector2)target.position + (offset * BarScale);
 
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(point);
+            Vector2 screenPos = (Vector2)Camera.main.WorldToScreenPoint(point);
 
             transform.position = screenPos;
         }
     }
 
-    void UpdateBar(float ratio)
+    public void UpdateBar(float ratio)
     {
-        fillImage.fillAmount = ratio;
+        HPGreenBar.anchoredPosition = new Vector2()
+        { 
+            x = (backGround.sizeDelta.x / 2) - (backGround.sizeDelta.x /2) * ratio,
+            y = HPGreenBar.anchoredPosition.y,
+        };
+
+        HPGreenBar.sizeDelta = new Vector2()
+        {
+            x = backGround.sizeDelta.x * ratio,
+            y = HPGreenBar.sizeDelta.y,
+        };
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.AssetImporters;
-using static UnityEditor.Progress;
-using Unity.VisualScripting;
+
 public abstract class GridBuilding
 {
     HashSet<Vector2Int> importPos;// 作業の実行位置

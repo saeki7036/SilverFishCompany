@@ -17,7 +17,10 @@ public class MouseController : MonoBehaviour
     [SerializeField]
     float MousePos_z = 0f;
 
+    [SerializeField]
     float UIwidthMax = Screen.width;
+
+    [SerializeField]
     float UIheightMax = Screen.height;
 
     const int ClampMin = 0;
@@ -70,6 +73,7 @@ public class MouseController : MonoBehaviour
     Vector3 GetWorldPoint(Vector3 UIPos)
     {
         Vector3 point = UIPos + Vector3.forward * MousePos_z;
+        //Debug.Log(point + "+" + Camera.main.ScreenToWorldPoint(point));
         return Camera.main.ScreenToWorldPoint(point);
     }
 
@@ -107,15 +111,16 @@ public class MouseController : MonoBehaviour
 
         RightParameter = new MouseParameter();
         RightParameter.ResetMousePos();
+
+        //Debug.Log(Screen.width + "+" + Screen.height);
+        //Debug.Log(UIwidthMax + "+" + UIheightMax);
     }
 
-    
+
     // Update is called once per frame
     void Update()
     {
         MouseInputParameter(LeftInputNum,ref LeftParameter);
-
-        Debug.Log(LeftParameter.mouseWorldPos == Vector3.zero);
 
         MouseInputParameter(RightInputNum,ref RightParameter);
     }
@@ -123,10 +128,11 @@ public class MouseController : MonoBehaviour
     Vector3 GetTouchClamp()
     {
         Vector3 ClampPosition = Input.mousePosition;
-
+       
         ClampPosition.y = Mathf.Clamp(ClampPosition.y, ClampMin, UIheightMax);
         ClampPosition.x = Mathf.Clamp(ClampPosition.x, ClampMin, UIwidthMax);
 
+        //Debug.Log(Input.mousePosition + "+" + ClampPosition);
         return ClampPosition;
     }
 }

@@ -149,6 +149,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HP: 10
   IsDestroy: 1
+  BarScale: 0.5
+  DestroyIvent:
+    m_PersistentCalls:
+      m_Calls: []
+  HPbarPrehab: {fileID: 6890130323972661016, guid: 77d9f2c6d97428345851be087815a809, type: 3}
+  HitEffect: {fileID: 7546187951318481092, guid: 9fd302d0806433846b94d563bb5a6c68, type: 3}
+  HitClip: {fileID: 8300000, guid: e765bf1506c44a5428db7b41914645ff, type: 3}
+  DieClip: {fileID: 8300000, guid: 1729d093bff2f7c4bbcb0e355f74fb16, type: 3}
 --- !u!1 &2839155898703038232
 GameObject:
   m_ObjectHideFlags: 0

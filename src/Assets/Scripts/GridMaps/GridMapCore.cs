@@ -1,11 +1,6 @@
 ﻿using System.Collections.Generic;
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
 using UnityEngine.Tilemaps;
-using UnityEngine.WSA;
 
 public class GridMap
 {

@@ -4,11 +4,41 @@ using UnityEngine.Events;
 public class warBuildTest : MonoBehaviour
 {
     public int HP = 100;
+    int MaxHP;
 
     public bool IsDestroy = true;
 
+    public float BarScale = 0.5f;
+
     [SerializeField]
     public UnityEvent DestroyIvent;
+
+    [SerializeField]
+    GameObject HPbarPrehab;
+
+    GameObject HPBar;
+    HPBarTest HPBarTest;
+
+    [SerializeField]
+    GameObject HitEffect;
+
+    [SerializeField]
+    AudioClip HitClip;
+
+    [SerializeField]
+    AudioClip DieClip;
+    void Start()
+    {
+        MaxHP = HP;
+
+        HPBar = Instantiate(HPbarPrehab);
+
+        HPBar.transform.parent = HPBarManagerTest.GetParent().transform;
+
+        HPBarTest = HPBar.GetComponent<HPBarTest>();
+
+        HPBarTest.Initialize(this.transform, 1f, BarScale);
+    }
 
     Vector2Int CrampGridPos()
     {
@@ -28,13 +58,18 @@ public class warBuildTest : MonoBehaviour
         if (!IsDestroy)
             Debug.Log("HP:"+HP);
 
+
         if(HP <= 0)
         {
             
 
             if (IsDestroy)
             {
+                if(DieClip != null)
+                    AudioManager.instance.isPlaySE(DieClip);
+
                 GridMapManager.Instance.DestroyContent(CrampGridPos());
+                Destroy(HPBar);
                 Destroy(gameObject);
             }
             else
@@ -43,5 +78,13 @@ public class warBuildTest : MonoBehaviour
             }
                
         }
+        else
+        {
+            AudioManager.instance.isPlaySE(HitClip);
+            GameObject effect = Instantiate(HitEffect,transform.position, Quaternion.identity);
+            effect.transform.localScale = transform.localScale;
+            HPBarTest.UpdateBar(Mathf.Clamp01((float)HP / MaxHP));
+        }
+            
     }
 }

@@ -5,9 +5,18 @@ public class BulletTest : MonoBehaviour
 {
     public int damege = 2;
     public float DastroyTime = 6f;
+
+    [SerializeField]
+    GameObject BulletLinePrehab;
+
+    [SerializeField]
+    GameObject EffectPrahab;
+
     void Start()
     {
         Destroy(gameObject, DastroyTime);
+
+        Instantiate(BulletLinePrehab, transform);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -16,6 +25,8 @@ public class BulletTest : MonoBehaviour
         {
             component.Hit(damege);
         }
+
+        Instantiate(EffectPrahab, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
     }
