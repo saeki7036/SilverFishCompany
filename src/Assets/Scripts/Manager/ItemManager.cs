@@ -1,23 +1,84 @@
 ﻿using System.Collections.Generic;
+using Unity.Android.Gradle.Manifest;
 using Unity.VisualScripting;
+using UnityEditor.AssetImporters;
 using UnityEngine;
+using static UnityEditor.Progress;
+using static UnityEngine.Rendering.DebugUI;
 
 public class ItemManager : MonoBehaviour
 {
     [SerializeField]
     GamePogressManager gamePogressManager;
 
+    [SerializeField]
+    ItemConfig itemConfig;
+
+    [SerializeField]
+    List<ItemRequest> StartItemValue;
+
+    ItemTransporter itemTransporter;
+
+    ItemStocker itemStocker;
+
+    float maxTimeCount = 1f;
+
     static ItemManager instance;
 
     public static ItemManager Instance => instance;
 
-    public void AddListItem(ProductItem productItem) => ItemSlot.Add(productItem);
+    public int GetItemValue(ItemCategory category, int level)
+    {
+        return itemStocker.GetItemCount(category, level);
+    }
 
-    public float GetMaxTimeCount() => maxTimeCount;
 
-    List<ProductItem> ItemSlot;
-    float addTimeCount = 0.02f;
-    float maxTimeCount = 1.5f;
+    public void AddItemStorage(ItemCategory category, int level)
+    {
+        itemStocker.AddItem(category, level);
+    }
+
+    public bool CanConsumeItem(ItemCategory category, int level, int value)
+    {
+        if(value <= 0)
+            return false;
+
+        return itemStocker.CanConsume(category, level, value);
+    }
+
+    public bool ItemConsume(ItemCategory category, int level, int value)
+    {
+        return itemStocker.ConsumeItem(category, level, value);
+    }
+
+    public bool CanConsumeAll(List<ItemRequest> requests)
+    {
+        if (requests == null || requests.Count <= 0)
+            return false;
+
+        return itemStocker.CanConsumeAll(requests);
+    }
+
+    public bool ItemConsumeAll(List<ItemRequest> requests)
+    {
+        if (requests == null || requests.Count <= 0)
+            return false;
+
+        return itemStocker.ConsumeAll(requests);
+    }
+
+
+    public ProductItem CreateItem(ItemInformation itemInformation,Vector2Int createPos)
+    {
+        if (itemInformation == null)
+            return null;
+
+        ProductItem Item = new ProductItem(itemInformation, createPos, maxTimeCount);
+
+        itemTransporter.AddPool(Item);
+
+        return Item;
+    }
 
     void Awake()
     {
@@ -29,46 +90,26 @@ public class ItemManager : MonoBehaviour
 
         instance = this;
 
-        ItemSlot = new List<ProductItem>();
+        itemStocker = new ItemStocker(itemConfig);
     }
 
     private void Start()
     {
         var config = ConfigManager.Instance.GetItemConfig();
-        addTimeCount = config.AddCount();
+
         maxTimeCount = config.MaxCount();
+
+        itemTransporter = new ItemTransporter(config.AddCount());
+
+        foreach(var item in StartItemValue)
+        {
+            itemStocker.AddItem(item.GetCategory(), item.GetLevel(), item.GetValue());
+        }
     }
 
     void FixedUpdate()
     {
         if(gamePogressManager.GetPogressFlag())
-            ItemMovingCheck();
-    }
-
-    void ItemMovingCheck()
-    {
-        // Removeを扱うので逆順ループ
-        for (int i = ItemSlot.Count - 1; i >= 0; i--)
-        {
-            // nullチェック
-            if (ItemSlot[i] == null)   
-            {
-                ItemSlot.RemoveAt(i);
-                continue;
-            }
-
-            // オブジェクトがなければ削除する
-            if(ItemSlot[i].IsEnptyItemObject())
-            {
-                ItemSlot.RemoveAt(i);
-                continue;
-            }
-            
-            // アイテム運搬処理
-            if (ItemSlot[i].IsItemMove())
-            {
-                ItemSlot[i].ItemMovement(addTimeCount);
-            }
-        }
+            itemTransporter.ItemMovingCheck();
     }
 }

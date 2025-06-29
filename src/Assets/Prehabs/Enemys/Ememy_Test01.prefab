@@ -172,3 +172,4 @@ MonoBehaviour:
   Rigidbody2D: {fileID: 689577365105305380}
   IsAttack: 0
   AttackTarget: {fileID: 0}
+  HPbarPrehab: {fileID: 6890130323972661016, guid: 77d9f2c6d97428345851be087815a809, type: 3}

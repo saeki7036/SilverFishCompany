@@ -14,6 +14,9 @@ public class ProductUISetting : MonoBehaviour
     RectTransform SerectCursol;
 
     [SerializeField]
+    float adjustmentX = -80f;
+
+    [SerializeField]
     UIContent[] ProductImages;
 
     static readonly float outIndexRectPosX = -2000f;
@@ -31,14 +34,14 @@ public class ProductUISetting : MonoBehaviour
 
     void SetCreateProduct(int index)
     {
-
         SerectCursol.anchoredPosition = new Vector2()
         {
-            x = ProductImages[index].GetRectAnchoredPosX(),
+            x = ProductImages[index].GetRectAnchoredPosX() - adjustmentX,
             y = SerectCursol.anchoredPosition.y
         };
         
         productUICreate.SetCreateContent(
+            ProductImages[index].GetItemRequestList(),
             ProductImages[index].GetPrehab(),
             ProductImages[index].GetSprite());
 
