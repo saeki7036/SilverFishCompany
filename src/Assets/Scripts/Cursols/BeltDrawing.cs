@@ -30,6 +30,9 @@ public class BeltDrawing : MonoBehaviour
     [SerializeField]
     SpriteRenderer EndIconSprite;
 
+    [SerializeField]
+    List<ItemRequest> requests;
+
     const int ClampMin = 0;
 
     Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
@@ -49,6 +52,8 @@ public class BeltDrawing : MonoBehaviour
     Vector3Int currentPos;
 
     bool DrawFlag;
+
+
 
     public void InputRegister(MouseController input)
     {
@@ -72,6 +77,43 @@ public class BeltDrawing : MonoBehaviour
             z = 0,
         };
     }
+
+    bool CheckItemRequests()
+    {
+        int requestValue = Mathf.Max(0, SelectedPosList.Count - 2);
+
+        foreach(var request in requests)
+        {
+             int value = request.GetValue() * requestValue;
+            bool consume = ItemManager.Instance.CanConsumeItem(request.GetCategory(), request.GetLevel(), value);
+
+            if(!consume)
+                return false;
+        }
+
+        return true;
+    }
+
+    bool ConsumeItemRequests()
+    {
+        if (!CheckItemRequests())
+            return false;
+
+        int requestValue = Mathf.Max(0, SelectedPosList.Count - 2);
+
+        foreach (var request in requests)
+        {
+            int value = request.GetValue() * requestValue;
+            bool consume = ItemManager.Instance.ItemConsume(request.GetCategory(), request.GetLevel(), value);
+
+            if (!consume)
+                return false;
+        }
+
+        return true;
+    }
+
+
 
     int ManhattanDistance2D(Vector3Int gridPos, Vector3Int targetPos)
     {
@@ -164,7 +206,6 @@ public class BeltDrawing : MonoBehaviour
 
         return path;
     }
-
 
     void BeltDrawSetup(Vector3 mouseWorldDownPos)
     {     
@@ -284,6 +325,12 @@ public class BeltDrawing : MonoBehaviour
             return;
         }
 
+        // Item個数が足りなければ終了させる
+        if(!ConsumeItemRequests())
+        {
+            return;
+        }
+
         List<GameObject> BeltList = new List<GameObject>();
 
         Vector3Int StratPos = SelectedPosList.First();
@@ -331,7 +378,6 @@ public class BeltDrawing : MonoBehaviour
         return true;
     }
 
-
     // ラインレンダラーを更新して描画をする処理
     void UpdateLineRenderer()
     {
@@ -344,7 +390,7 @@ public class BeltDrawing : MonoBehaviour
             lineRenderer.SetPosition(i, SelectedPosList[i]);
         }
 
-        //経路の問題ないかで色変更
+        //経路を生成出来るかで色変更
         GradientSetting();
     }
     void GradientSetting()
@@ -352,7 +398,9 @@ public class BeltDrawing : MonoBehaviour
         float GradientFirstTime = 0f;
         float GradientLastTime = 1f;
 
-        Gradient gradient = IsNoProblemRoute ? scsessGradient : failedGradient;
+
+        bool RouteCheck = IsNoProblemRoute &&  CheckItemRequests();
+        Gradient gradient = RouteCheck ? scsessGradient : failedGradient;
 
         lineRenderer.colorGradient = gradient;
         StratIconSprite.color = gradient.Evaluate(GradientFirstTime);

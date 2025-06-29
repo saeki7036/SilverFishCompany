@@ -8,23 +8,45 @@ public class EnemyTest : MonoBehaviour
     public int Interval = 100;
 
     int timeCount = 0;
+    int MaxHP; 
 
     [SerializeField]
     Rigidbody2D Rigidbody2D;
 
     public bool IsAttack;
 
-    public warBuildTest AttackTarget;
+    warBuildTest AttackTarget;
 
     Vector2 currentPosition;
 
+    [SerializeField]
+    GameObject HPbarPrehab;
+
+    GameObject HPBar;
+    HPBarTest HPBarTest;
+
     public Vector2 GetCurrentPos() => currentPosition;
+
+    void Start()
+    {
+        MaxHP = HP;
+
+        HPBar = Instantiate(HPbarPrehab);
+
+        HPBar.transform.parent =  HPBarManagerTest.GetParent().transform;
+
+        HPBarTest = HPBar.GetComponent<HPBarTest>();
+
+        HPBarTest.Initialize(this.transform,1f);
+    }
 
     public void Hit(int damege)
     {
         HP -= damege;
         if (HP <= 0)
             OnDead();
+        else
+            HPBarTest.Initialize(this.transform, (float)HP / MaxHP);
     }
 
     public void FixedUpdates()

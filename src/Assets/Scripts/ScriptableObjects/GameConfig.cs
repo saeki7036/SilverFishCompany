@@ -6,9 +6,9 @@ using System.Linq;
 public class GameConfig : ScriptableObject
 {
     [SerializeField]
-    ItemConfig itemConfig;
+    ItemTransportConfig itemTransportConfig;
 
-    public ItemConfig GetItemConfig ()=> itemConfig;
+    public ItemTransportConfig GetItemConfig ()=> itemTransportConfig;
 
     [SerializeField]
     BuildingConfig buildingConfig;
@@ -17,7 +17,7 @@ public class GameConfig : ScriptableObject
 }
 
 [System.Serializable]
-public class ItemConfig
+public class ItemTransportConfig
 {
     [SerializeField]
     float addCountValue = 0.02f;

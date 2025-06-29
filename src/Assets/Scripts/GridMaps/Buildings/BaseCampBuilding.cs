@@ -137,7 +137,8 @@ public class BaseCampBuilding : GridBuilding
 
     void ItemStock(ProductItem productItem)
     {
-        Debug.Log("アイテムカデゴリ：" + productItem.GetCategory() + 
-                  "アイテムレベル："+ productItem.GetLevel().ToString());
+        ItemManager.Instance.AddItemStorage(productItem.GetCategory(), productItem.GetLevel());
+        //Debug.Log("アイテムカデゴリ：" + productItem.GetCategory() + 
+        //          "アイテムレベル："+ productItem.GetLevel().ToString());
     }
 }

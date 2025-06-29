@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class ProductUICreate : MonoBehaviour
@@ -21,6 +23,8 @@ public class ProductUICreate : MonoBehaviour
 
     bool CreateFlag;
 
+    List<ItemRequest> requests;
+
     float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
 
     Vector2Int MaxMapSize => GridMapManager.Instance.mapSize;
@@ -39,10 +43,11 @@ public class ProductUICreate : MonoBehaviour
         };
     }
 
-    public void SetCreateContent(GameObject gameObject = null, Sprite sprite = null)
+    public void SetCreateContent(List<ItemRequest> list,GameObject gameObject = null, Sprite sprite = null)
     {
         CreateFlag = (gameObject != null && sprite != null);
-        
+
+        requests = new List<ItemRequest>(list);
         contentPrehab = gameObject;
         contentSpriteShadow.sprite = sprite;
 
@@ -76,6 +81,7 @@ public class ProductUICreate : MonoBehaviour
         gridContent = null;
         beltDrawing.SetDrawFlag(false);
         CreateFlag = false;
+        requests = new List<ItemRequest>();
     }
 
     public void InputRegister(MouseController input)
@@ -85,6 +91,10 @@ public class ProductUICreate : MonoBehaviour
         input.LeftUpEvent += CreateProduct;
     }
 
+    bool CheckItemRequests() => ItemManager.Instance.CanConsumeAll(requests);
+
+    bool ConsumeItemRequests() => ItemManager.Instance.ItemConsumeAll(requests);
+   
     Vector2Int Cursol2DInt(Vector3 mouseWorldDownPos) => new Vector2Int()
     {
         x = Mathf.RoundToInt(mouseWorldDownPos.x),
@@ -173,7 +183,7 @@ public class ProductUICreate : MonoBehaviour
             isCanCreate = IsCanCreateTile(cursol2DInt);
         }
 
-        if (isInMap && isCanCreate)
+        if (isInMap && isCanCreate && CheckItemRequests())
             contentSpriteShadow.color = enabledColor;
         else
             contentSpriteShadow.color = disabledColor;
@@ -208,6 +218,10 @@ public class ProductUICreate : MonoBehaviour
         {
             return;
         }
+        if(!CheckItemRequests() || !ConsumeItemRequests())
+        {
+            return;
+        }
 
         transform.position = new Vector3Int()
         {
@@ -215,7 +229,7 @@ public class ProductUICreate : MonoBehaviour
             y = cursol2DInt.y,
             z = 0
         };
-
+        
         GameObject Content = Instantiate(contentPrehab, transform.position, Quaternion.identity);
 
         EmptyContent();
@@ -227,5 +241,6 @@ public class ProductUICreate : MonoBehaviour
     void Start()
     {
         CreateFlag = false;
+        requests = new List<ItemRequest>();
     }
 }

@@ -16,7 +16,10 @@ public class GridContentFieldViewer : Editor
         // 更新
         serializedObject.Update();
 
-        base.OnInspectorGUI();
+        //base.OnInspectorGUI();
+
+        var contentProp = serializedObject.FindProperty("content");
+        EditorGUILayout.PropertyField(contentProp);
 
         GridContent instance = target as GridContent;
 

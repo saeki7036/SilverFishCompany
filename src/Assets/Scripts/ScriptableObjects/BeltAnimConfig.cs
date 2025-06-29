@@ -18,20 +18,36 @@ public class BeltAnimConfig : ScriptableObject
     public void Initialize()
     {
         if(TypeToNameMap == null)
-        TypeToNameMap = animNameInfos.ToDictionary(value => value.animType, value => value.name);
+        {
+            TypeToNameMap = new();
 
-        if(indexToTypeMap == null)
-        indexToTypeMap = animIndexInfos.ToDictionary(value => value.index, value => value.animType);
+            TypeToNameMap = animNameInfos.ToDictionary(
+            value => value.animNameType,
+            value => value.name
+            );
+        }
+            
+
+        if (indexToTypeMap == null)
+        {
+            indexToTypeMap = new();
+
+            indexToTypeMap = animIndexInfos.ToDictionary(
+               value => value.index,
+               value => value.animIndexType
+               );
+        }
+           
     }
 
-    public string GetAnimName(AnimType type)
+    public string GetAnimName(AnimType animType)
     {
-        return TypeToNameMap.TryGetValue(type, out string name) ? name : "Multi";
+        return TypeToNameMap.TryGetValue(animType, out string animName) ? animName : "Multi";
     }
 
-    public AnimType GetAnimType(string index)
+    public AnimType GetAnimType(string animIndex)
     {
-        return indexToTypeMap.TryGetValue(index, out var type) ? type : AnimType.None;
+        return indexToTypeMap.TryGetValue(animIndex, out var type) ? type : AnimType.None;
     }
 }
 
@@ -39,13 +55,13 @@ public class BeltAnimConfig : ScriptableObject
 public class AnimIndex
 {
     public string index = "0000";
-    public AnimType animType = AnimType.None;
+    public AnimType animIndexType = AnimType.None;
 }
 
 [System.Serializable]
 public class AnimNames
 {
-    public AnimType animType = AnimType.None;
+    public AnimType animNameType = AnimType.None;
     public string name;
 }
 

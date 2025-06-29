@@ -86,11 +86,11 @@ public class BeltAnimation : MonoBehaviour
 
             index += value.ToString();
         }
-
+        //Debug.Log(index);
         AnimType type = beltAnimConfig.GetAnimType(index);
 
         string animName = beltAnimConfig.GetAnimName(type);
-
+        
         if (inport.Count == 0 || export.Count == 0 || type == AnimType.None)
         {
             return;
