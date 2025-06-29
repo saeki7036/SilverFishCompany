@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -16,6 +15,9 @@ public class ProductUICreate : MonoBehaviour
 
     [SerializeField]
     Color disabledColor = Color.cyan;
+
+    [SerializeField]
+    AudioClip Clip;
 
     GameObject contentPrehab;
 
@@ -231,6 +233,8 @@ public class ProductUICreate : MonoBehaviour
         };
         
         GameObject Content = Instantiate(contentPrehab, transform.position, Quaternion.identity);
+
+        AudioManager.instance.isPlaySE(Clip);
 
         EmptyContent();
 

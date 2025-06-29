@@ -49,7 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5abb50514fb5aad449af55e3505d5c11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fillImage: {fileID: 7236507348243415647}
+  backGround: {fileID: 4358664011445220008}
+  HPGreenBar: {fileID: 3570306753978996176}
+  offset: {x: 0, y: 0.6}
 --- !u!1 &6890249329691038524
 GameObject:
   m_ObjectHideFlags: 0

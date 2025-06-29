@@ -6,7 +6,7 @@ public class EnemyTest : MonoBehaviour
     public int ATK = 4;
     public float speed = 1.0f;
     public int Interval = 100;
-
+    public float BarScale = 0.7f;
     int timeCount = 0;
     int MaxHP; 
 
@@ -25,6 +25,15 @@ public class EnemyTest : MonoBehaviour
     GameObject HPBar;
     HPBarTest HPBarTest;
 
+    [SerializeField]
+    GameObject DieEffect;
+
+    [SerializeField]
+    AudioClip DamegeClip;
+
+    [SerializeField]
+    AudioClip DieClip;
+
     public Vector2 GetCurrentPos() => currentPosition;
 
     void Start()
@@ -37,7 +46,7 @@ public class EnemyTest : MonoBehaviour
 
         HPBarTest = HPBar.GetComponent<HPBarTest>();
 
-        HPBarTest.Initialize(this.transform,1f);
+        HPBarTest.Initialize(this.transform,1f, BarScale);
     }
 
     public void Hit(int damege)
@@ -46,7 +55,11 @@ public class EnemyTest : MonoBehaviour
         if (HP <= 0)
             OnDead();
         else
-            HPBarTest.Initialize(this.transform, (float)HP / MaxHP);
+        {
+            AudioManager.instance.isPlaySE(DamegeClip);
+            HPBarTest.UpdateBar(Mathf.Clamp01((float)HP / MaxHP));
+        }
+            
     }
 
     public void FixedUpdates()
@@ -85,6 +98,9 @@ public class EnemyTest : MonoBehaviour
 
     private void OnDead()
     {
+        AudioManager.instance.isPlaySE(DieClip);
+        Instantiate(DieEffect, transform.position, Quaternion.identity);
+        Destroy(HPBar);
         Destroy(gameObject);
     }
 

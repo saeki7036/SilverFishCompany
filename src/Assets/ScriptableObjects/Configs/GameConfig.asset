@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c23f2488a45448b40b1e6fac9c9513c1, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  itemConfig:
+  itemTransportConfig:
     addCountValue: 0.02
     maxCountValue: 1
   buildingConfig:
@@ -23,6 +23,6 @@ MonoBehaviour:
     - type: 2
       startupTime: 1
     - type: 3
-      startupTime: 2
+      startupTime: 4
     - type: 4
       startupTime: 2

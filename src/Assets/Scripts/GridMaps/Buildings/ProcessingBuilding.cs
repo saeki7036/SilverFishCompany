@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Rendering;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
 
 public class ProcessingBuilding : GridBuilding
 {

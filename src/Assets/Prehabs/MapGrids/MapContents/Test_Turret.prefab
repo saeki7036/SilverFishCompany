@@ -306,8 +306,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e159a1140baa804f8bc39066c769fa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interval: 150
+  interval: 180
   FirePosTransform: {fileID: 3406083387305837169}
   neckObject: {fileID: 769001556254622113}
   BulletPrehab: {fileID: 1385668542543310216, guid: 21563440535732949bf62abe156442ea, type: 3}
-  speed: 5
+  speed: 8
+  Range: 4
+  ShotClip: {fileID: 8300000, guid: c416b2df27b8f774e8ca0e1404d5467c, type: 3}

@@ -33,6 +33,9 @@ public class BeltDrawing : MonoBehaviour
     [SerializeField]
     List<ItemRequest> requests;
 
+    [SerializeField]
+    AudioClip Clip;
+
     const int ClampMin = 0;
 
     Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
@@ -53,7 +56,7 @@ public class BeltDrawing : MonoBehaviour
 
     bool DrawFlag;
 
-
+    bool ItemFlag;
 
     public void InputRegister(MouseController input)
     {
@@ -252,6 +255,8 @@ public class BeltDrawing : MonoBehaviour
         // すでに何らかの位置が選択されてる場合に処理を実行
         if (SelectedPosList.Count != 0)
         {
+            ItemFlag = CheckItemRequests();
+
             // 今回の位置が前回の位置と同じ場合に処理を終了
             if (gridPos == currentPos)       
                 return;
@@ -285,6 +290,8 @@ public class BeltDrawing : MonoBehaviour
                     currentPos = nextPos;
                 }
             }
+            ItemFlag = CheckItemRequests();
+
             // 経路が問題ないか確認
             IsNoProblemRoute = RouteProblemCheck();
 
@@ -330,6 +337,8 @@ public class BeltDrawing : MonoBehaviour
         {
             return;
         }
+
+        AudioManager.instance.isPlaySE(Clip);
 
         List<GameObject> BeltList = new List<GameObject>();
 
@@ -393,13 +402,14 @@ public class BeltDrawing : MonoBehaviour
         //経路を生成出来るかで色変更
         GradientSetting();
     }
+
     void GradientSetting()
     {
         float GradientFirstTime = 0f;
         float GradientLastTime = 1f;
 
 
-        bool RouteCheck = IsNoProblemRoute &&  CheckItemRequests();
+        bool RouteCheck = IsNoProblemRoute && ItemFlag;
         Gradient gradient = RouteCheck ? scsessGradient : failedGradient;
 
         lineRenderer.colorGradient = gradient;
@@ -410,6 +420,7 @@ public class BeltDrawing : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        ItemFlag = false;
         DrawFlag = false;
         OnGridMap = false;
         IsNoProblemRoute = true;

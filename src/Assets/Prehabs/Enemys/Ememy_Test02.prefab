@@ -169,6 +169,10 @@ MonoBehaviour:
   ATK: 4
   speed: 0.8
   Interval: 150
+  BarScale: 0.7
   Rigidbody2D: {fileID: 689577365105305380}
   IsAttack: 0
   HPbarPrehab: {fileID: 6890130323972661016, guid: 77d9f2c6d97428345851be087815a809, type: 3}
+  DieEffect: {fileID: 6623700759234702549, guid: ed9825406e6365c449e3903c9886c211, type: 3}
+  DamegeClip: {fileID: 8300000, guid: 246530032a9edec4088fada1ae8d6cb2, type: 3}
+  DieClip: {fileID: 8300000, guid: 5b4610e4d134d8440a95e55980d069a5, type: 3}

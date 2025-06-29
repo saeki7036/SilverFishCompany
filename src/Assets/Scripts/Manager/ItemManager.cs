@@ -1,10 +1,5 @@
 ﻿using System.Collections.Generic;
-using Unity.Android.Gradle.Manifest;
-using Unity.VisualScripting;
-using UnityEditor.AssetImporters;
 using UnityEngine;
-using static UnityEditor.Progress;
-using static UnityEngine.Rendering.DebugUI;
 
 public class ItemManager : MonoBehaviour
 {
@@ -112,4 +107,15 @@ public class ItemManager : MonoBehaviour
         if(gamePogressManager.GetPogressFlag())
             itemTransporter.ItemMovingCheck();
     }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if(Input.GetKey(KeyCode.U) && Input.GetKeyDown(KeyCode.Y))
+        {
+            itemStocker.AddItem(ItemCategory.Wood, 1, 50);
+            itemStocker.AddItem(ItemCategory.Stone, 1, 50);
+        }
+    }
+#endif
 }
