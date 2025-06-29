@@ -1,6 +1,3 @@
-﻿using System.Net;
-using Unity.Android.Gradle.Manifest;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class ProductItem
