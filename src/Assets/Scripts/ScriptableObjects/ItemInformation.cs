@@ -9,17 +9,8 @@ public class ItemInformation : ScriptableObject
 
     // プロパティ
     public ItemCategory GetItemCategory() => itemCategory;
-    
 
     public int GetItemLevel() => itemLevel;
     
-
     public GameObject GetItemPrehab() => itemPrehab;
-}
-
-public enum ItemCategory
-{
-    None,
-    Wood,
-    Stone,
 }

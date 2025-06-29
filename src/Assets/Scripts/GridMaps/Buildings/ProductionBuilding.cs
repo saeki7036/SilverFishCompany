@@ -39,9 +39,7 @@ public class ProductionBuilding : GridBuilding
         {
             var instance = ItemManager.Instance;
 
-            Item = new ProductItem(itemInfo, ImportPos.First(), instance.GetMaxTimeCount());
-
-            instance.AddListItem(Item);
+            Item = instance.CreateItem(itemInfo, ImportPos.First());
         } 
     }
 

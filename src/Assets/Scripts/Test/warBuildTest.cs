@@ -24,14 +24,22 @@ public class warBuildTest : MonoBehaviour
     public void Hit(int atk)
     {
         HP -= atk;
+
+        if (!IsDestroy)
+            Debug.Log("HP:"+HP);
+
         if(HP <= 0)
         {
-            DestroyIvent?.Invoke();
+            
 
             if (IsDestroy)
             {
                 GridMapManager.Instance.DestroyContent(CrampGridPos());
                 Destroy(gameObject);
+            }
+            else
+            {
+                DestroyIvent?.Invoke();
             }
                
         }

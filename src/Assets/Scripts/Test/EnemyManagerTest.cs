@@ -22,12 +22,16 @@ public class EnemyManagerTest : MonoBehaviour
     [SerializeField]
     public UnityEvent ClearIvent;
 
-    public int timeCount;
-    int index = 0;
     List<EnemyTest> enemyList;
 
+    public int timeCount;
+
+    public int index = 0;
+
+    [HideInInspector]
     static EnemyManagerTest instance;
 
+    [HideInInspector]
     public static EnemyManagerTest Instance => instance;
 
     public Vector2 NearestPos(Vector2 basePos ,float range)
@@ -87,7 +91,9 @@ public class EnemyManagerTest : MonoBehaviour
     {
         enemyList.RemoveAll(enemy => enemy == null);
 
-        if(enemyList.Count == 0 && index == EnemyPrehab.Length) 
+        Debug.Log(enemyList.Count + " : " + index + " : " + Spowntime.Length);
+
+        if(enemyList.Count == 0 && index == Spowntime.Length) 
         {
             ClearIvent?.Invoke();
         }

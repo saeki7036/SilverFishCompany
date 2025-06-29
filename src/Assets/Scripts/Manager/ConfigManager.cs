@@ -9,7 +9,7 @@ public class ConfigManager : MonoBehaviour
     static ConfigManager instance;
     public static ConfigManager Instance => instance;
 
-    public ItemConfig GetItemConfig() => gameConfig.GetItemConfig();
+    public ItemTransportConfig GetItemConfig() => gameConfig.GetItemConfig();
 
     public BuildingConfig GetBuildingConfig() => gameConfig.GetBuildingConfig();
 
