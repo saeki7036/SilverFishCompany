@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05faf6863a596ec49aac88a23c080322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damege: 1
+  damege: 2
   DastroyTime: 6
   BulletLinePrehab: {fileID: 785995225070483439, guid: 311c044ab824dfa4aa2cfb1515fefe0a, type: 3}
   EffectPrahab: {fileID: 7546187951318481092, guid: 2a09d8c4117d422439252f8df1fd97b7, type: 3}

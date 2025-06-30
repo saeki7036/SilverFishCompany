@@ -311,5 +311,5 @@ MonoBehaviour:
   neckObject: {fileID: 769001556254622113}
   BulletPrehab: {fileID: 1385668542543310216, guid: 0d8a50086319389469094e5b8eb228de, type: 3}
   speed: 8
-  Range: 4
+  Range: 6
   ShotClip: {fileID: 8300000, guid: c416b2df27b8f774e8ca0e1404d5467c, type: 3}
