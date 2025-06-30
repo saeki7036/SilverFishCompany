@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbac78aefd3560144867c981669f48e5, type: 3}
+  m_Name: EnemySpownInformation
+  m_EditorClassIdentifier: 
+  EnemyPrehabList:
+  - {fileID: 2959811036750138740, guid: a08fb2d0dec77064faf13cc13d3e62e9, type: 3}
+  - {fileID: 2959811036750138740, guid: 0d212cbbd0865f04188846e96790ea58, type: 3}
+  WaveList:
+  - WaveTimeValue: 1500
+    EnemySpownValue: 2
+    SpownIDList: 00000000
+  - WaveTimeValue: 2500
+    EnemySpownValue: 6
+    SpownIDList: 00000000
+  - WaveTimeValue: 3000
+    EnemySpownValue: 6
+    SpownIDList: 01000000
+  - WaveTimeValue: 1000
+    EnemySpownValue: 4
+    SpownIDList: 00000000
+  - WaveTimeValue: 3000
+    EnemySpownValue: 12
+    SpownIDList: 0000000001000000
