@@ -5,49 +5,58 @@ using UnityEngine.Events;
 public class ProductUISetting : MonoBehaviour
 {
     [SerializeField]
-    ProductUICreate productUICreate;
+    ProductUICreate productUICreate; // 生成処理を行うクラス
 
     [SerializeField]
-    RectTransform ProductBackImage;
+    RectTransform SerectCursol;// 選択中の建物に表示されるカーソル
 
     [SerializeField]
-    RectTransform SerectCursol;
+    float adjustmentX = -65f;// カーソル位置の補正値（デザインに合わせて位置調整）
 
     [SerializeField]
-    float adjustmentX = -80f;
+    UIContent[] ProductImages;// 建物のUIコンテンツ配列
 
-    [SerializeField]
-    UIContent[] ProductImages;
-
-    static readonly float outIndexRectPosX = -2000f;
+    const float outIndexRectPosX = -2000f;// 非表示にするためのX座標（画面外）
 
     void Start()
     {
+        // 各UIContentにクリックイベントを登録する
         for (int i = 0; i < ProductImages.Length; i++)
         {
             int captureIndex = i; // forのiをローカルに
 
+            // UIContent 側にイベント登録
             UnityAction action = () => SetCreateProduct(captureIndex);
-            ProductImages[i].SetIvent(action);
+            ProductImages[i].SetEvent(action);
         }
     }
 
+    /// <summary>
+    /// 指定したインデックスのUIを生成し、カーソルを移動させる
+    /// </summary>
+    /// <param name="index">選択されたUIのインデックス</param>
     void SetCreateProduct(int index)
     {
+        // 選択カーソルの位置を調整して移動
         SerectCursol.anchoredPosition = new Vector2()
         {
             x = ProductImages[index].GetRectAnchoredPosX() - adjustmentX,
             y = SerectCursol.anchoredPosition.y
         };
-        
+
+        // UIからの生成指示
         productUICreate.SetCreateContent(
             ProductImages[index].GetItemRequestList(),
             ProductImages[index].GetPrehab(),
             ProductImages[index].GetSprite());
 
+        // 生成が終わったらカーソルを非表示に戻す処理を開始
         StartCoroutine(WaitResetCursol());
     }
 
+    /// <summary>
+    /// UI生成が完了するまで待機し、選択カーソルを画面外へ戻す
+    /// </summary>
     IEnumerator WaitResetCursol()
     {
         // 待機
@@ -109,7 +118,7 @@ public class ProductUISetting : MonoBehaviour
             return;
 
         // スクリーン座標に変換
-        // ② ワールド座標をスクリーン座標に変換（UI Canvas用）
+        // ワールド座標をスクリーン座標に変換（UI Canvas用）
         Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(Camera.main, mouseWorldUpPos);
 
         //Vector3 screenPos = Camera.main.WorldToScreenPoint(mouseWorldUpPos);

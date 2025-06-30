@@ -7,6 +7,8 @@ public class BaseCampTest : MonoBehaviour
     //public int HP = 100;
 
     static BaseCampTest instance;
+
+    [HideInInspector]
     public static BaseCampTest Instance => instance;
 
     public Vector2 Pos;

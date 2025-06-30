@@ -3,12 +3,14 @@ using UnityEngine.Events;
 
 public class warBuildTest : MonoBehaviour
 {
-    public int HP = 100;
-    int MaxHP;
+    [SerializeField]
+    int HP = 100;
+    
+    [SerializeField]
+    bool IsDestroy = true;
 
-    public bool IsDestroy = true;
-
-    public float BarScale = 0.5f;
+    [SerializeField]
+    float BarScale = 0.5f;
 
     [SerializeField]
     public UnityEvent DestroyIvent;
@@ -27,6 +29,8 @@ public class warBuildTest : MonoBehaviour
 
     [SerializeField]
     AudioClip DieClip;
+
+    int MaxHP;
     void Start()
     {
         MaxHP = HP;

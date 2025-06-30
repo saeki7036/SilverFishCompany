@@ -2,28 +2,26 @@
 
 public class EnemyTest : MonoBehaviour
 {
-    public int HP = 3;
-    public int ATK = 4;
-    public float speed = 1.0f;
-    public int Interval = 100;
-    public float BarScale = 0.7f;
-    int timeCount = 0;
-    int MaxHP; 
+    [SerializeField]
+    int HP = 3;
+
+    [SerializeField]
+    int ATK = 4;
+
+    [SerializeField]
+    float speed = 1.0f;
+
+    [SerializeField]
+    int Interval = 100;
+
+    [SerializeField]
+    float BarScale = 0.7f;
 
     [SerializeField]
     Rigidbody2D Rigidbody2D;
 
-    public bool IsAttack;
-
-    warBuildTest AttackTarget;
-
-    Vector2 currentPosition;
-
     [SerializeField]
     GameObject HPbarPrehab;
-
-    GameObject HPBar;
-    HPBarTest HPBarTest;
 
     [SerializeField]
     GameObject DieEffect;
@@ -33,6 +31,20 @@ public class EnemyTest : MonoBehaviour
 
     [SerializeField]
     AudioClip DieClip;
+
+    warBuildTest AttackTarget;
+
+    Vector2 currentPosition;
+
+    int timeCount = 0;
+
+    int MaxHP;
+
+    GameObject HPBar;
+
+    HPBarTest HPBarTest;
+
+    bool IsAttack;
 
     public Vector2 GetCurrentPos() => currentPosition;
 

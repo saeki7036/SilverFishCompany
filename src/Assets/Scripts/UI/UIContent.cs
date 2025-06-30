@@ -45,7 +45,7 @@ public class UIContent : MonoBehaviour
         }
     }
 
-    public void SetIvent(UnityAction buttonAction)
+    public void SetEvent(UnityAction buttonAction)
     {
         Clickbutton.onClick.AddListener(buttonAction);
     }
