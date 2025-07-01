@@ -3,7 +3,7 @@
 public class GridContent : MonoBehaviour
 {
     [SerializeField]
-    MapContent content;
+    MapContent content; //コンテンツの情報を格納している
 
     /// <summary>
     /// このオブジェクトがベルトかどうかを判定する

@@ -47,7 +47,7 @@ public class BeltBuilding : GridBuilding
             if (importCellType == BuildType.None || importCellType == BuildType.NULLTYPE)
                 continue;
 
-            GridBuilding importBuilding = importCell.Building;
+            GridBuilding importBuilding = importCell.GetBuilding();
 
             if (importBuilding == null)
                 continue;
@@ -64,7 +64,7 @@ public class BeltBuilding : GridBuilding
                 if (exportCellType == BuildType.None || exportCellType == BuildType.NULLTYPE)
                     continue;
 
-                GridBuilding exportBuilding = exportCell.Building;
+                GridBuilding exportBuilding = exportCell.GetBuilding();
 
                 if (exportBuilding == null)
                     continue;

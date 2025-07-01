@@ -163,14 +163,13 @@ public enum BuildType
 /// グリッドの各セルを表すクラス
 /// 位置、建物、タイル情報を管理
 /// </summary>
-[System.Serializable]
 public class GridCell
 {
     public Vector2Int GridPos;
     public BuildType GridCellType;
     public GameObject GridObject;
-    public GridBuilding Building;
 
+    GridBuilding building;
     TileType tileType;
 
     // 最初にすべて初期化するコンストラクタ
@@ -180,7 +179,7 @@ public class GridCell
         tileType = TileType.None;
         GridCellType = BuildType.None;
         GridObject = null;      
-        Building = null;
+        building = null;
     }
 
     // エラー参照用コンストラクタ
@@ -190,7 +189,7 @@ public class GridCell
         tileType = TileType.None;
         GridCellType = NULLTYPE;
         GridObject = null;
-        Building = null;
+        building = null;
 
         Debug.LogError("何かしら良くないので要デバッグ");
     }
@@ -204,8 +203,14 @@ public class GridCell
         GridCellType = cellType;
         GridObject = gameObject;
         GridPos = vector2Int;
-        Building = gridBuilding;
+        building = gridBuilding;
     }
+
+    /// <summary>
+    /// 建物のロジッククラスを取得
+    /// </summary>
+    /// <returns>建物のクラス(派生クラス込み)</returns>
+    public GridBuilding GetBuilding() => building;
 
     /// <summary>
     /// セルを空の状態にリセット
@@ -214,7 +219,7 @@ public class GridCell
     {
         GridCellType = BuildType.None;
         GridObject = null;
-        Building = null;
+        building = null;
     }
 
     // <summary>
@@ -245,13 +250,13 @@ public class GridCell
     /// <returns>建物サイズ（建物がない場合は1x1x0）</returns>
     public Vector3 GetBuildingSize()
     {
-        if (Building == null)
+        if (building == null)
             return Vector3.one;
 
         return new()
         {
-            x = Building.MinBuildingPos.x,
-            y = Building.MaxBuildingPos.y,
+            x = building.MinBuildingPos.x,
+            y = building.MaxBuildingPos.y,
             z = 0
         };
     }

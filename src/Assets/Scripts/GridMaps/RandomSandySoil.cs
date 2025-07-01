@@ -8,7 +8,6 @@ public class RandomSandySoil : MonoBehaviour
     [SerializeField]
     Sprite[] sprites;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // スプライトをランダムに変更する

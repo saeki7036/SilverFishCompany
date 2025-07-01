@@ -63,8 +63,10 @@ public abstract class GridBuilding
         var cell = GridMapManager.Instance.GetCell(pos);
         var cellType = cell.GridCellType;
 
-        if (cellType == BuildType.None || cellType == BuildType.NULLTYPE) return null;
-        return cell.Building;
+        if (cellType == BuildType.None || cellType == BuildType.NULLTYPE) 
+            return null;
+
+        return cell.GetBuilding();
     }
 
     public abstract void Operat();

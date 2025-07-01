@@ -4,13 +4,16 @@ using static UnityEngine.GraphicsBuffer;
 
 public class HPBarTest : MonoBehaviour
 {
-    [SerializeField] RectTransform backGround;
-    [SerializeField] RectTransform HPGreenBar;
+    [SerializeField] 
+    RectTransform backGround;
 
-    Transform target;
+    [SerializeField] 
+    RectTransform HPGreenBar;
 
     [SerializeField]
     Vector2 offset = new Vector2(0, 100f);
+
+    Transform target;
 
     float  BarScale = 1.0f;
 

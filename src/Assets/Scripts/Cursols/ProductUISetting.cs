@@ -68,7 +68,7 @@ public class ProductUISetting : MonoBehaviour
             y = SerectCursol.anchoredPosition.y
         };
 
-        Debug.Log("処理終了");
+        // Debug.Log("処理終了");
     }
 
     /*

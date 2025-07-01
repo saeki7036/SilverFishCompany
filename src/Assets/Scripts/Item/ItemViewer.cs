@@ -7,31 +7,41 @@ public class ItemViewer : MonoBehaviour
     [SerializeField]
     List<ItemView> itemViewList = new List<ItemView>();
 
+    /// <summary>
+    /// 個別のアイテム表示を管理する内部クラス
+    /// カテゴリとレベルに対応するアイテム値をテキストで表示
+    /// </summary>
     [System.Serializable]
     class ItemView
     {
         [SerializeField]
         int level;
-
         [SerializeField]
         ItemCategory category;
-       
+
         [SerializeField]
         Text itemValueText;
-            
+
+        /// <summary>
+        /// アイテム値を取得してテキストを更新
+        /// </summary>
         public void UpdateText()
         {
+            // ItemManagerから該当するアイテムの現在値を取得
             int Value = ItemManager.Instance.GetItemValue(category,level);
             itemValueText.text = Value.ToString();
         }
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// 毎フレーム全てのアイテム表示を更新
+    /// </summary>
     void Update()
     {
-        foreach(var view in itemViewList)
+        // イベント処理にする予定
+        foreach (var view in itemViewList)
         {
-            view.UpdateText();
+            view.UpdateText();// アイテムビューのテキストを更新
         }
     }
 }

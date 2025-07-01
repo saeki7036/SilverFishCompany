@@ -56,7 +56,7 @@ public class BeltAnimation : MonoBehaviour
         if(beltCell.GridCellType == BuildType.Belt)
         {
             // キャスト成功時のみ実行
-            if (beltCell.Building is BeltBuilding beltBuilding)
+            if (beltCell.GetBuilding() is BeltBuilding beltBuilding)
             {
                 beltBuilding.SetBeltAnimation(this);
                 beltBuilding.BeltAnimPlay();

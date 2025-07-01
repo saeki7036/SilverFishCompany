@@ -1,20 +1,28 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 保有しているアイテムを管理するクラス
+/// 各アイテムの取得、消費、表示を制御
+/// </summary>
 public class ItemStocker
 {
     Dictionary<ItemCategory, Dictionary<int, int>> itemStorage;
 
+    // コンストラクタ
     public ItemStocker(ItemConfig itemConfig)
     {
+        // 初期化
         itemStorage = new Dictionary<ItemCategory, Dictionary<int, int>>();
 
+        // List内を初期化
         foreach (var useItem in itemConfig.GetUseItemList())
         {
             ItemCategory useCategory = useItem.GetCategory();
 
             itemStorage[useCategory] = new Dictionary<int, int>();
 
+            // 使用するレベルの範囲を0で初期化
             for (int level = useItem.GetMinLevel(); level <= useItem.GetMaxLevel(); level++)
             {
                 itemStorage[useCategory][level] = 0;
@@ -45,6 +53,7 @@ public class ItemStocker
     {
         if (itemStorage.ContainsKey(type) && itemStorage[type].ContainsKey(level))
             return itemStorage[type][level];
+
         return 0;
     }
 

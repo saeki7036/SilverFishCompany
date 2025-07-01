@@ -21,9 +21,13 @@ public class GameResult : MonoBehaviour
 
     public void Start()
     {
+        // タイムスケールを初期化
         Time.timeScale = 1;
     }
 
+    /// <summary>
+    /// ゲームオーバー処理(ボタン起動想定)
+    /// </summary>
     public void GameOver()
     {
         gamePogressManager.SetPogressFlag(false);
@@ -32,6 +36,9 @@ public class GameResult : MonoBehaviour
         ObjectsActivate();
     }
 
+    /// <summary>
+    /// ゲームクリア処理(ボタン起動想定)
+    /// </summary>
     public void GameClear()
     {
         gamePogressManager.SetPogressFlag(false);
@@ -42,6 +49,7 @@ public class GameResult : MonoBehaviour
 
     void ObjectsActivate()
     {
+        // 登録したオブジェクトをアクティブ化
         foreach (GameObject obj in objectsActivater)
         {
             obj.SetActive(true);
