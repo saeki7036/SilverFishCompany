@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ProductionBuilding : GridBuilding
 {
+    // アイテムを生産する建物クラス
+
     ItemInformation itemInfo;
 
     // コンストラクタ
@@ -30,15 +32,19 @@ public class ProductionBuilding : GridBuilding
 
     public override void Operat()
     {
+        // インポート位置が一つでなければ停止
         if (ImportPos.Count != 1)
         {
+            Debug.LogAssertion("複数のインポート位置あり");
             return;
         }
 
+        // アイテムがない場合
         if (Item == null)
         {
             var instance = ItemManager.Instance;
 
+            // アイテムクラスを生成
             Item = instance.CreateItem(itemInfo, ImportPos.First());
         } 
     }

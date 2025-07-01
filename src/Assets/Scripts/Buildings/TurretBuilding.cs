@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class TurretBuilding : GridBuilding
 {
-    Vector2 target;
+    // タレットクラス 仮置き状態のため、要実装
 
+    //Vector2 target;
+
+    // コンストラクタ
     public TurretBuilding(Vector2Int minBuildingPos, Vector2Int maxBuildingPos,
                        HashSet<Vector2Int> importList, HashSet<Vector2Int> exportList)
                        : base(minBuildingPos, maxBuildingPos, importList, exportList)

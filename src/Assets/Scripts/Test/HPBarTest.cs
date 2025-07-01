@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
+
 
 public class HPBarTest : MonoBehaviour
 {
+    // HPバーの表示を管理するクラス
+
     [SerializeField] 
     RectTransform backGround;
 

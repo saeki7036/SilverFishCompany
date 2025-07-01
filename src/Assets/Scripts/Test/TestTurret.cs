@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class TestTurret : MonoBehaviour
 {
+    // タレットの動作確認クラス
+    //のち本実装に取り込む
+
     [SerializeField]
     int interval = 150;
 

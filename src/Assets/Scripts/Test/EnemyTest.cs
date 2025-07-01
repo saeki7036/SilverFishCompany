@@ -2,6 +2,9 @@
 
 public class EnemyTest : MonoBehaviour
 {
+    // 敵クラス
+    // のち行動パターンを複数製作予定
+
     [SerializeField]
     int HP = 3;
 

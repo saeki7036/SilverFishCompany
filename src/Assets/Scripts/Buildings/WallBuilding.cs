@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class WallBuilding :GridBuilding
 {
+    // 壁クラス 仮置き状態のため、要実装
+
+    // コンストラクタ
     public WallBuilding(Vector2Int minBuildingPos, Vector2Int maxBuildingPos,
                       HashSet<Vector2Int> importList, HashSet<Vector2Int> exportList)
                       : base(minBuildingPos, maxBuildingPos, importList, exportList)

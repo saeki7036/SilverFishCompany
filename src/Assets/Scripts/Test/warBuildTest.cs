@@ -3,6 +3,9 @@ using UnityEngine.Events;
 
 public class warBuildTest : MonoBehaviour
 {
+    // 建物の動作を確認するクラス
+    //のち本実装に取り込む
+
     [SerializeField]
     int HP = 100;
     
@@ -88,7 +91,6 @@ public class warBuildTest : MonoBehaviour
             GameObject effect = Instantiate(HitEffect,transform.position, Quaternion.identity);
             effect.transform.localScale = transform.localScale;
             HPBarTest.UpdateBar(Mathf.Clamp01((float)HP / MaxHP));
-        }
-            
+        }          
     }
 }

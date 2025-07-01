@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ProcessingBuilding : GridBuilding
 {
+    // アイテムを加工する建物クラス
+
     ItemInformation itemInfo;
 
     // コンストラクタ

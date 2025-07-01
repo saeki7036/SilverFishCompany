@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 
 public class BaseCampTest : MonoBehaviour
 {
-    //public int HP = 100;
+    // 拠点位置を取得させるクラス(シングルトン)
 
     static BaseCampTest instance;
 

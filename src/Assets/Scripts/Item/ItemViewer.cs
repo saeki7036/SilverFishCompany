@@ -15,12 +15,13 @@ public class ItemViewer : MonoBehaviour
     class ItemView
     {
         [SerializeField]
-        int level;
-        [SerializeField]
-        ItemCategory category;
+        int level; // アイテムのレベル
 
         [SerializeField]
-        Text itemValueText;
+        ItemCategory category; // アイテムカデゴリ
+
+        [SerializeField]
+        Text itemValueText; //表示用テキスト
 
         /// <summary>
         /// アイテム値を取得してテキストを更新

@@ -108,11 +108,14 @@ public class ItemManager : MonoBehaviour
     /// <returns>生成されたProductItemオブジェクト</returns>
     public ProductItem CreateItem(ItemInformation itemInformation,Vector2Int createPos)
     {
+        // 情報のヌルチェック
         if (itemInformation == null)
             return null;
 
+        // アイテムクラス作成
         ProductItem Item = new ProductItem(itemInformation, createPos, maxTimeCount);
 
+        //アイテム輸送Listに登録
         itemTransporter.AddPool(Item);
 
         return Item;
