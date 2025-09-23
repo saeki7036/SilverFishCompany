@@ -1,43 +1,56 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// アイテムの輸送を管理するクラス
+/// アイテムプールを保持し、各アイテムの移動処理を制御
+/// </summary>
 public class ItemTransporter
 {
-    List<ProductItem> ItemPool;
-    float AddTimeCount;
+    List<ProductItem> itemPool;
+    float addTimeCount;
 
+    // コンストラクタ
+    /// <param name="addTimeCount">アイテム移動の時間カウント</param>
     public ItemTransporter(float addTimeCount)
     {
-        ItemPool = new List<ProductItem>();
-        AddTimeCount = addTimeCount;
+        itemPool = new List<ProductItem>();
+        this.addTimeCount = addTimeCount;
     }
 
-    public void AddPool(ProductItem item) => ItemPool.Add(item);
+    /// <summary>
+    /// アイテムをプールに追加
+    /// </summary>
+    /// <param name="item">追加するアイテム</param>
+    public void AddPool(ProductItem item) => itemPool.Add(item);
 
-
+    /// <summary>
+    /// アイテムプール内の全アイテムの移動チェックと処理
+    /// 無効なアイテムの削除も行う
+    /// </summary>
     public void ItemMovingCheck()
     {
         // Removeを扱うので逆順ループ
-        for (int i = ItemPool.Count - 1; i >= 0; i--)
+        for (int i = itemPool.Count - 1; i >= 0; i--)
         {
             // nullチェック
-            if (ItemPool[i] == null)
+            if (itemPool[i] == null)
             {
-                ItemPool.RemoveAt(i);
+                itemPool.RemoveAt(i);
                 continue;
             }
 
             // オブジェクトがなければ削除する
-            if (ItemPool[i].IsEnptyItemObject())
+            if (itemPool[i].IsEnptyItemObject())
             {
-                ItemPool.RemoveAt(i);
+                itemPool.RemoveAt(i);
                 continue;
             }
 
-            // アイテム運搬処理
-            if (ItemPool[i].IsItemMove())
+            // アイテムが移動中の場合、移動処理を実行
+            if (itemPool[i].IsItemMove())
             {
-                ItemPool[i].ItemMovement(AddTimeCount);
+                itemPool[i].ItemMovement(addTimeCount);  // アイテム運搬処理
             }
         }
     }

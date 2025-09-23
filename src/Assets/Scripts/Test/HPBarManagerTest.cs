@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 public class HPBarManagerTest : MonoBehaviour
 {
+    // HPバーをUIの子供に設定するため、オブジェクト参照させるクラス
+
     [SerializeField]
     static GameObject hpBarParent;
 

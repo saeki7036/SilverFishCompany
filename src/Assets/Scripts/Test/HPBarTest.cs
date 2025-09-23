@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
+
 
 public class HPBarTest : MonoBehaviour
 {
-    [SerializeField] RectTransform backGround;
-    [SerializeField] RectTransform HPGreenBar;
+    // HPバーの表示を管理するクラス
 
-    Transform target;
+    [SerializeField] 
+    RectTransform backGround;
+
+    [SerializeField] 
+    RectTransform HPGreenBar;
 
     [SerializeField]
     Vector2 offset = new Vector2(0, 100f);
+
+    Transform target;
 
     float  BarScale = 1.0f;
 

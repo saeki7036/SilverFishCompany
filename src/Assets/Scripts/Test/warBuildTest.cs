@@ -3,12 +3,17 @@ using UnityEngine.Events;
 
 public class warBuildTest : MonoBehaviour
 {
-    public int HP = 100;
-    int MaxHP;
+    // 建物の動作を確認するクラス
+    //のち本実装に取り込む
 
-    public bool IsDestroy = true;
+    [SerializeField]
+    int HP = 100;
+    
+    [SerializeField]
+    bool IsDestroy = true;
 
-    public float BarScale = 0.5f;
+    [SerializeField]
+    float BarScale = 0.5f;
 
     [SerializeField]
     public UnityEvent DestroyIvent;
@@ -27,6 +32,8 @@ public class warBuildTest : MonoBehaviour
 
     [SerializeField]
     AudioClip DieClip;
+
+    int MaxHP;
     void Start()
     {
         MaxHP = HP;
@@ -84,7 +91,6 @@ public class warBuildTest : MonoBehaviour
             GameObject effect = Instantiate(HitEffect,transform.position, Quaternion.identity);
             effect.transform.localScale = transform.localScale;
             HPBarTest.UpdateBar(Mathf.Clamp01((float)HP / MaxHP));
-        }
-            
+        }          
     }
 }

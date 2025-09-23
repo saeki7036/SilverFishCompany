@@ -3,8 +3,13 @@ using UnityEngine.Rendering;
 
 public class BulletTest : MonoBehaviour
 {
-    public int damege = 2;
-    public float DastroyTime = 6f;
+    //　弾クラス
+
+    [SerializeField]
+    int damege = 2;//ダメージ
+
+    [SerializeField]
+    float DastroyTime = 6f;//消えるまでの時間
 
     [SerializeField]
     GameObject BulletLinePrehab;

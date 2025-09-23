@@ -7,59 +7,58 @@ using UnityEngine.EventSystems;
 public class BeltDrawing : MonoBehaviour
 {
     [SerializeField]
-    LineRenderer lineRenderer;
+    LineRenderer lineRenderer;// ベルト経路の線を描画するLineRenderer
 
     [SerializeField]
-    Gradient scsessGradient;
+    Gradient scsessGradient;// 成功時に表示される経路色（アイテム条件・経路OK）
 
     [SerializeField]
-    Gradient failedGradient;
+    Gradient failedGradient;// 失敗時に表示される経路色（建物と干渉やアイテム不足）
 
     [SerializeField]
-    GameObject BeltPrehab;
+    GameObject BeltPrefab;// ベルト本体のPrefab
 
     [SerializeField]
-    GameObject StratPosIcon;
+    GameObject StartPosIcon;// ベルト始点を示すアイコン
 
     [SerializeField]
-    SpriteRenderer StratIconSprite;
+    SpriteRenderer StratIconSprite;// 始点アイコンの色変更用SpriteRenderer
 
     [SerializeField]
-    GameObject EndPosIcon;
+    GameObject EndPosIcon;// ベルト終点を示すアイコン
 
     [SerializeField]
-    SpriteRenderer EndIconSprite;
+    SpriteRenderer EndIconSprite;// 終点アイコンの色変更用SpriteRenderer
 
     [SerializeField]
-    List<ItemRequest> requests;
+    List<ItemRequest> requests;// ベルト作成時に必要なアイテムリスト
 
     [SerializeField]
-    AudioClip Clip;
+    AudioClip Clip; // ベルト設置時に再生される効果音
 
-    const int ClampMin = 0;
+    Vector3Int currentPos; // 触ったグリッドの場所
+    bool OnGridMap;// 左クリックした場所がグリッドマップ内かのフラグ
+    bool IsNoProblemRoute;// 経路がすでにある建物と干渉していないか
+    bool DrawFlag;// ベルト描画モードの有効/無効フラグ
+    bool ItemFlag;// 必要なアイテムが足りているかのフラグ
 
-    Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
-
-    float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
-
+    // 現在選択中のグリッド経路（始点〜終点）
     List<Vector3Int> SelectedPosList = new List<Vector3Int>();
+
+    // 各グリッド座標が選択リストの何番目かを記録（巻き戻し用）
     Dictionary<Vector3Int, int> posIndexMap = new Dictionary<Vector3Int, int>();
 
-    // 左クリックした場所がグリッドマップ内かのフラグ
-    bool OnGridMap;
+    const int ClampMin = 0;// マップ座標の最小値
 
-    // 経路がすでにある建物と干渉していないか
-    bool IsNoProblemRoute;
+    // マップサイズの最大値（外部参照）
+    Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
 
-    // 触ったグリッドの場所
-    Vector3Int currentPos;
-
-    bool DrawFlag;
-
-    bool ItemFlag;
+    // マップサイズ調整スケール（外部参照）
+    float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
 
     public void InputRegister(MouseController input)
     {
+        // イベント登録
         input.LeftDownEvent += BeltDrawSetup;
         input.LeftClickEvent += DrawingBelt;
         input.LeftUpEvent += DrowBeltGenerate;
@@ -68,6 +67,10 @@ public class BeltDrawing : MonoBehaviour
     public bool GetDrawFlag() => DrawFlag;
     public void SetDrawFlag(bool flag) => DrawFlag = flag;
 
+    /// <summary>
+    /// ワールド座標をグリッドマップ内の整数座標に変換する
+    /// マップサイズの範囲内にクランプされる
+    /// </summary>
     Vector3Int GetMapGridInt(Vector3 mouseWorldPos)
     {
         // インデックスからの取得のため -1 をしている
@@ -81,11 +84,16 @@ public class BeltDrawing : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// 経路に必要なアイテムがすべて存在するかを確認する
+    /// </summary>
     bool CheckItemRequests()
     {
+        // ベルトに必要な個数を計算（開始・終了地点を除く）
         int requestValue = Mathf.Max(0, SelectedPosList.Count - 2);
 
-        foreach(var request in requests)
+        // 各リクエストアイテムについて在庫をチェック
+        foreach (var request in requests)
         {
              int value = request.GetValue() * requestValue;
             bool consume = ItemManager.Instance.CanConsumeItem(request.GetCategory(), request.GetLevel(), value);
@@ -96,14 +104,17 @@ public class BeltDrawing : MonoBehaviour
 
         return true;
     }
-
+    /// <summary>
+    /// 経路に必要なアイテムを実際に消費する（可能でなければ失敗）
+    /// </summary>
     bool ConsumeItemRequests()
     {
+        // 消費可能かチェック
         if (!CheckItemRequests())
             return false;
-
+        // ベルトに必要な個数を計算
         int requestValue = Mathf.Max(0, SelectedPosList.Count - 2);
-
+        // 実際にアイテムを消費
         foreach (var request in requests)
         {
             int value = request.GetValue() * requestValue;
@@ -117,29 +128,27 @@ public class BeltDrawing : MonoBehaviour
     }
 
 
-
-    int ManhattanDistance2D(Vector3Int gridPos, Vector3Int targetPos)
-    {
-        int x = Mathf.Abs(targetPos.x - gridPos.x);
-        int y = Mathf.Abs(targetPos.y - gridPos.y);
-
-        return x + y;
-    }
-
+    /// <summary>
+    /// 座標がグリッドマップ内に収まっているか確認する
+    /// </summary>
     bool IsInGridMap(Vector3 mouseWorldDownPos)
     {
-        if(mouseWorldDownPos.x < -GridAdjustScale || 
+        // X座標の範囲チェック
+        if (mouseWorldDownPos.x < -GridAdjustScale || 
             maxMapSize.x - GridAdjustScale < mouseWorldDownPos.x)
             return false;
 
-        if(mouseWorldDownPos.y < -GridAdjustScale || 
+        // Y座標の範囲チェック
+        if (mouseWorldDownPos.y < -GridAdjustScale || 
             maxMapSize.y - GridAdjustScale < mouseWorldDownPos.y)
             return false;
 
         return true;
     }
 
-    // 2つのグリッド座標を縦横の動きのみで対角線に近づけながら繋ぐ経路を生成する処理
+    /// <summary>
+    /// 2つのグリッド座標を縦横の動きのみで対角線に近づけながら繋ぐ経路を生成する処理
+    /// </summary>
     List<Vector3Int> CorrectionBeltLine(Vector3Int endPos, Vector3Int startPos)
     {
         // ブレゼンハムの線分アルゴリズム(Bresenham's Line Algorithm)を斜め移動禁止で実装
@@ -210,42 +219,57 @@ public class BeltDrawing : MonoBehaviour
         return path;
     }
 
+    // <summary>
+    /// ベルト描画の開始処理（マウス左ボタン押下時）
+    /// グリッド座標の初期化と開始地点の設定を行う
+    /// </summary>
     void BeltDrawSetup(Vector3 mouseWorldDownPos)
-    {     
+    {
+        // リストとマップを初期化
         SelectedPosList = new List<Vector3Int>();
         posIndexMap = new Dictionary<Vector3Int, int>();
 
         // ラインレンダラーを全消去（描画をリセット）
         lineRenderer.positionCount = 0;
 
+        // マウス位置がグリッドマップ内かチェック
         OnGridMap = IsInGridMap(mouseWorldDownPos);
 
+        // UIオブジェクト上でクリックした場合は処理しない
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
 
+        // 描画モード有効 かつ グリッドマップ内の場合
         if (DrawFlag && OnGridMap)
         {
-            StratPosIcon.SetActive(true);
+            // 開始・終了アイコンを表示
+            StartPosIcon.SetActive(true);
             EndPosIcon.SetActive(true);
 
+            // マウス位置をグリッド座標に変換
             Vector3Int gridPos = GetMapGridInt(mouseWorldDownPos);
 
-            StratPosIcon.transform.position = gridPos;
+            // アイコンを開始位置に配置
+            StartPosIcon.transform.position = gridPos;
             EndPosIcon.transform.position = gridPos;
 
+            // 開始地点を選択リストに追加
             posIndexMap.Add(gridPos, SelectedPosList.Count);
             SelectedPosList.Add(gridPos);
             currentPos = gridPos;
         } 
     }
 
-    // ベルト（選択ライン）を描画する処理。マウスのワールド座標を元に選択ラインの更新を行う。
+    /// <summary>
+    /// ベルト（選択ライン）を描画する処理。マウスのワールド座標を元に選択ラインの更新を行う。
+    /// 経路上の各グリッド座標を保存し、巻き戻し処理にも対応する。
+    /// 途中で経路が既に存在する建物に接触していないかなどを確認する。
+    /// </summary>
     void DrawingBelt(Vector3 mouseWorldPos)
     {
-        Debug.Log(mouseWorldPos == Vector3.zero);
-
+        // 描画モード無効 または グリッドマップ外の場合は処理しない
         if (!DrawFlag || !OnGridMap)     
             return;
         
@@ -255,6 +279,7 @@ public class BeltDrawing : MonoBehaviour
         // すでに何らかの位置が選択されてる場合に処理を実行
         if (SelectedPosList.Count != 0)
         {
+            // アイテム在庫チェック
             ItemFlag = CheckItemRequests();
 
             // 今回の位置が前回の位置と同じ場合に処理を終了
@@ -290,6 +315,7 @@ public class BeltDrawing : MonoBehaviour
                     currentPos = nextPos;
                 }
             }
+            // アイテム在庫を再チェック
             ItemFlag = CheckItemRequests();
 
             // 経路が問題ないか確認
@@ -301,22 +327,27 @@ public class BeltDrawing : MonoBehaviour
             // 終点の位置にオブジェクトを移動する
             EndPosIcon.transform.position = gridPos;
         }
-
-        Debug.Log(mouseWorldPos == Vector3.zero);
     }
 
+    /// <summary>
+    /// マウスの左ボタンを離したときにベルトの生成を行う
+    /// 選択された経路が有効で、かつ必要なリソースがあればBeltオブジェクトを生成して配置する
+    /// </summary>
     void DrowBeltGenerate(Vector3 mouseWorldUpPos)
     {
+        // 描画モードが無効なら処理しない
         if (!DrawFlag)
             return;
 
-        if (BeltPrehab == null)
+        // ベルトプレハブが設定されていない場合は処理しない
+        if (BeltPrefab == null)
             return;
 
         // LineRendererの描画を初期化
         lineRenderer.positionCount = 0;
 
-        StratPosIcon.SetActive(false);
+        // アイコンを非表示にする
+        StartPosIcon.SetActive(false);
         EndPosIcon.SetActive(false);
 
         // 経路に既に建物があるなら生成せずに終了
@@ -338,47 +369,56 @@ public class BeltDrawing : MonoBehaviour
             return;
         }
 
+        // 効果音を再生
         AudioManager.instance.isPlaySE(Clip);
 
+        // 生成するベルトオブジェクトのリスト
         List<GameObject> BeltList = new List<GameObject>();
 
+        // 開始地点と終了地点を保存
         Vector3Int StratPos = SelectedPosList.First();
         Vector3Int EndPos = SelectedPosList.Last();
-
-        //Debug.Log(StratPos + " : " + EndPos);
 
         // 終点から削除
         SelectedPosList.RemoveAt(SelectedPosList.Count - 1); // 終点を削除
         SelectedPosList.RemoveAt(0); // 先頭を削除
 
+        // 中間地点にベルトオブジェクトを生成
         foreach (Vector3Int posInt in SelectedPosList)
         {
-            GameObject BeltObject = Instantiate(BeltPrehab,posInt,Quaternion.identity);
+            GameObject BeltObject = Instantiate(BeltPrefab,posInt,Quaternion.identity);
             BeltList.Add(BeltObject);
         }
 
+        // グリッドマップにベルト情報を設定
         GridMapManager.Instance.BeltSetting(SelectedPosList, BeltList, StratPos, EndPos);
 
+        // 描画モードを終了
         DrawFlag = false;
     }
 
-
+    /// <summary>
+    /// ベルト経路上に既存の建物がないかをチェックする（先頭・終点を除く）
+    /// </summary>
+    /// <returns>true：問題なし / false：建物と干渉</returns>
     bool RouteProblemCheck()
     {
         // 先頭要素と終点要素を除いて既に建物があるか確認
         for (int i = 1; i < SelectedPosList.Count - 1; i++)
         {
+            // Vector3IntからVector2Intに変換
             Vector2Int vector2Int = new Vector2Int()
             {
                 x = SelectedPosList[i].x,
                 y = SelectedPosList[i].y,
             };
 
+            // セルが空かどうかチェック
             if (GridMapManager.Instance.GetCell(vector2Int).IsNoneCelltype())
             {
                 continue;
             }
-            else
+            else// 建物がある場合は問題あり
             {
                 return false;
             }
@@ -387,9 +427,12 @@ public class BeltDrawing : MonoBehaviour
         return true;
     }
 
-    // ラインレンダラーを更新して描画をする処理
+    /// <summary>
+    /// ラインレンダラーを更新して描画をする処理
+    /// </summary>
     void UpdateLineRenderer()
     {
+        // 選択された地点数分の頂点を設定
         lineRenderer.positionCount = SelectedPosList.Count;
 
         // Vector3Int → Vector3 変換しつつ設定
@@ -403,15 +446,20 @@ public class BeltDrawing : MonoBehaviour
         GradientSetting();
     }
 
+    /// <summary>
+    /// 経路の状態に応じて、ラインの色やアイコンの色を変更する
+    /// 問題なし：成功グラデーション、問題あり：失敗グラデーション
+    /// </summary>
     void GradientSetting()
     {
         float GradientFirstTime = 0f;
         float GradientLastTime = 1f;
 
-
+        // 経路チェックとアイテムチェックの両方をクリアしているか
         bool RouteCheck = IsNoProblemRoute && ItemFlag;
         Gradient gradient = RouteCheck ? scsessGradient : failedGradient;
 
+        // ラインとアイコンの色を設定
         lineRenderer.colorGradient = gradient;
         StratIconSprite.color = gradient.Evaluate(GradientFirstTime);
         EndIconSprite.color = gradient.Evaluate(GradientLastTime);
@@ -420,16 +468,18 @@ public class BeltDrawing : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // 初期化処理
         ItemFlag = false;
         DrawFlag = false;
         OnGridMap = false;
         IsNoProblemRoute = true;
         currentPos = new(-1, -1, 0);
 
-        StratPosIcon.SetActive(false);
+        // アイコンを非表示にする
+        StartPosIcon.SetActive(false);
         EndPosIcon.SetActive(false);
 
-        // LineRendererの初期設定（任意）
+        // LineRendererの初期設定
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));

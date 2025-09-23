@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class TestTurret : MonoBehaviour
 {
-    Vector2 Target;
+    // タレットの動作確認クラス
+    //のち本実装に取り込む
 
-    int timecount = 0;
-
-    public int interval = 150;
+    [SerializeField]
+    int interval = 150;
 
     [SerializeField]
     Transform FirePosTransform;
@@ -26,6 +25,10 @@ public class TestTurret : MonoBehaviour
 
     [SerializeField]
     AudioClip ShotClip;
+
+    Vector2 Target;
+
+    int timecount = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

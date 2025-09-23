@@ -5,14 +5,17 @@ using UnityEngine.UI;
 
 public class EnemyManagerTest : MonoBehaviour
 {
+    // 敵管理するクラスのテスト(シングルトン)
+    // wave制のスポーンシステムは本採用予定
+
     [SerializeField]
     GamePogressManager gamePogressManager;
 
     [SerializeField]
-    int[] Spowntime;
+    int[] Spowntime;　// 未使用
 
     [SerializeField]
-    GameObject[] EnemyPrehab;
+    GameObject[] EnemyPrehab; // 未使用
 
     [SerializeField]
     Vector2 minPos;
@@ -38,24 +41,26 @@ public class EnemyManagerTest : MonoBehaviour
     [HideInInspector]
     public static EnemyManagerTest Instance => instance;
 
-    List<EnemyTest> enemyList;
+    List<EnemyTest> enemyList;// 生成された敵のリスト
+  
+    int RemoveCount = 0;// 撃破された敵の数  
+    int timeCount = 0;// 経過時間カウンタ   
+    int WaveIndex = 0;// 現在のWaveインデックス   
+    int nextSpownCount = 0;// 次の敵スポーンタイミング
+    int nextIndexCount = 0;// 次のWave開始タイミング
+    int currentEnemySpownValue = 0;// 現在のWaveで残りスポーン数
 
-    int RemoveCount = 0;
+    EnemyWave currentWave;// 現在のWave情報
 
-    int timeCount = 0;
-    
-    int WaveIndex = 0;
+    bool IventOneFlag;// クリアイベント実行フラグ（一度だけ実行）
 
-    int nextSpownCount = 0;
-
-    int nextIndexCount = 0;
-
-    int currentEnemySpownValue = 0;
-
-    EnemyWave currentWave;
-
-    bool IventOneFlag;
-
+    /// <summary>
+    /// 指定位置から範囲内にいる最も近い敵の位置を取得
+    /// タレットの攻撃対象選定などで使用
+    /// </summary>
+    /// <param name="basePos">基準位置</param>
+    /// <param name="range">検索範囲</param>
+    /// <returns>最も近い敵の位置、見つからない場合は(-1,-1)</returns>
     public Vector2 NearestPos(Vector2 basePos ,float range)
     {
         // float rangePow = range * range;
@@ -71,6 +76,7 @@ public class EnemyManagerTest : MonoBehaviour
             }
             else
             {
+                // 距離の二乗を計算
                 float distancePow = DistancePow(enemyList[i].GetCurrentPos(), basePos);
 
                 if (distancePow < nearestDistance)
@@ -84,6 +90,13 @@ public class EnemyManagerTest : MonoBehaviour
         return nearest;
     }
 
+    /// <summary>
+    /// 2点間の距離の二乗を計算
+    /// 平方根計算を省略して処理を高速化
+    /// </summary>
+    /// <param name="a">座標A</param>
+    /// <param name="b">座標B</param>
+    /// <returns>距離の二乗</returns>
     float DistancePow(Vector2 a, Vector2 b)
     {
         float num = a.x - b.x;
@@ -93,6 +106,7 @@ public class EnemyManagerTest : MonoBehaviour
 
     void Awake()
     {
+        // シングルトンパターンの初期化
         if (instance != null && instance != this)
         {
             Destroy(gameObject); // 複数生成を防止
@@ -105,6 +119,7 @@ public class EnemyManagerTest : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // 初期化処理
         IventOneFlag = true;
         WaveIndex = 0;
         RemoveCount = 0;
@@ -112,10 +127,16 @@ public class EnemyManagerTest : MonoBehaviour
         nextIndexCount = 0;
         nextSpownCount = 0;
         enemyList = new List<EnemyTest>();
+
+        // 最初のWave設定
         SetWave();
         UpdateText();
     }
 
+    /// <summary>
+    /// デバッグ情報をテキストに表示
+    /// 開発時の状態確認用
+    /// </summary>
     void DebugTextRead()
     {
         DebugText.text = "timeCount:" + timeCount + "\n" +
@@ -125,17 +146,26 @@ public class EnemyManagerTest : MonoBehaviour
                          "WaveIndex:" + WaveIndex + "\n";                        
     }
 
-
+    /// <summary>
+    /// Wave情報を設定
+    /// 次のWaveの開始時間と敵スポーン数を設定
+    /// </summary>
     void SetWave()
     {
+        // 全Waveが終了している場合は処理しない
         if (WaveIndex >= enemyInformation.GetWaveCount())
             return;
 
-        currentWave = enemyInformation.GetWave(WaveIndex);
-        nextIndexCount += currentWave.GetWaveTime();
-        currentEnemySpownValue = currentWave.GetSpownCountValue();
+        currentWave = enemyInformation.GetWave(WaveIndex);// 現在のWave情報を取得
+        nextIndexCount += currentWave.GetWaveTime();// 次のWave開始タイミングを設定
+        currentEnemySpownValue = currentWave.GetSpownCountValue();// 現在のWaveでスポーンする敵の数を設定
     }
 
+    /// <summary>
+    /// ランダムなスポーン位置を生成
+    /// 設定された範囲内でランダムに座標を決定
+    /// </summary>
+    /// <returns>スポーン座標</returns>
     Vector2 SpownPos() => new Vector2()
     {
         x = UnityEngine.Random.Range(minPos.x, maxPos.x),
@@ -146,9 +176,11 @@ public class EnemyManagerTest : MonoBehaviour
     private void Update()
     {
         //enemyList.RemoveAll(enemy => enemy == null);
-        DebugTextRead();
         //Debug.Log(enemyList.Count + " : " + index + " : " + Spowntime.Length);
+        //Debug表示
+        DebugTextRead();
 
+        // 全敵撃破でクリアイベント実行（一度だけ）
         if (IventOneFlag && RemoveCount == enemyInformation.EnemySpownALLValue()) 
         {
             IventOneFlag = false;
@@ -159,14 +191,17 @@ public class EnemyManagerTest : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        // ゲーム進行が停止中は処理しない
         if (!gamePogressManager.GetPogressFlag())
             return;
 
         timeCount++;
 
-        if(currentEnemySpownValue > 0 && 
+        // 敵スポーン処理
+        if (currentEnemySpownValue > 0 && 
            timeCount >= nextSpownCount)
         {
+            // 次のスポーンタイミングをランダムに設定
             nextSpownCount = UnityEngine.Random.Range(nextSpownCount, nextIndexCount);
 
             currentEnemySpownValue--;
@@ -174,57 +209,85 @@ public class EnemyManagerTest : MonoBehaviour
             SpownEnemy();
         }
 
-        if(currentEnemySpownValue <= 0 && 
+        // Wave進行処理
+        if (currentEnemySpownValue <= 0 && 
            WaveIndex < enemyInformation.GetWaveCount() && 
            timeCount >= nextIndexCount)
         {
             WaveIndex++;
 
+            // 次のWaveの開始準備
             int beforeIndexCount = nextIndexCount;
+
             SetWave();
+
+            // Wave間のインターバル考慮して次のスポーンタイミングを設定
             nextSpownCount = UnityEngine.Random.Range(beforeIndexCount,(beforeIndexCount + nextIndexCount / 2));
         }
 
         EnemyListUpdate();
     }
 
-    
+    /// <summary>
+    /// 敵をスポーンする処理
+    /// 現在のWaveから敵タイプをランダム選択して生成
+    /// </summary>
     void SpownEnemy()
     {
+        // 現在のWaveからランダムに敵IDを取得
         int enemyID = currentWave.GetRandomEnemyID();
 
-        if (enemyID == -1) 
+        if (enemyID == -1)
             return;
 
+        // 敵のプレハブを取得
         GameObject enemyPrehab = enemyInformation.GetPrehab(enemyID);
 
         if (enemyPrehab == null)
             return;
 
+        // 敵オブジェクトを生成（180度回転で配置）
         GameObject enemyObject = Instantiate(enemyPrehab, SpownPos(),Quaternion.Euler(0f, 0f, 180f));
 
+        // 親オブジェクトに設定（階層整理）
         enemyObject.transform.parent = transform;
 
+        // 敵リストに追加
         enemyList.Add(enemyObject.GetComponent<EnemyTest>());
     }
 
+    /// <summary>
+    /// 敵リストの更新処理
+    /// 破壊された敵の削除と生存敵の更新処理
+    /// </summary>
     void EnemyListUpdate()
     {
+        // 逆順ループで削除処理を安全に実行
         for (int i = enemyList.Count - 1; i >= 0; i--)
         {
             if (enemyList[i] == null)
             {
+                // 撃破カウントを増加
                 RemoveCount++;
+
+                // リストから削除
                 enemyList.RemoveAt(i);
+
+                // UI更新
                 UpdateText();
             }
             else
             {
+                // 生存している敵の更新処理
                 enemyList[i].FixedUpdates();
             }
         }
     }
 
+    /// <summary>
+    /// 敵撃破数の表示を更新
+    /// 進行状況をUIに反映
+    /// </summary>
     void UpdateText()
     { 
         EnemyCounter.text = RemoveCount.ToString() + "/" + enemyInformation.EnemySpownALLValue().ToString();
