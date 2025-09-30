@@ -57,7 +57,8 @@ public class EnemyTest : MonoBehaviour
 
         HPBar = Instantiate(HPbarPrehab);
 
-        HPBar.transform.parent =  HPBarManagerTest.GetParent().transform;
+        HPBar.transform.SetParent(HPBarManagerTest.GetParent().transform, false);
+        //HPBar.transform.parent =  HPBarManagerTest.GetParent().transform;
 
         HPBarTest = HPBar.GetComponent<HPBarTest>();
 

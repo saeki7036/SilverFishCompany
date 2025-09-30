@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ public class ItemViewer : MonoBehaviour
         ItemCategory category; // アイテムカデゴリ
 
         [SerializeField]
-        Text itemValueText; //表示用テキスト
+        TextMeshProUGUI itemValueText; //表示用テキスト
 
         /// <summary>
         /// アイテム値を取得してテキストを更新
@@ -30,7 +31,7 @@ public class ItemViewer : MonoBehaviour
         {
             // ItemManagerから該当するアイテムの現在値を取得
             int Value = ItemManager.Instance.GetItemValue(category,level);
-            itemValueText.text = Value.ToString();
+            itemValueText.SetText(Value.ToString());
         }
     }
 

@@ -26,7 +26,7 @@ public class BulletTest : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.transform.TryGetComponent<EnemyTest>(out var component))
+        if(collision.transform.TryGetComponent<EnemyBase>(out var component))
         {
             component.Hit(damege);
         }
