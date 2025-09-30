@@ -40,7 +40,7 @@ public class warBuildTest : MonoBehaviour
 
         HPBar = Instantiate(HPbarPrehab);
 
-        HPBar.transform.parent = HPBarManagerTest.GetParent().transform;
+        HPBar.transform.SetParent(HPBarManagerTest.GetParent().transform, false);
 
         HPBarTest = HPBar.GetComponent<HPBarTest>();
 

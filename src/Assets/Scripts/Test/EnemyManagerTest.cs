@@ -35,13 +35,23 @@ public class EnemyManagerTest : MonoBehaviour
     [SerializeField]
     Text DebugText;
 
+    [SerializeField]
+    GameObject BaseCamp;
+
     [HideInInspector]
     static EnemyManagerTest instance;
 
     [HideInInspector]
     public static EnemyManagerTest Instance => instance;
 
-    List<EnemyTest> enemyList;// 生成された敵のリスト
+    Vector2 BaseCampPosSenter;
+    HashSet<Vector2Int> BaseCampPos;
+
+    public Vector2 GetBaseCampPosSenter() => BaseCampPosSenter;
+
+    public HashSet<Vector2Int> GetBaseCampPos() => BaseCampPos;
+
+    List<EnemyBase> enemyList;// 生成された敵のリスト
   
     int RemoveCount = 0;// 撃破された敵の数  
     int timeCount = 0;// 経過時間カウンタ   
@@ -77,12 +87,12 @@ public class EnemyManagerTest : MonoBehaviour
             else
             {
                 // 距離の二乗を計算
-                float distancePow = DistancePow(enemyList[i].GetCurrentPos(), basePos);
+                float distancePow = DistancePow(enemyList[i].transform.position, basePos);
 
                 if (distancePow < nearestDistance)
                 {
                     nearestDistance = distancePow;
-                    nearest = enemyList[i].GetCurrentPos();
+                    nearest = enemyList[i].transform.position;
                 }
             }
         }
@@ -126,7 +136,15 @@ public class EnemyManagerTest : MonoBehaviour
         timeCount = 0;
         nextIndexCount = 0;
         nextSpownCount = 0;
-        enemyList = new List<EnemyTest>();
+        enemyList = new List<EnemyBase>();
+        BaseCampPos = new HashSet<Vector2Int>();
+
+        Vector2Int BaseCampMinPos = new((int)BaseCamp.transform.position.x, (int)BaseCamp.transform.position.y);
+
+        BaseCampBuilding baseCampBuilding = (BaseCampBuilding)GridMapManager.Instance.GetCell(BaseCampMinPos).GetBuilding();
+
+        BaseCampPosSenter = baseCampBuilding.GetBuidingPosSenter();
+        BaseCampPos = baseCampBuilding.GetVectorIntGridPos();
 
         // 最初のWave設定
         SetWave();
@@ -252,8 +270,14 @@ public class EnemyManagerTest : MonoBehaviour
         // 親オブジェクトに設定（階層整理）
         enemyObject.transform.parent = transform;
 
+        // 敵クラス取得
+        EnemyBase enemyBase = enemyObject.GetComponent<EnemyBase>();
+
+        //敵のStartで行動AIやHPバーなどの、呼ぶものを呼び出し
+        enemyBase.EnemyStart();
+
         // 敵リストに追加
-        enemyList.Add(enemyObject.GetComponent<EnemyTest>());
+        enemyList.Add(enemyBase);
     }
 
     /// <summary>
@@ -279,7 +303,7 @@ public class EnemyManagerTest : MonoBehaviour
             else
             {
                 // 生存している敵の更新処理
-                enemyList[i].FixedUpdates();
+                enemyList[i].EnemyUpdate();
             }
         }
     }

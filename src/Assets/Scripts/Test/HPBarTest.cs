@@ -20,7 +20,6 @@ public class HPBarTest : MonoBehaviour
 
     public void Initialize(Transform targetTransform, float percent, float barScale)
     {
-
         target = targetTransform;
         UpdateBar(percent);
 
@@ -56,4 +55,6 @@ public class HPBarTest : MonoBehaviour
             y = HPGreenBar.sizeDelta.y,
         };
     }
+
+    public void IsDestroy() => Destroy(gameObject);
 }

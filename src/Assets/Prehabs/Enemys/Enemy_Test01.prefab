@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2485481863525188306}
   - component: {fileID: 689577365105305380}
   - component: {fileID: 1713938234294595399}
+  - component: {fileID: 7052418867802770591}
   m_Layer: 7
   m_Name: Enemy_Test01
   m_TagString: Untagged
@@ -160,7 +161,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2959811036750138740}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5b7d836229e77a4797027a1ef71b2c6, type: 3}
   m_Name: 
@@ -171,8 +172,30 @@ MonoBehaviour:
   Interval: 100
   BarScale: 0.7
   Rigidbody2D: {fileID: 689577365105305380}
-  IsAttack: 0
   HPbarPrehab: {fileID: 6890130323972661016, guid: 77d9f2c6d97428345851be087815a809, type: 3}
+  DieEffect: {fileID: 6623700759234702549, guid: ed9825406e6365c449e3903c9886c211, type: 3}
+  DamegeClip: {fileID: 8300000, guid: 246530032a9edec4088fada1ae8d6cb2, type: 3}
+  DieClip: {fileID: 8300000, guid: 5b4610e4d134d8440a95e55980d069a5, type: 3}
+--- !u!114 &7052418867802770591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2959811036750138740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccf4a060f54f5ba42ada756968590a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyParameter:
+    hp: 2
+    atk: 2
+    Speed: 1
+    Intarval: 100
+  AI: 1
+  Rigidbody: {fileID: 689577365105305380}
+  BarScale: 0.7
   DieEffect: {fileID: 6623700759234702549, guid: ed9825406e6365c449e3903c9886c211, type: 3}
   DamegeClip: {fileID: 8300000, guid: 246530032a9edec4088fada1ae8d6cb2, type: 3}
   DieClip: {fileID: 8300000, guid: 5b4610e4d134d8440a95e55980d069a5, type: 3}

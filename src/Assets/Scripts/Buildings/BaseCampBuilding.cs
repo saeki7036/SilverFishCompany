@@ -198,4 +198,22 @@ public class BaseCampBuilding : GridBuilding
         // アイテムの排出は行わないのでreturn。
         return;
     }
+
+    //以下、Enemy探索用関数
+    //=============================================================
+    public HashSet<Vector2Int> GetVectorIntGridPos()
+    {
+        HashSet<Vector2Int> BaseCampPos = new HashSet<Vector2Int>();
+
+        for(int x = MinBuildingPos.x; x <= MaxBuildingPos.x; x++)
+        {
+            for (int y = MinBuildingPos.y; y <= MaxBuildingPos.y; y++)
+            {
+                BaseCampPos.Add(new Vector2Int(x, y));
+            }
+        }
+
+        return BaseCampPos;
+    }
+
 }

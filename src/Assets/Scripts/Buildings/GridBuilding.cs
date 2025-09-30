@@ -109,4 +109,25 @@ public abstract class GridBuilding
     /// そのうちアイテムを取得できるかのboolメゾットに変更予定
     /// </summary>
     public abstract void ExportItem();
+
+    public Vector2 GetBuidingPosSenter() => (minBuildingPos + maxBuildingPos) / 2;
+
+    /*
+    //以下、Enemy探索用関数
+    //=============================================================
+    public HashSet<Vector2Int> GetVectorIntGridPos()
+    {
+        HashSet<Vector2Int> BaseCampPos = new HashSet<Vector2Int>();
+
+        for (int x = MinBuildingPos.x; x <= MaxBuildingPos.x; x++)
+        {
+            for (int y = MinBuildingPos.y; y <= MaxBuildingPos.y; y++)
+            {
+                BaseCampPos.Add(new Vector2Int(x, y));
+            }
+        }
+
+        return BaseCampPos;
+    }
+    */
 }
