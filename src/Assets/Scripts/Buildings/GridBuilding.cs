@@ -20,7 +20,7 @@ public abstract class GridBuilding
         get => importPos;
         set => importPos = value;
     }
-    public HashSet<Vector2Int> ExportPos
+    public virtual HashSet<Vector2Int> ExportPos
     {
         get => exportPos;
         set => exportPos = value;
@@ -39,6 +39,13 @@ public abstract class GridBuilding
     {
         get => item;
         set => item = value;
+    }
+
+    // ゲッター
+    // virtualの干渉を防ぐために実装
+    public HashSet<Vector2Int> ExportPosBase
+    {
+        get => exportPos;
     }
 
     /// <summary>

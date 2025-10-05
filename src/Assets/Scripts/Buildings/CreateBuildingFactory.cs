@@ -25,6 +25,7 @@ public static class CreateBuildingFactory
         return type switch
         {
             BuildType.Belt => new BeltBuilding(minBuldingPos, maxBuldingPos, importList, exportList),
+            BuildType.MultiBelt => new MultiBeltBuilding(minBuldingPos, maxBuldingPos, importList, exportList),
             BuildType.BaseCamp => new BaseCampBuilding(minBuldingPos, maxBuldingPos, importList, exportList),
             BuildType.Production => new ProductionBuilding(minBuldingPos, maxBuldingPos, importList, exportList,itemInfomation),
             BuildType.Processing => new ProcessingBuilding(minBuldingPos, maxBuldingPos, importList, exportList, itemInfomation),

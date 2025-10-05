@@ -65,6 +65,7 @@ public class BeltDrawing : MonoBehaviour
     }
 
     public bool GetDrawFlag() => DrawFlag;
+
     public void SetDrawFlag(bool flag) => DrawFlag = flag;
 
     /// <summary>
@@ -114,6 +115,7 @@ public class BeltDrawing : MonoBehaviour
             return false;
         // ベルトに必要な個数を計算
         int requestValue = Mathf.Max(0, SelectedPosList.Count - 2);
+
         // 実際にアイテムを消費
         foreach (var request in requests)
         {

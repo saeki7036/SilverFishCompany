@@ -24,7 +24,7 @@ public class GridMapManager : MonoBehaviour
 
     static GridMapManager instance;// シングルトンインスタンス
 
-    public static GridMapManager Instance => instance;// GridMapManagerのインスタンスのアクセ
+    public static GridMapManager Instance => instance;// GridMapManagerのインスタンスのアクセサ
 
     /// <summary>
     /// 指定位置のグリッドセルを取得

@@ -16,6 +16,16 @@ public class ProductUISetting : MonoBehaviour
     [SerializeField]
     UIContent[] ProductImages;// 建物のUIコンテンツ配列
 
+    [SerializeField]
+    float ScaleChengeTime = 0.3f;
+
+    [SerializeField]
+    float defaltScale = 1.0f;
+
+    [SerializeField]
+    float SelectScale = 1.45f;
+
+
     const float outIndexRectPosX = -2000f;// 非表示にするためのX座標（画面外）
 
     void Start()
@@ -37,6 +47,8 @@ public class ProductUISetting : MonoBehaviour
     /// <param name="index">選択されたUIのインデックス</param>
     void SetCreateProduct(int index)
     {
+        ProductImages[index].ChangeScale(SelectScale, ScaleChengeTime);
+
         // 選択カーソルの位置を調整して移動
         SerectCursol.anchoredPosition = new Vector2()
         {
@@ -51,16 +63,18 @@ public class ProductUISetting : MonoBehaviour
             ProductImages[index].GetSprite());
 
         // 生成が終わったらカーソルを非表示に戻す処理を開始
-        StartCoroutine(WaitResetCursol());
+        StartCoroutine(WaitResetCursol(index));
     }
 
     /// <summary>
     /// UI生成が完了するまで待機し、選択カーソルを画面外へ戻す
     /// </summary>
-    IEnumerator WaitResetCursol()
+    IEnumerator WaitResetCursol(int index)
     {
         // 待機
         yield return new WaitUntil(() => productUICreate.IsCreated() == true);
+
+        ProductImages[index].ChangeScale(defaltScale,ScaleChengeTime);
 
         SerectCursol.anchoredPosition = new Vector2()
         {

@@ -2,6 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 
 public class UIContent : MonoBehaviour
 {
@@ -110,5 +111,28 @@ public class UIContent : MonoBehaviour
             requests.Add(item.GetRequest());
         }
         return requests;
+    }
+
+    public void ChangeScale(float targetScale, float duration)
+    {
+        StartCoroutine(CheangeScaleForCoroutine(targetScale, duration));
+    }
+
+    public IEnumerator CheangeScaleForCoroutine(float targetScale ,float duration)
+    {
+        Vector3 startScale = thisRectTransform.localScale;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.fixedDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            thisRectTransform.localScale = Vector3.Lerp(startScale, Vector3.one * targetScale, t);
+
+            yield return null;
+        }
+
+        thisRectTransform.localScale = Vector3.one * targetScale;
     }
 }

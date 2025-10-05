@@ -199,7 +199,7 @@ MonoBehaviour:
   content:
     minGridPos: {x: 0, y: 0}
     gridSize: {x: 1, y: 1}
-    gridCellType: 5
+    gridCellType: 6
     canCreateTileType: 0
     gridObject: {fileID: 6432954517971650590}
     importTransforms: []

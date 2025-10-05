@@ -219,6 +219,7 @@ public class ProductUICreate : MonoBehaviour
             return;
 
         Vector2Int cursol2DInt = Cursol2DInt(mouseWorldPos);
+
         bool inMap = IsInGridMap(mouseWorldPos);// マウス位置がグリッドマップの外か
         bool canCreate = inMap && IsCanCreateTile(cursol2DInt);// グリッドマップ内かつ生成可能なタイルか
         bool hasItems = CheckItemRequests();// 素材不足でないか

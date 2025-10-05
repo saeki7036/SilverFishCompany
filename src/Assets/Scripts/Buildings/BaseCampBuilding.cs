@@ -153,8 +153,11 @@ public class BaseCampBuilding : GridBuilding
     /// <returns>移動先座標、見つからない場合はNoTargetPosを返す</returns>
     Vector3 GetMoveTargetPos(GridBuilding currentBuilding, GridBuilding importBuilding)
     {
+        HashSet< Vector2Int > exportpos = new HashSet< Vector2Int >();
+
+
         // インポート建物のエクスポート先をすべてチェック
-        foreach (Vector2Int pos in importBuilding.ExportPos)
+        foreach (Vector2Int pos in importBuilding.ExportPosBase)
         {
             GridBuilding exportBuilding = GetValidBuilding(pos);
 

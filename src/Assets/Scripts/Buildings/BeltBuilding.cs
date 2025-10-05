@@ -90,7 +90,7 @@ public class BeltBuilding : GridBuilding
             {
                 var exportCell = GridMapManager.Instance.GetCell(export);
 
-                BuildType exportCellType = importCell.GridCellType;
+                BuildType exportCellType = exportCell.GridCellType;
 
                 // セルが空の場合はスキップ
                 if (exportCellType == BuildType.None || exportCellType == BuildType.NULLTYPE)

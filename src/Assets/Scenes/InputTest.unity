@@ -70163,7 +70163,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4843690184252511079, guid: d788417f5c7b0c74d84a0b9a5ed03e52, type: 3}
       propertyPath: m_Name
-      value: AudioManager
+      value: <--AudioManager-->
       objectReference: {fileID: 0}
     - target: {fileID: 8150048205078256902, guid: d788417f5c7b0c74d84a0b9a5ed03e52, type: 3}
       propertyPath: BGM
@@ -98067,6 +98067,9 @@ MonoBehaviour:
   - {fileID: 7329189402626405712}
   - {fileID: 6512344124399545391}
   - {fileID: 4535516164641243463}
+  ScaleChengeTime: 0.3
+  defaltScale: 1
+  SelectScale: 1.45
 --- !u!4 &837282320 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2475232956873164584, guid: a64f038fba78e4d4fa25b90bea93217b, type: 3}
