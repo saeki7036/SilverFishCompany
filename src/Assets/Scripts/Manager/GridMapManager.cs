@@ -27,17 +27,17 @@ public class GridMapManager : MonoBehaviour
     public static GridMapManager Instance => instance;// GridMapManagerのインスタンスのアクセサ
 
     /// <summary>
+    /// グリッドセルを設定
+    /// </summary>
+    /// <param name="cell">設定するグリッドセル</param>
+    void SetCell(GridCell cell) => gridMap.SetGridCell(cell);
+
+    /// <summary>
     /// 指定位置のグリッドセルを取得
     /// </summary>
     /// <param name="pos">取得したいセルの座標</param>
     /// <returns>指定位置のグリッドセル</returns>
     public GridCell GetCell(Vector2Int pos) => gridMap.GetGridCell(pos);
-
-    /// <summary>
-    /// グリッドセルを設定
-    /// </summary>
-    /// <param name="cell">設定するグリッドセル</param>
-    public void SetCell(GridCell cell) => gridMap.SetGridCell(cell);
 
     /// <summary>
     /// マップの最大サイズを取得
@@ -49,6 +49,11 @@ public class GridMapManager : MonoBehaviour
     /// </summary>
     public float GridAdjustScale() => gridAdjustScale;
 
+    /// <summary>
+    /// 建物情報のDictionaryを取得(getter)
+    /// </summary>
+    /// <returns>newで初期化されたDictionaryを取得</returns>
+    public Dictionary<BuildType, HashSet<GridBuilding>> GetDictionary() => new(BuildingDictionary);
 
     /// <summary>
     /// 指定座標がマップ範囲内かどうかを判定
@@ -58,33 +63,6 @@ public class GridMapManager : MonoBehaviour
     public bool IsInBounds(Vector2Int pos)
     {
         return pos.x >= 0 && pos.y >= 0 && pos.x < mapSize.x && pos.y < mapSize.y;
-    }
-
-    /// <summary>
-    /// 建物を辞書から削除
-    /// BuildType.BaseCampとBuildType.Noneは除外処理あり
-    /// </summary>
-    /// <param name="cellType">削除する建物のタイプ</param>
-    /// <param name="building">削除する建物</param>
-    public void RemoveBuilding(BuildType cellType, GridBuilding building)
-    {
-        if (cellType == BuildType.None || building == null)
-        {
-            Debug.LogAssertion("nullかどうか要確認");
-            return;
-        }
-        else if (cellType == BuildType.BaseCamp)
-        {
-            Debug.Log("BaseCamp除外");
-            return;
-        }
-        else if (!BuildingDictionary.ContainsKey(cellType))
-        {
-            Debug.Log("ないCellTypeは除外");
-            return;
-        }
-        
-        //BuildingDictionary[cellType].Remove(building);
     }
 
     /// <summary>
@@ -104,24 +82,25 @@ public class GridMapManager : MonoBehaviour
                 return;
             }
 
+            // CellType.BaseCampを実行
             foreach (GridBuilding basecamp in BuildingDictionary[BuildType.BaseCamp])
             {
                 basecamp.ImportItem();
             }
             return;
         }
-
+        // 例外処理
         else if (!BuildingDictionary.ContainsKey(cellType))
         {
-            Debug.Log("扱わないTypeです:" + cellType);
+            //Debug.Log("扱わないTypeです:" + cellType);
             return;
         }
-
         else 
         {
+            // CellTypeを実行
             foreach (GridBuilding building in BuildingDictionary[cellType])
             {
-                building.Operat();
+                building?.Operat();
             }
             return;
         } 
@@ -222,7 +201,7 @@ public class GridMapManager : MonoBehaviour
     void SetBuildingDictionary(BuildType cellType, GridBuilding building)
     {
         // 例外処理
-        if (cellType == BuildType.None || building == null)
+        if (cellType == BuildType.None || cellType == BuildType.NULLTYPE || building == null)
         {
             Debug.LogAssertion("nullかどうか要確認");
             return;
@@ -234,12 +213,15 @@ public class GridMapManager : MonoBehaviour
             BuildingDictionary[cellType] = new HashSet<GridBuilding>();
         }
 
+        /*
         else if (cellType == BuildType.Belt)
         {
             Debug.Log("Belt除外");
             return;
         }
+        */
 
+        // Dictionaryに追加
         BuildingDictionary[cellType].Add(building);
     }
 
@@ -309,6 +291,8 @@ public class GridMapManager : MonoBehaviour
             SetCell(cell);
 
             BeltCellList.Add(cell);
+
+            SetBuildingDictionary(BuildType.Belt, beltBuilding);
         }
     }
 
@@ -319,6 +303,50 @@ public class GridMapManager : MonoBehaviour
     /// <param name="point">削除する座標</param>
     public void DestroyContent(Vector2Int point)
     {
-        gridMap.SetEmptyGridCell(point);
+        // Celltype取得
+        var DestroyCellType = GetCell(point).GridCellType;
+        // Building取得
+        var DestroyBuilding = GetCell(point).GetBuilding();
+
+        // Dictionaryから削除
+        RemoveBuildingDictionary(DestroyCellType, DestroyBuilding);
+
+        // GridMap内の位置を取得
+        Vector2Int minPos = DestroyBuilding.MinBuildingPos, maxPos = DestroyBuilding.MaxBuildingPos;
+
+        // 多重ループで削除
+        for(int x = minPos.x; x < maxPos.x; x++)
+            for (int y = minPos.y; y < maxPos.y; y++)
+            {
+                gridMap.SetEmptyGridCell(new(x,y));
+            }
+    }
+
+    /// <summary>
+    /// 建物を辞書から削除
+    /// BuildType.BaseCampとNullは除外処理あり
+    /// </summary>
+    /// <param name="cellType">削除する建物のタイプ</param>
+    /// <param name="building">削除する建物</param>
+    void RemoveBuildingDictionary(BuildType cellType, GridBuilding building)
+    {
+        if (cellType == BuildType.None || cellType == BuildType.NULLTYPE || building == null)
+        {
+            Debug.LogAssertion("nullかどうか要確認");
+            return;
+        }
+        else if (cellType == BuildType.BaseCamp)
+        {
+            Debug.Log("BaseCamp除外");
+            return;
+        }
+        else if (!BuildingDictionary.ContainsKey(cellType))
+        {
+            Debug.Log("ないCellTypeは除外");
+            return;
+        }
+
+        //
+        BuildingDictionary[cellType].Remove(building);
     }
 }

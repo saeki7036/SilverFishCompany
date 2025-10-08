@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BaseCampBuilding : GridBuilding
@@ -51,20 +53,23 @@ public class BaseCampBuilding : GridBuilding
     /// </summary>
     public override void ImportItem()
     {
-        ImportSearch();
+        BFSImportSearch();
     }
 
     /// <summary>
     /// アイテム回収のための建物探索処理
     /// BFS（幅優先探索）を使って接続された建物チェーンからアイテムを回収
     /// </summary>
-    void ImportSearch()
+    void BFSImportSearch()
     {
         // 探索済み建物を記録するハッシュセット（重複探索防止）
         HashSet<GridBuilding> searchedHash = new HashSet<GridBuilding>();
 
         // BFS用のキュー
         Queue<GridBuilding> buildingQueue = new Queue<GridBuilding>();
+
+        // 自信を探索済みとしてマーク
+        searchedHash.Add(this);
 
         // 直接接続された建物からアイテム回収を開始
         foreach (Vector2Int pos in ImportPos)
@@ -87,8 +92,31 @@ public class BaseCampBuilding : GridBuilding
             ItemRecovery(TargetPos, gridBuilding);
         }
 
-        // 現在BFSを使用しているが、接続していない建物のアイテム移動が行われないため
+        // 現在BFSを使用している
+        // 探索後、はぐれ建物を順番関係なしに処理
         // 別途他の探索手法を試す必要あり
+
+        // 建物一覧のDictionaryを取得
+        var BuildingDictionary = GridMapManager.Instance.GetDictionary();
+
+        // 探索用クラス
+        BuildingSearch buildingSearch = new BuildingSearch(BuildingDictionary);
+
+        // はぐれ建物のクラスを宣言
+        GridBuilding SearchBuilding = null;
+        // 候補なし => はぐれ建物を探索
+        if (buildingQueue.Count == 0)
+        {
+            // 探索
+            SearchBuilding = buildingSearch.SearchNext(searchedHash);
+
+            // 候補があればQueueに追加
+            if (SearchBuilding != null)
+                buildingQueue.Enqueue(SearchBuilding);
+            // なければreturnで処理終了させる
+            else
+                return;
+        }          
 
         // BFSでチェーン接続された全建物を探索
         while (buildingQueue.Count > 0)
@@ -119,6 +147,17 @@ public class BaseCampBuilding : GridBuilding
                 // 未探索の建物のみキューに追加
                 if (!searchedHash.Contains(gridBuilding))
                     buildingQueue.Enqueue(gridBuilding);
+            }
+
+            // 候補なし => はぐれ建物を探索
+            if(buildingQueue.Count == 0)
+            {
+                // 探索
+                SearchBuilding = buildingSearch.SearchNext(searchedHash);
+
+                // 候補があればQueueに追加
+                if (SearchBuilding != null)
+                    buildingQueue.Enqueue(SearchBuilding);
             }
         }
     }
@@ -178,7 +217,7 @@ public class BaseCampBuilding : GridBuilding
             return targetPos;
         }
 
-        Debug.Log(importBuilding + "のExport先に" + currentBuilding + "は無かった");
+        //Debug.Log(importBuilding + "のExport先に" + currentBuilding + "は無かった");
 
         return NoTargetPos;
     }
@@ -219,4 +258,64 @@ public class BaseCampBuilding : GridBuilding
         return BaseCampPos;
     }
 
+}
+
+public class BuildingSearch
+{
+    private Dictionary<BuildType, HashSet<GridBuilding>> buildingDict;
+    private List<BuildType> buildTypes;
+
+    // 現在の探索位置を記録
+    private int currentTypeIndex = 0;
+    private int currentBuildingIndex = 0;
+
+    // コンストラクタ
+    public BuildingSearch(Dictionary<BuildType, HashSet<GridBuilding>> dict)
+    {
+        buildingDict = dict;
+        buildTypes = buildingDict.Keys.ToList();
+        Reset();
+    }
+
+    /// <summary>
+    /// 特定条件を満たす建物を探索する。条件を満たした時点でbreak。
+    /// 次回呼び出し時は続きから探索を再開する。
+    /// </summary>
+    public GridBuilding? SearchNext(HashSet<GridBuilding> searchedHash)
+    {
+        for (; currentTypeIndex < buildTypes.Count; currentTypeIndex++)
+        {
+            BuildType type = buildTypes[currentTypeIndex];
+            var buildings = buildingDict[type].ToList();
+
+            for (; currentBuildingIndex < buildings.Count; currentBuildingIndex++)
+            {
+                var building = buildings[currentBuildingIndex];
+
+                // 探索済みHashSetに含まれてなければ値を返す
+                if (!searchedHash.Contains(building))
+                {
+                    // 次回はこの次から探索を再開
+                    currentBuildingIndex++;
+                    return building; // 条件一致で停止
+                }
+            }
+
+            // 現在のBuildType内をすべて探索し終えたら、次のタイプへ
+            currentBuildingIndex = 0;
+        }
+
+        // すべて探索済み
+        Reset();
+        return null;
+    }
+
+    /// <summary>
+    /// 探索位置をリセット
+    /// </summary>
+    public void Reset()
+    {
+        currentTypeIndex = 0;
+        currentBuildingIndex = 0;
+    }
 }

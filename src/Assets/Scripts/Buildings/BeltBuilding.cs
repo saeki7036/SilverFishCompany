@@ -122,7 +122,7 @@ public class BeltBuilding : GridBuilding
             z = 0 
         };
 
-        Debug.Log(itemMovingPos);
+        // Debug.Log(itemMovingPos);
 
         // アイテムに移動設定を適用
         possibleTuple.Item1.Item.ItemMoveSetting(itemMovingPos);
