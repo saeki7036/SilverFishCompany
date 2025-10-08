@@ -8,18 +8,29 @@ public class ProductUISetting : MonoBehaviour
     ProductUICreate productUICreate; // 生成処理を行うクラス
 
     [SerializeField]
-    RectTransform SerectCursol;// 選択中の建物に表示されるカーソル
-
-    [SerializeField]
-    float adjustmentX = -65f;// カーソル位置の補正値（デザインに合わせて位置調整）
-
-    [SerializeField]
     UIContent[] ProductImages;// 建物のUIコンテンツ配列
 
-    const float outIndexRectPosX = -2000f;// 非表示にするためのX座標（画面外）
+    [SerializeField]
+    float ScaleUpTime = 0.3f;
+
+    [SerializeField]
+    float ScaleDownTime = 0.3f;
+
+    [SerializeField]
+    float DefaultScale = 1.0f;
+
+    [SerializeField]
+    float SelectScale = 1.45f;
+
+    int currentIndex = -1;//選択しているインデックス
+    Coroutine CurrentCoroutine; // 実行中のコルーチン
+
+    public void IndexReset() => currentIndex = -1;
 
     void Start()
     {
+        currentIndex = -1;
+
         // 各UIContentにクリックイベントを登録する
         for (int i = 0; i < ProductImages.Length; i++)
         {
@@ -32,44 +43,105 @@ public class ProductUISetting : MonoBehaviour
     }
 
     /// <summary>
-    /// 指定したインデックスのUIを生成し、カーソルを移動させる
+    /// 指定したインデックスのUIを選択し、UIを拡大させる
     /// </summary>
     /// <param name="index">選択されたUIのインデックス</param>
     void SetCreateProduct(int index)
     {
-        // 選択カーソルの位置を調整して移動
-        SerectCursol.anchoredPosition = new Vector2()
+        productUICreate.CancelCreate();
+
+        if (currentIndex == index)
         {
-            x = ProductImages[index].GetRectAnchoredPosX() - adjustmentX,
-            y = SerectCursol.anchoredPosition.y
-        };
+            if (CurrentCoroutine != null)
+            {
+                StopCoroutine(CurrentCoroutine);
+            }
 
-        // UIからの生成指示
-        productUICreate.SetCreateContent(
-            ProductImages[index].GetItemRequestList(),
-            ProductImages[index].GetPrehab(),
-            ProductImages[index].GetSprite());
+            CurrentCoroutine = StartCoroutine(WaitResetScale(currentIndex));
+        }
+        else
+        {
+            if(CurrentCoroutine != null)
+            {
+                StopCoroutine(CurrentCoroutine);
 
-        // 生成が終わったらカーソルを非表示に戻す処理を開始
-        StartCoroutine(WaitResetCursol());
+                if (currentIndex != -1)
+                    ProductImages[currentIndex].ChangeScale(DefaultScale, ScaleDownTime);
+            }
+
+            // UIのスケールを拡大
+            ProductImages[index].ChangeScale(SelectScale, ScaleUpTime);
+
+            // UIからの生成指示
+            productUICreate.SetCreateContent(
+                ProductImages[index].GetItemRequestList(),
+                ProductImages[index].GetPrehab(),
+                ProductImages[index].GetSprite());
+
+            // 生成が終わったらカーソルを非表示に戻す処理を開始
+            CurrentCoroutine = StartCoroutine(WaitResetCursol(index));
+
+            currentIndex = index;
+        }
+
+        return;
     }
 
     /// <summary>
-    /// UI生成が完了するまで待機し、選択カーソルを画面外へ戻す
+    /// 建物の生成が完了するまで待機し、選択したUIを元のサイズへ戻す
     /// </summary>
-    IEnumerator WaitResetCursol()
+    IEnumerator WaitResetCursol(int index)
     {
         // 待機
         yield return new WaitUntil(() => productUICreate.IsCreated() == true);
 
-        SerectCursol.anchoredPosition = new Vector2()
-        {
-            x = outIndexRectPosX,
-            y = SerectCursol.anchoredPosition.y
-        };
+        // UIのスケールを戻す
+        ProductImages[index].ChangeScale(DefaultScale, ScaleDownTime);
+       
+        currentIndex = -1;
 
-        // Debug.Log("処理終了");
+        CurrentCoroutine = null;
     }
+
+    /// <summary>
+    /// 同じUIを選択した時に、元のサイズへ戻す動作を待機する
+    /// </summary>
+    IEnumerator WaitResetScale(int index)
+    {
+        // UIのスケールを戻す
+        ProductImages[index].ChangeScale(DefaultScale, ScaleDownTime);
+        // 待機
+        yield return new WaitUntil(() => ProductImages[index].IsNullCoroutine() == true);
+
+        currentIndex = -1;
+
+        CurrentCoroutine = null;
+    }
+
+    /*
+       // 同じUIを選んだ場合キャンセル処理
+       if (!ProductImages[index].IsDefaltScale())
+       {
+           currentIndex = -1;
+           createdIndex = -1;
+           productUICreate.CancelCreate();
+           return;
+       }
+
+       Debug.Log("qqq");
+
+       currentIndex = index;
+
+       // UIのスケールを拡大
+       ProductImages[index].ChangeScale(SelectScale, ScaleUpTime);
+
+       // 選択カーソルの位置を調整して移動
+
+       SerectCursol.anchoredPosition = new Vector2()
+       {
+           x = ProductImages[index].GetRectAnchoredPosX() - adjustmentX,
+           y = SerectCursol.anchoredPosition.y
+       };*/
 
     /*
     public void InputRegister(MouseController input)

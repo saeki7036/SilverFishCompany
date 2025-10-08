@@ -2,6 +2,8 @@
 using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
+using TMPro;
 
 public class UIContent : MonoBehaviour
 {
@@ -20,6 +22,8 @@ public class UIContent : MonoBehaviour
     [SerializeField]
     List<ItemReqestView> itemReqestViewList;
 
+    Coroutine coroutine;
+
     /// <summary>
     /// アイテム要求の表示を管理する内部クラス
     /// アイテム要求情報とそれに対応するUIテキストを管理
@@ -31,7 +35,7 @@ public class UIContent : MonoBehaviour
         ItemRequest itemRequests;
 
         [SerializeField]
-        Text ItemValueTexts;
+        TextMeshProUGUI ItemValueTexts;
 
         /// <summary>
         /// アイテム要求情報を取得
@@ -44,7 +48,7 @@ public class UIContent : MonoBehaviour
         /// </summary>
         public void SetView()
         {
-            ItemValueTexts.text = itemRequests.GetValue().ToString();
+            ItemValueTexts.SetText(itemRequests.GetValue().ToString());
         }
     }
 
@@ -74,16 +78,16 @@ public class UIContent : MonoBehaviour
     public bool RectContain(Vector3 screenPos) => thisRectTransform.rect.Contains(screenPos);
 
     // <summary>
-    /// RectTransformを取得
+    /// 現在のRectTransformのスケールがDefaltの値(= 1f)かどうか判定
     /// </summary>
-    /// <returns>このオブジェクトのRectTransform</returns>
-    public RectTransform GetRectTransform() => thisRectTransform;
+    /// <returns>scaleが1fならtrue</returns>
+    public bool IsDefaltScale() => thisRectTransform.localScale.z == 1f;
 
     /// <summary>
     /// RectTransformのアンカー位置のX座標を取得
     /// </summary>
     /// <returns>アンカー位置のX座標</returns>
-    public float GetRectAnchoredPosX() => thisRectTransform.anchoredPosition.x;
+    public bool IsNullCoroutine() => coroutine == null;
 
     /// <summary>
     /// コンテンツのプレハブを取得
@@ -110,5 +114,37 @@ public class UIContent : MonoBehaviour
             requests.Add(item.GetRequest());
         }
         return requests;
+    }
+
+    public void ChangeScale(float targetScale, float duration)
+    {
+        // 既存のスケール変更が進行中なら停止
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+            coroutine = null;
+        }
+
+        coroutine = StartCoroutine(CheangeScaleForCoroutine(targetScale, duration));
+    }
+
+    public IEnumerator CheangeScaleForCoroutine(float targetScale ,float duration)
+    {
+        Vector3 startScale = thisRectTransform.localScale;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.fixedDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            thisRectTransform.localScale = Vector3.Lerp(startScale, Vector3.one * targetScale, t);
+
+            yield return null;
+        }
+
+        thisRectTransform.localScale = Vector3.one * targetScale;
+
+        coroutine = null;
     }
 }

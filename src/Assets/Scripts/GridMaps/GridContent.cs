@@ -15,7 +15,7 @@ public class GridContent : MonoBehaviour
     /// <summary>
     /// MapContentの読み取り専用プロパティ
     /// </summary>
-    public MapContent GetContent()=> content;
+    public MapContent GetContent()　=> content;
 
     /// <summary>
     /// Transform位置をグリッドマップ範囲内の整数座標に変換する

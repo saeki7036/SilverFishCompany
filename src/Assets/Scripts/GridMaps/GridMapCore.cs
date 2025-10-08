@@ -152,6 +152,7 @@ public enum BuildType
     None,      // 無し
     BaseCamp,  // 拠点本体
     Belt,      // ベルトコンベア
+    MultiBelt, // 集約、分配を行うベルトコンベア
     Production,// 生産拠点
     Processing,// 加工施設
     Turret,    // 攻撃施設

@@ -22,6 +22,7 @@ public class ProductUICreate : MonoBehaviour
     GameObject contentPrehab; // 生成対象のPrefab
     GridContent gridContent; // 対象Prefabに付随する内容情報
     bool CreateFlag; // 現在生成モード中かどうか
+    bool OnClickUI; // UI上をクリックしているかどうか
     List<ItemRequest> requests; // 生成に必要なアイテムリスト
 
     float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
@@ -34,19 +35,9 @@ public class ProductUICreate : MonoBehaviour
     public bool IsCreated()=> !CreateFlag && !beltDrawing.GetDrawFlag();
 
     /// <summary>
-    /// スプライトを画面外に移動させて非表示にする
+    /// 生成可能状態をキャンセルする
     /// </summary>
-    void ResetSpritePos()
-    {
-        int OutCameraPosValue = -10;
-
-        transform.position = new Vector3Int()
-        {
-            x = OutCameraPosValue,
-            y = OutCameraPosValue,
-            z = 0
-        };
-    }
+    public void CancelCreate() => EmptyContent();
 
     /// <summary>
     /// UI選択時に生成対象情報を登録する（Prefabとスプライト）
@@ -59,6 +50,8 @@ public class ProductUICreate : MonoBehaviour
         requests = new List<ItemRequest>(list);
         contentPrehab = gameObject;
         contentSpriteShadow.sprite = sprite;
+
+        OnClickUI = false;
 
         if (CreateFlag == false)
             return;
@@ -94,18 +87,37 @@ public class ProductUICreate : MonoBehaviour
     void EmptyContent()
     {
         // スプライトと内容情報をクリア
-        contentSpriteShadow.enabled = false;
-        contentSpriteShadow.sprite = null;
-        gridContent = null;
-        beltDrawing.SetDrawFlag(false);
-        CreateFlag = false;
-        requests = new List<ItemRequest>();
+        contentSpriteShadow.enabled = false; //スプライト非表示
+        contentSpriteShadow.sprite = null;// スプライトの中身初期化
+
+        beltDrawing.SetDrawFlag(false);// Belt機能停止
+
+        CreateFlag = false;// フラグ解除
+        OnClickUI = false;
+
+        gridContent = null;// 建物情報初期化
+        requests = new List<ItemRequest>();// 消費アイテム内容初期化
+    }
+
+    /// <summary>
+    /// スプライトを画面外に移動させて非表示にする
+    /// </summary>
+    void ResetSpritePos()
+    {
+        int OutCameraPosValue = -10;
+
+        transform.position = new Vector3Int()
+        {
+            x = OutCameraPosValue,
+            y = OutCameraPosValue,
+            z = 0
+        };
     }
 
     public void InputRegister(MouseController input)
     {
         // マウス入力イベントを登録
-        input.LeftDownEvent += DragSpriteRenderer;
+        input.LeftDownEvent += ClickSpriteRenderer;
         input.LeftClickEvent += SetCreateTransform;
         input.LeftUpEvent += CreateProduct;
     }
@@ -148,6 +160,40 @@ public class ProductUICreate : MonoBehaviour
     }
 
     /// <summary>
+    /// 指定位置のマスに建物が存在しないかどうかを判定
+    /// </summary>
+    bool IsNoneBuilding(Vector2Int cursolPos)
+    {
+        var gridMap = GridMapManager.Instance;
+
+        // 範囲内すべてのマスに対して条件を満たしているか確認
+        for (int x = cursolPos.x; x < cursolPos.x + gridContent.GetContent().GridSize.x; x++)
+        {
+            for (int y = cursolPos.y; y < cursolPos.y + gridContent.GetContent().GridSize.y; y++)
+            {
+                Vector2Int vector2Int = new Vector2Int()
+                {
+                    x = x,
+                    y = y,
+                };
+
+                // グリッドマップの範囲内か
+                if (!gridMap.IsInBounds(vector2Int))
+                    return false;
+
+                //地形タイルが同じか判定
+                if (!gridMap.GetCell(vector2Int).IsNoneCelltype())
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
+
+    /// <summary>
     /// 指定位置に生成可能なタイルが存在するかどうかを判定
     /// </summary>
     bool IsCanCreateTile(Vector2Int cursolPos)
@@ -188,14 +234,14 @@ public class ProductUICreate : MonoBehaviour
     /// <summary>
     /// 左クリックドラッグ時、生成スプライトを移動させる
     /// </summary>
-    void DragSpriteRenderer(Vector3 mouseWorldDownPos)
+    void ClickSpriteRenderer(Vector3 mouseWorldDownPos)
     {
         if (!CreateFlag)
             return;
 
         if (EventSystem.current.IsPointerOverGameObject())
         {
-            CreateFlag = false;// UI上をクリックしてた場合キャンセル
+            OnClickUI = true;// UI上をクリックしてた場合キャンセル
             return;
         }
 
@@ -215,16 +261,18 @@ public class ProductUICreate : MonoBehaviour
     /// </summary>
     void SetCreateTransform(Vector3 mouseWorldPos)
     {
-        if (!CreateFlag)
+        if (!CreateFlag || OnClickUI)
             return;
 
         Vector2Int cursol2DInt = Cursol2DInt(mouseWorldPos);
+
         bool inMap = IsInGridMap(mouseWorldPos);// マウス位置がグリッドマップの外か
         bool canCreate = inMap && IsCanCreateTile(cursol2DInt);// グリッドマップ内かつ生成可能なタイルか
+        bool NoneBuilding = IsNoneBuilding(cursol2DInt);
         bool hasItems = CheckItemRequests();// 素材不足でないか
 
         // 条件を満たしていれば「有効色」、そうでなければ「無効色」
-        contentSpriteShadow.color = (inMap && canCreate && hasItems) ? enabledColor : disabledColor;
+        contentSpriteShadow.color = (inMap && canCreate && NoneBuilding && hasItems) ? enabledColor : disabledColor;
 
         // 影スプライトを設置候補位置に表示
         transform.position = new Vector3Int()
@@ -246,7 +294,7 @@ public class ProductUICreate : MonoBehaviour
             return;
         }
         // UIの上でマウスが離された場合は無視する
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (OnClickUI || EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
@@ -260,7 +308,7 @@ public class ProductUICreate : MonoBehaviour
         Vector2Int cursol2DInt = Cursol2DInt(mouseWorldUpPos);
 
         // 生成可能なタイルかどうかを判定
-        if (!IsCanCreateTile(cursol2DInt))
+        if (!IsCanCreateTile(cursol2DInt) || !IsNoneBuilding(cursol2DInt))
         {
             return;
         }
@@ -286,11 +334,14 @@ public class ProductUICreate : MonoBehaviour
         ResetSpritePos();// スプライトを画面外に移動
     }
 
+    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // 初期化処理
         CreateFlag = false;
+        OnClickUI = false;
         requests = new List<ItemRequest>();
     }
 }
