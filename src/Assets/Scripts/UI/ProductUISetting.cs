@@ -5,10 +5,13 @@ using UnityEngine.Events;
 public class ProductUISetting : MonoBehaviour
 {
     [SerializeField]
-    ProductUICreate productUICreate; // 生成処理を行うクラス
+    ProductCreate ProductCreate; // 生成処理を行うクラス
 
     [SerializeField]
-    UIContent[] ProductImages;// 建物のUIコンテンツ配列
+    ProductDestroy ProductDestroy; // 破壊処理を行うクラス
+
+    [SerializeField]
+    ProductUI[] ProductUIButtonList;// UIのボタン配列
 
     [SerializeField]
     float ScaleUpTime = 0.3f;
@@ -20,7 +23,7 @@ public class ProductUISetting : MonoBehaviour
     float DefaultScale = 1.0f;
 
     [SerializeField]
-    float SelectScale = 1.45f;
+    float SelectScale = 1.3f;
 
     int currentIndex = -1;//選択しているインデックス
     Coroutine CurrentCoroutine; // 実行中のコルーチン
@@ -31,14 +34,14 @@ public class ProductUISetting : MonoBehaviour
     {
         currentIndex = -1;
 
-        // 各UIContentにクリックイベントを登録する
-        for (int i = 0; i < ProductImages.Length; i++)
+        // 各ProductUIにクリックイベントを登録する
+        for (int i = 0; i < ProductUIButtonList.Length; i++)
         {
             int captureIndex = i; // forのiをローカルに
 
             // UIContent 側にイベント登録
             UnityAction action = () => SetCreateProduct(captureIndex);
-            ProductImages[i].SetEvent(action);
+            ProductUIButtonList[i].SetEvent(action);
         }
     }
 
@@ -48,7 +51,8 @@ public class ProductUISetting : MonoBehaviour
     /// <param name="index">選択されたUIのインデックス</param>
     void SetCreateProduct(int index)
     {
-        productUICreate.CancelCreate();
+        ProductCreate.CancelCreate();
+        ProductDestroy.CancelDestroy();
 
         if (currentIndex == index)
         {
@@ -66,20 +70,35 @@ public class ProductUISetting : MonoBehaviour
                 StopCoroutine(CurrentCoroutine);
 
                 if (currentIndex != -1)
-                    ProductImages[currentIndex].ChangeScale(DefaultScale, ScaleDownTime);
+                    ProductUIButtonList[currentIndex].ChangeScale(DefaultScale, ScaleDownTime);
             }
 
             // UIのスケールを拡大
-            ProductImages[index].ChangeScale(SelectScale, ScaleUpTime);
+            ProductUIButtonList[index].ChangeScale(SelectScale, ScaleUpTime);
 
-            // UIからの生成指示
-            productUICreate.SetCreateContent(
-                ProductImages[index].GetItemRequestList(),
-                ProductImages[index].GetPrehab(),
-                ProductImages[index].GetSprite());
+            // ProductUIContentクラスなら以下を実行
+            if (ProductUIButtonList[index] is ProductUIContent productUIContent)
+            {
+                // UIからの生成指示
+                ProductCreate.SetCreateContent(
+                    productUIContent.GetItemRequestList(),
+                    productUIContent.GetPrehab(),
+                    productUIContent.GetSprite());
 
-            // 生成が終わったらカーソルを非表示に戻す処理を開始
-            CurrentCoroutine = StartCoroutine(WaitResetCursol(index));
+                // 生成が終わったらカーソルを非表示に戻す処理を開始
+                CurrentCoroutine = StartCoroutine(WaitResetCursolCreate(index));
+
+            }
+            // ProductUITrushクラスなら以下を実行
+            else if (ProductUIButtonList[index] is ProductUITrush)
+            {
+                ProductDestroy.DestorySetUp();
+
+                // 破壊が終わったらカーソルを非表示に戻す処理を開始
+                CurrentCoroutine = StartCoroutine(WaitResetCursolDestroy(index));
+            }
+
+            
 
             currentIndex = index;
         }
@@ -90,14 +109,30 @@ public class ProductUISetting : MonoBehaviour
     /// <summary>
     /// 建物の生成が完了するまで待機し、選択したUIを元のサイズへ戻す
     /// </summary>
-    IEnumerator WaitResetCursol(int index)
+    IEnumerator WaitResetCursolCreate(int index)
     {
         // 待機
-        yield return new WaitUntil(() => productUICreate.IsCreated() == true);
-
+        yield return new WaitUntil(() => ProductCreate.IsCreated() == true);
+        Debug.Log("c");
         // UIのスケールを戻す
-        ProductImages[index].ChangeScale(DefaultScale, ScaleDownTime);
+        ProductUIButtonList[index].ChangeScale(DefaultScale, ScaleDownTime);
        
+        currentIndex = -1;
+
+        CurrentCoroutine = null;
+    }
+
+    /// <summary>
+    /// 建物の破壊が完了するまで待機し、選択したUIを元のサイズへ戻す
+    /// </summary>
+    IEnumerator WaitResetCursolDestroy(int index)
+    {
+        // 待機
+        yield return new WaitUntil(() => ProductDestroy.IsDestroyed() == true);
+        Debug.Log("建物の破壊が完了するまで待機し");
+        // UIのスケールを戻す
+        ProductUIButtonList[index].ChangeScale(DefaultScale, ScaleDownTime);
+
         currentIndex = -1;
 
         CurrentCoroutine = null;
@@ -109,9 +144,9 @@ public class ProductUISetting : MonoBehaviour
     IEnumerator WaitResetScale(int index)
     {
         // UIのスケールを戻す
-        ProductImages[index].ChangeScale(DefaultScale, ScaleDownTime);
+        ProductUIButtonList[index].ChangeScale(DefaultScale, ScaleDownTime);
         // 待機
-        yield return new WaitUntil(() => ProductImages[index].IsNullCoroutine() == true);
+        yield return new WaitUntil(() => ProductUIButtonList[index].IsNullCoroutine() == true);
 
         currentIndex = -1;
 

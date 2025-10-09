@@ -93,4 +93,10 @@ public class warBuildTest : MonoBehaviour
             HPBarTest.UpdateBar(Mathf.Clamp01((float)HP / MaxHP));
         }          
     }
+
+    private void OnDestroy()
+    {
+        if(HPBar != null)
+        Destroy(HPBar);
+    }
 }

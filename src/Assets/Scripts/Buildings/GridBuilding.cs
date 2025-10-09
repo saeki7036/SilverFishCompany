@@ -117,7 +117,11 @@ public abstract class GridBuilding
     /// </summary>
     public abstract void ExportItem();
 
-    public Vector2 GetBuidingPosSenter() => (minBuildingPos + maxBuildingPos) / 2;
+    /// <summary>
+    /// 建物の中心の位置を取得
+    /// </summary>
+    /// <returns>建物の中心の位置</returns>
+    public Vector2 GetBuidingPosSenter() => (Vector2)(minBuildingPos + maxBuildingPos) / 2;
 
     /*
     //以下、Enemy探索用関数

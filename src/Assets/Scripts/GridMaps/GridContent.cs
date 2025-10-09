@@ -53,5 +53,8 @@ public class GridContent : MonoBehaviour
 
         // GridMapManagerにこのコンテンツを登録
         GridSetting();
+
+        // 生成した建物は親に登録する
+        transform.parent = DestroyProductGC.GetProductParent();
     }
 }

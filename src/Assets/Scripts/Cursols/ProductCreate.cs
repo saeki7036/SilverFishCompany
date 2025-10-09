@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ProductUICreate : MonoBehaviour
+public class ProductCreate : MonoBehaviour
 {
     [SerializeField]
     SpriteRenderer contentSpriteShadow;// 生成予定オブジェクトの影表示
@@ -190,9 +190,6 @@ public class ProductUICreate : MonoBehaviour
         return true;
     }
 
-
-
-
     /// <summary>
     /// 指定位置に生成可能なタイルが存在するかどうかを判定
     /// </summary>
@@ -232,7 +229,7 @@ public class ProductUICreate : MonoBehaviour
     }
 
     /// <summary>
-    /// 左クリックドラッグ時、生成スプライトを移動させる
+    /// 左クリックをした時、生成スプライトを移動させる
     /// </summary>
     void ClickSpriteRenderer(Vector3 mouseWorldDownPos)
     {

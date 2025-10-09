@@ -5,13 +5,9 @@ using System.Collections.Generic;
 using System.Collections;
 using TMPro;
 
-public class UIContent : MonoBehaviour
+public class ProductUIContent : ProductUI
 {
-    [SerializeField]
-    Button Clickbutton;
-
-    [SerializeField]
-    RectTransform thisRectTransform;
+    [Header("ProductUIContent")]
 
     [SerializeField]
     GameObject contentPrehab;
@@ -21,8 +17,6 @@ public class UIContent : MonoBehaviour
 
     [SerializeField]
     List<ItemReqestView> itemReqestViewList;
-
-    Coroutine coroutine;
 
     /// <summary>
     /// アイテム要求の表示を管理する内部クラス
@@ -61,15 +55,8 @@ public class UIContent : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ボタンにイベントを設定
-    /// </summary>
-    /// <param name="buttonAction">ボタンクリック時のアクション</param>
-    public void SetEvent(UnityAction buttonAction)
-    {
-        Clickbutton.onClick.AddListener(buttonAction);
-    }
-
+    
+    /*
     /// <summary>
     /// 指定したスクリーン座標がこのRectTransform内に含まれるかを判定
     /// </summary>
@@ -82,12 +69,7 @@ public class UIContent : MonoBehaviour
     /// </summary>
     /// <returns>scaleが1fならtrue</returns>
     public bool IsDefaltScale() => thisRectTransform.localScale.z == 1f;
-
-    /// <summary>
-    /// RectTransformのアンカー位置のX座標を取得
-    /// </summary>
-    /// <returns>アンカー位置のX座標</returns>
-    public bool IsNullCoroutine() => coroutine == null;
+    */
 
     /// <summary>
     /// コンテンツのプレハブを取得
@@ -114,37 +96,5 @@ public class UIContent : MonoBehaviour
             requests.Add(item.GetRequest());
         }
         return requests;
-    }
-
-    public void ChangeScale(float targetScale, float duration)
-    {
-        // 既存のスケール変更が進行中なら停止
-        if (coroutine != null)
-        {
-            StopCoroutine(coroutine);
-            coroutine = null;
-        }
-
-        coroutine = StartCoroutine(CheangeScaleForCoroutine(targetScale, duration));
-    }
-
-    public IEnumerator CheangeScaleForCoroutine(float targetScale ,float duration)
-    {
-        Vector3 startScale = thisRectTransform.localScale;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.fixedDeltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-
-            thisRectTransform.localScale = Vector3.Lerp(startScale, Vector3.one * targetScale, t);
-
-            yield return null;
-        }
-
-        thisRectTransform.localScale = Vector3.one * targetScale;
-
-        coroutine = null;
     }
 }
