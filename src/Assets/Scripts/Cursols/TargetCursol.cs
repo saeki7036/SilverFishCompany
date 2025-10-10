@@ -5,6 +5,21 @@ public class TargetCursol : MonoBehaviour
     [SerializeField]
     Transform targetTransform;// カーソル表示対象のTransform
 
+    [SerializeField]
+    float fixScaling  = 0.5f; // スケールを調整するパラメータ
+
+    [SerializeField]
+    SpriteRenderer CursolSprite;
+
+    [SerializeField]
+    ProductDestroy productDestroy;
+
+    [SerializeField]
+    ProductCreate productCreate;
+
+    // 建物の生成・破壊をしていないかどうかを調べる
+    bool IsNoneProductFunc() => productCreate.IsCreated() && productDestroy.IsDestroyed();
+
     // マップの最大サイズ（インスタンス経由）
     Vector2Int maxMapSize => GridMapManager.Instance.MaxMapSize;
 
@@ -19,9 +34,6 @@ public class TargetCursol : MonoBehaviour
 
     // インデックスからの取得のため -1 をしている
     Vector2Int MaxMapIndex => maxMapSize - Vector2Int.one;
-
-    // 初期スケール
-    Vector3 StartCorsolScale;
 
     public void InputRegister(MouseController input)
     {
@@ -67,43 +79,39 @@ public class TargetCursol : MonoBehaviour
             y = Mathf.Clamp(Mathf.RoundToInt(mouseWorldDownPos.y), ClampMin, MaxMapIndex.y),
         };
 
-        // 対応するグリッドオブジェクトを取得
-        GameObject gridObject = GridMapManager.Instance.GetCell(mapPos2DInt).GridObject;
+        // 対応するグリッドセルを取得
+        var gridCell = GridMapManager.Instance.GetCell(mapPos2DInt);
 
-        // そのマスにオブジェクトが無い場合は座標だけ移動
-        if (gridObject == null)
+        // スケールを変更する
+        // 建物がない場合は、1*1*1サイズに
+        transform.localScale = gridCell.GetBuildingSize() * fixScaling;
+
+        Vector3 SpritePosition = new()
         {
-            targetTransform.position = new Vector3()
+            x = mapPos2DInt.x,
+            y = mapPos2DInt.y,
+            z = 0
+        };
+
+        // そのマスに建物がある場合は建物の中央に移動
+        if (!gridCell.IsNoneCelltype())
+        {
+            Vector2 BuildingSenter = gridCell.GetBuildingSenterPos();
+
+            SpritePosition = new Vector3()
             {
-                x = mapPos2DInt.x,
-                y = mapPos2DInt.y,
+                x = BuildingSenter.x,
+                y = BuildingSenter.y,
                 z = 0
             };
-
-            targetTransform.localScale = StartCorsolScale;
-            return;
         }
 
-        // 対象オブジェクトの位置にカーソルを移動
-        Vector3 contentObjectWorldPosition = gridObject.transform.position;
-
-        targetTransform.position = contentObjectWorldPosition;
-
-        // 対象オブジェクトのスケールを反映
-        Vector3 contentObjectScale = gridObject.transform.localScale;
-           
-        targetTransform.localScale = new Vector3()
-        {
-            x = StartCorsolScale.x * contentObjectScale.x,
-            y = StartCorsolScale.y * contentObjectScale.y,
-            z = 1
-        };
+        // 対象の位置にカーソルを移動
+        targetTransform.position = SpritePosition;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void LateUpdate()
     {
-        // 初期化処理：カーソルの初期スケールを保存
-        StartCorsolScale = transform.localScale;
+        CursolSprite.enabled = IsNoneProductFunc();
     }
 }
