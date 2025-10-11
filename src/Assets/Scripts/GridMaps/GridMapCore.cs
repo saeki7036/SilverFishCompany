@@ -337,7 +337,7 @@ public struct MapContent
     /// インポート座標のハッシュセットを取得
     /// </summary>
     /// <returns>インポート座標のHashSet</returns>
-    public readonly HashSet<Vector2Int> IｍportGridPos() => ConvertVector2Int(importTransforms);
+    public readonly HashSet<Vector2Int> ImportGridPos() => ConvertVector2Int(importTransforms);
 
     /// <summary>
     /// エクスポート座標のハッシュセットを取得

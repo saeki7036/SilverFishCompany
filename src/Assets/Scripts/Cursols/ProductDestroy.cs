@@ -1,5 +1,4 @@
-﻿using Unity.VisualScripting.Dependencies.Sqlite;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class ProductDestroy : MonoBehaviour

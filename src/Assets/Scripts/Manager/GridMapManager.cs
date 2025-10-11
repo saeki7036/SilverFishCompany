@@ -152,7 +152,7 @@ public class GridMapManager : MonoBehaviour
             content.GridCellType,
             content.MinGridPos,
             content.MaxGridPos(),
-            content.IｍportGridPos(),
+            content.ImportGridPos(),
             content.ExportGridPos(),
             content.Iteminfo
             );

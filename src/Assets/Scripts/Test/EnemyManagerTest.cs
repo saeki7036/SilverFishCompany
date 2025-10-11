@@ -13,12 +13,6 @@ public class EnemyManagerTest : MonoBehaviour
     GamePogressManager gamePogressManager;
 
     [SerializeField]
-    int[] Spowntime;　// 未使用
-
-    [SerializeField]
-    GameObject[] EnemyPrehab; // 未使用
-
-    [SerializeField]
     Vector2 minPos;
 
     [SerializeField]
