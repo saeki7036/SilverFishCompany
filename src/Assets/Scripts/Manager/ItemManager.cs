@@ -165,6 +165,7 @@ public class ItemManager : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+
     /// <summary>
     /// デバッグ用のアイテム追加機能（エディタ専用）
     /// U+Yキーでアイテムを追加
@@ -175,6 +176,9 @@ public class ItemManager : MonoBehaviour
         {
             itemStocker.AddItem(ItemCategory.Wood, 1, 50);
             itemStocker.AddItem(ItemCategory.Stone, 1, 50);
+
+            itemStocker.AddItem(ItemCategory.Wood, 2, 10); 
+            itemStocker.AddItem(ItemCategory.Stone, 2, 10);
         }
     }
 #endif

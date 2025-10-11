@@ -15,19 +15,25 @@ MonoBehaviour:
   EnemyPrehabList:
   - {fileID: 2959811036750138740, guid: a08fb2d0dec77064faf13cc13d3e62e9, type: 3}
   - {fileID: 2959811036750138740, guid: 0d212cbbd0865f04188846e96790ea58, type: 3}
+  - {fileID: 7976666224046765304, guid: f29638403406af641879a615ff72f833, type: 3}
+  - {fileID: 7976666224046765304, guid: 57fda769f48f74049918491a21bd4b6d, type: 3}
+  - {fileID: 7976666224046765304, guid: a42cb65d1ed40944fadb4b9c03515bf0, type: 3}
   WaveList:
   - WaveTimeValue: 1500
     EnemySpownValue: 2
     SpownIDList: 00000000
   - WaveTimeValue: 2500
     EnemySpownValue: 6
-    SpownIDList: 00000000
-  - WaveTimeValue: 3000
-    EnemySpownValue: 6
-    SpownIDList: 01000000
-  - WaveTimeValue: 1000
-    EnemySpownValue: 4
-    SpownIDList: 00000000
-  - WaveTimeValue: 3000
-    EnemySpownValue: 12
     SpownIDList: 0000000001000000
+  - WaveTimeValue: 3000
+    EnemySpownValue: 8
+    SpownIDList: 000000000100000003000000
+  - WaveTimeValue: 1000
+    EnemySpownValue: 12
+    SpownIDList: 00000000010000000200000003000000
+  - WaveTimeValue: 1250
+    EnemySpownValue: 10
+    SpownIDList: 0100000002000000
+  - WaveTimeValue: 100
+    EnemySpownValue: 1
+    SpownIDList: 04000000

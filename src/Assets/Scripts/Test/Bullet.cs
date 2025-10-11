@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 
-public class BulletTest : MonoBehaviour
+public class Bullet : MonoBehaviour
 {
     //　弾クラス
 

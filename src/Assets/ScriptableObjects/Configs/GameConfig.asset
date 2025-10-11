@@ -22,7 +22,7 @@ MonoBehaviour:
       startupTime: 0
     - type: 2
       startupTime: 1
-    - type: 3
-      startupTime: 4
     - type: 4
+      startupTime: 2
+    - type: 5
       startupTime: 2

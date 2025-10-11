@@ -119,10 +119,9 @@ public class ProductDestroy : MonoBehaviour
     /// </summary>
     void ClickSpriteRenderer(Vector3 mouseWorldDownPos)
     {
-        Debug.Log("a");
         if (!DestroyFlag)
             return;
-        Debug.Log("b");
+      
         if (EventSystem.current.IsPointerOverGameObject())
         {
             OnClickUI = true;// UI上をクリックしてた場合キャンセル

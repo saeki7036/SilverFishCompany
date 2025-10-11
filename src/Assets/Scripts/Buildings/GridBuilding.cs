@@ -57,8 +57,18 @@ public abstract class GridBuilding
     /// <summary>
     /// 保持アイテムを削除（nullに設定）
     /// </summary>
-    public void RemoveItem()=> item = null;
+    public void RemoveItem()　=> item = null;
 
+    /// <summary>
+    /// 保持アイテムがあるなら削除（nullに設定）
+    /// </summary>
+    public void DestoryItem()
+    {
+        if(item != null)
+            item.ItemObjectDestroy();
+
+        item = null;
+    }
     // コンストラクタ
 
     /// <summary>

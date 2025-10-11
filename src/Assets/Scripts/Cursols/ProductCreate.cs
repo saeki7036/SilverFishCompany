@@ -32,7 +32,7 @@ public class ProductCreate : MonoBehaviour
     List<ItemRequest> requests; // 生成に必要なアイテムリスト
 
     int RotatesIndex = 0;
-    static readonly float[] Rotates = { 0f, 90f, 180f, 270f };
+    static readonly float[] Rotates = { 0f, 270f, 180f, 90f };
 
     float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
 

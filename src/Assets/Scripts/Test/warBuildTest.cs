@@ -63,9 +63,10 @@ public class warBuildTest : MonoBehaviour
         HP -= atk;
 
         if (!IsDestroy)
-            Debug.Log("HP:"+HP);
-
-
+        {
+            //Debug.Log("HP:" + HP);
+        }
+         
         if(HP <= 0)
         {
             
