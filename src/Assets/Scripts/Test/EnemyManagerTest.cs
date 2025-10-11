@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -27,7 +28,7 @@ public class EnemyManagerTest : MonoBehaviour
     public UnityEvent ClearIvent;
 
     [SerializeField]
-    Text EnemyCounter;
+    TextMeshProUGUI EnemyCounter;
 
     [SerializeField]
     EnemySpownInformation enemyInformation;
@@ -314,6 +315,6 @@ public class EnemyManagerTest : MonoBehaviour
     /// </summary>
     void UpdateText()
     { 
-        EnemyCounter.text = RemoveCount.ToString() + "/" + enemyInformation.EnemySpownALLValue().ToString();
+        EnemyCounter.SetText((enemyInformation.EnemySpownALLValue() - RemoveCount).ToString());
     }
 }
