@@ -115,8 +115,23 @@ public class ProductItem
         //Debug.Log(itemInformation.GetItemLevel()+"=="+ level + "+" + difference);
 
         // レベル差をチェック
-        return itemInformation.GetItemLevel() != level + difference;
+        return itemInformation.GetItemLevel() == level + difference;
     }
+
+    public bool CanLevelUp()
+    {
+        if (nextLevelInfomation == null)
+            return false;
+
+        // カテゴリが異なる場合はfalse
+        if (nextLevelInfomation.GetItemCategory() != category)
+            return false;
+        //Debug.Log(itemInformation.GetItemLevel()+"=="+ level + "+" + difference);
+
+        // レベル差をチェック
+        return nextLevelInfomation.GetItemLevel() == level + 1;
+    }
+
 
     /// <summary>
     /// アイテムの移動処理 - Lerpを使用してスムーズに移動

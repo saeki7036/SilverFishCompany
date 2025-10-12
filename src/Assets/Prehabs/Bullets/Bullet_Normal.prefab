@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3870122185746383713}
   - component: {fileID: 8915730336312352680}
   m_Layer: 8
-  m_Name: Test_Bullet
+  m_Name: Bullet_Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,6 +51,7 @@ MonoBehaviour:
   DastroyTime: 6
   BulletLinePrehab: {fileID: 785995225070483439, guid: 311c044ab824dfa4aa2cfb1515fefe0a, type: 3}
   EffectPrahab: {fileID: 7546187951318481092, guid: 2a09d8c4117d422439252f8df1fd97b7, type: 3}
+  rb2D: {fileID: 3870122185746383713}
 --- !u!212 &2696968678474002929
 SpriteRenderer:
   m_ObjectHideFlags: 0

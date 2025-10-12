@@ -113,6 +113,7 @@ public class BeltDrawing : MonoBehaviour
         // 消費可能かチェック
         if (!CheckItemRequests())
             return false;
+
         // ベルトに必要な個数を計算
         int requestValue = Mathf.Max(0, SelectedPosList.Count - 2);
 
@@ -282,7 +283,7 @@ public class BeltDrawing : MonoBehaviour
         if (SelectedPosList.Count != 0)
         {
             // アイテム在庫チェック
-            ItemFlag = CheckItemRequests();
+            //ItemFlag = CheckItemRequests();
 
             // 今回の位置が前回の位置と同じ場合に処理を終了
             if (gridPos == currentPos)       
@@ -318,7 +319,7 @@ public class BeltDrawing : MonoBehaviour
                 }
             }
             // アイテム在庫を再チェック
-            ItemFlag = CheckItemRequests();
+            //ItemFlag = CheckItemRequests();
 
             // 経路が問題ないか確認
             IsNoProblemRoute = RouteProblemCheck();
@@ -364,13 +365,13 @@ public class BeltDrawing : MonoBehaviour
             Debug.Log("選択セル：" + SelectedPosList.Count);
             return;
         }
-
+        /*
         // Item個数が足りなければ終了させる
         if(!ConsumeItemRequests())
         {
             return;
         }
-
+        */
         // 効果音を再生
         AudioManager.instance.isPlaySE(Clip);
 
@@ -458,7 +459,7 @@ public class BeltDrawing : MonoBehaviour
         float GradientLastTime = 1f;
 
         // 経路チェックとアイテムチェックの両方をクリアしているか
-        bool RouteCheck = IsNoProblemRoute && ItemFlag;
+        bool RouteCheck = IsNoProblemRoute;// && ItemFlag;
         Gradient gradient = RouteCheck ? scsessGradient : failedGradient;
 
         // ラインとアイコンの色を設定
@@ -471,7 +472,7 @@ public class BeltDrawing : MonoBehaviour
     void Start()
     {
         // 初期化処理
-        ItemFlag = false;
+        //ItemFlag = false;
         DrawFlag = false;
         OnGridMap = false;
         IsNoProblemRoute = true;

@@ -5,8 +5,8 @@ public class ProductManager : MonoBehaviour
 {
     // 各建物タイプの生産タイマーを管理し、時間経過に応じて建物を動作させるマネージャークラス
 
-    [SerializeField]
-    GamePogressManager gamePogressManager; //ゲーム進行を管理するマネージャー
+    //[SerializeField]
+    //GamePogressManager gamePogressManager; //ゲーム進行を管理するマネージャー
 
     // タイマーカウントの増加値（FixedUpdateごとに加算される値）
     float addTimeCountValue = 0.02f;
@@ -95,7 +95,7 @@ public class ProductManager : MonoBehaviour
     void FixedUpdate()
     {
         // ゲームの進行中のみタイマーを更新
-        if (gamePogressManager.GetPogressFlag())
+        if (GamePogressManager.GetPogressFlag())
         {
             AddTimeCount();
             OperatCheck();

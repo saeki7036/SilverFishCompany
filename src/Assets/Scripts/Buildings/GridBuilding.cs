@@ -57,8 +57,18 @@ public abstract class GridBuilding
     /// <summary>
     /// 保持アイテムを削除（nullに設定）
     /// </summary>
-    public void RemoveItem()=> item = null;
+    public void RemoveItem()　=> item = null;
 
+    /// <summary>
+    /// 保持アイテムがあるなら削除（nullに設定）
+    /// </summary>
+    public void DestoryItem()
+    {
+        if(item != null)
+            item.ItemObjectDestroy();
+
+        item = null;
+    }
     // コンストラクタ
 
     /// <summary>
@@ -117,7 +127,11 @@ public abstract class GridBuilding
     /// </summary>
     public abstract void ExportItem();
 
-    public Vector2 GetBuidingPosSenter() => (minBuildingPos + maxBuildingPos) / 2;
+    /// <summary>
+    /// 建物の中心の位置を取得
+    /// </summary>
+    /// <returns>建物の中心の位置</returns>
+    public Vector2 GetBuidingPosSenter() => (Vector2)(minBuildingPos + maxBuildingPos) / 2;
 
     /*
     //以下、Enemy探索用関数

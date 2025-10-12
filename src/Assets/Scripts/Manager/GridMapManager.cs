@@ -152,7 +152,7 @@ public class GridMapManager : MonoBehaviour
             content.GridCellType,
             content.MinGridPos,
             content.MaxGridPos(),
-            content.IｍportGridPos(),
+            content.ImportGridPos(),
             content.ExportGridPos(),
             content.Iteminfo
             );
@@ -305,21 +305,28 @@ public class GridMapManager : MonoBehaviour
     {
         // Celltype取得
         var DestroyCellType = GetCell(point).GridCellType;
+
         // Building取得
         var DestroyBuilding = GetCell(point).GetBuilding();
+
+        // アイテム情報削除
+        DestroyBuilding.DestoryItem();
 
         // Dictionaryから削除
         RemoveBuildingDictionary(DestroyCellType, DestroyBuilding);
 
         // GridMap内の位置を取得
-        Vector2Int minPos = DestroyBuilding.MinBuildingPos, maxPos = DestroyBuilding.MaxBuildingPos;
+        Vector2Int minPos = DestroyBuilding.MinBuildingPos;
+        Vector2Int maxPos = DestroyBuilding.MaxBuildingPos;
 
         // 多重ループで削除
-        for(int x = minPos.x; x < maxPos.x; x++)
-            for (int y = minPos.y; y < maxPos.y; y++)
+        for (int x = minPos.x; x <= maxPos.x; x++)
+            for (int y = minPos.y; y <= maxPos.y; y++)
             {
                 gridMap.SetEmptyGridCell(new(x,y));
             }
+
+        DestroyBuilding = null;
     }
 
     /// <summary>
@@ -346,7 +353,10 @@ public class GridMapManager : MonoBehaviour
             return;
         }
 
+        Debug.Log(BuildingDictionary[cellType].Count);
         //
         BuildingDictionary[cellType].Remove(building);
+
+        Debug.Log(BuildingDictionary[cellType].Count);
     }
 }

@@ -9,6 +9,10 @@ public class ProcessingBuilding : GridBuilding
 
     ItemInformation itemInfo;
 
+    static readonly int ItemCount = 5;
+
+    int currentItemCount;
+
     // コンストラクタ
     public ProcessingBuilding(Vector2Int minBuildingPos, Vector2Int maxBuildingPos,
                         HashSet<Vector2Int> importList, HashSet<Vector2Int> exportList,
@@ -17,6 +21,8 @@ public class ProcessingBuilding : GridBuilding
     {
         // ここで抽象クラス側にない変数のみ設定
         itemInfo = itemInfomation;
+
+        currentItemCount = 0;
 
         Debug.Log("コンストラクタ：ProcessingBuilding");
 
@@ -46,10 +52,45 @@ public class ProcessingBuilding : GridBuilding
             return;
         }
 
+        // この建物がアイテムを所持 + 次のアイテム内容が設定されているか
         if (Item != null && Item.IsSetNextLevelInfo())
         {
-            if(Item.IsItemUpdate())
-                Item.NextLevelSetting();
+            if (Item.IsItemUpdate())
+            {
+                // 正しくレベルアップ出来ないなら破棄
+                if(!Item.CanLevelUp())
+                {
+                    // オブジェクトの破壊
+                    Item.ItemObjectDestroy();
+
+                    // アイテム情報初期化
+                    Item = null;
+
+                    return;
+                }
+
+                // アイテムカウントを進める
+                currentItemCount++;
+
+                // カウントが一定以上なら次のレベルのアイテムを生成
+                if(currentItemCount >= ItemCount)
+                {
+                    // カウントリセット
+                    currentItemCount = 0;
+
+                    Item.NextLevelSetting();
+                }
+                // カウントが一定未満ならアイテムを破棄
+                else
+                {                
+                    // オブジェクトの破壊
+                    Item.ItemObjectDestroy();
+
+                    // アイテム情報初期化
+                    Item = null;
+                }
+            }
+                
         }
     }
 
@@ -67,10 +108,24 @@ public class ProcessingBuilding : GridBuilding
         if (gridBuilding == null)
             return;
 
+        /*
+        if (!gridBuilding.IsEmptyItem()) 
+        {
+            Debug.Log(gridBuilding.Item.IsItemMove());
+            Debug.Log(gridBuilding.Item.IsSameCategoryAndNearLevel(itemInfo));
+        }
+        */
+
+        // アイテムが無い+アイテムが移動中でないなら弾く
+        /*
         if (gridBuilding.IsEmptyItem() || gridBuilding.Item.IsItemMove() 
-            || gridBuilding.Item.IsSameCategoryAndNearLevel(itemInfo))
+            || !gridBuilding.Item.IsSameCategoryAndNearLevel(itemInfo))
             return;
-        
+        */
+
+        if (gridBuilding.IsEmptyItem() || gridBuilding.Item.IsItemMove())
+            return;
+
         foreach (Vector2Int export in gridBuilding.ExportPos)
         {
             GridBuilding exportBuilding = GetValidBuilding(export);
@@ -94,12 +149,16 @@ public class ProcessingBuilding : GridBuilding
             z = 0
         };
 
+        // アイテムに移動設定を適用
         possibleTuple.Item1.Item.ItemMoveSetting(itemMovingPos);
 
+        // この施設にアイテムを設定
         this.Item = possibleTuple.Item1.Item;
 
+        // 元の建物からアイテムクラスを削除
         possibleTuple.Item1.RemoveItem();
 
+        // アイテムに次のレベルの情報を設定
         Item.SetNextLevelInfo(itemInfo);
     }
 

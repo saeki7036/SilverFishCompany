@@ -5,8 +5,8 @@ public class ItemManager : MonoBehaviour
 {
     // アイテムシステム全体を統括管理するマネージャークラス（シングルトン）
 
-    [SerializeField]
-    GamePogressManager gamePogressManager; // ゲーム進行状態を管理するマネージャー
+    //[SerializeField]
+    //GamePogressManager gamePogressManager; // ゲーム進行状態を管理するマネージャー
 
     [SerializeField]
     ItemConfig itemConfig; // アイテムの設定情報
@@ -160,11 +160,12 @@ public class ItemManager : MonoBehaviour
     void FixedUpdate()
     {
         // アイテム輸送の更新処理
-        if (gamePogressManager.GetPogressFlag())// ゲーム進行中のみ
+        if (GamePogressManager.GetPogressFlag())// ゲーム進行中のみ
             itemTransporter.ItemMovingCheck();// 移動チェックを実行
     }
 
 #if UNITY_EDITOR
+
     /// <summary>
     /// デバッグ用のアイテム追加機能（エディタ専用）
     /// U+Yキーでアイテムを追加
@@ -175,6 +176,9 @@ public class ItemManager : MonoBehaviour
         {
             itemStocker.AddItem(ItemCategory.Wood, 1, 50);
             itemStocker.AddItem(ItemCategory.Stone, 1, 50);
+
+            itemStocker.AddItem(ItemCategory.Wood, 2, 10); 
+            itemStocker.AddItem(ItemCategory.Stone, 2, 10);
         }
     }
 #endif

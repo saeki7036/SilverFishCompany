@@ -76,7 +76,7 @@ public class EnemySpownInformation : ScriptableObject
 public class EnemyWave
 {
     [SerializeField]
-    [Tooltip("ウェーブの持続時間（秒）")]
+    [Tooltip("ウェーブの持続時間（50 = 1秒）")]
     int WaveTimeValue;
 
     [SerializeField]

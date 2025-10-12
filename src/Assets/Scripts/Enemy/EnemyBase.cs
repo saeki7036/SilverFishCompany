@@ -96,6 +96,11 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
+    public void StopVelocity()
+    {
+        Rigidbody.linearVelocity = Vector3.zero;
+    }
+
     public void EnemyUpdate()
     {
         Vector2 currentPosition = transform.position;

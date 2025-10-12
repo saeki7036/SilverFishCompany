@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 0.5019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
     gridSize: {x: 1, y: 1}
     gridCellType: 3
     canCreateTileType: 0
-    gridObject: {fileID: 3335194000252999264}
+    gridObject: {fileID: 6329199013496658921}
     importTransforms:
     - {fileID: 9103996778226231404}
     - {fileID: 5514913829861786589}

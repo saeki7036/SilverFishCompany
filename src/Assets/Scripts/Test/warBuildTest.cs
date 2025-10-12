@@ -63,9 +63,10 @@ public class warBuildTest : MonoBehaviour
         HP -= atk;
 
         if (!IsDestroy)
-            Debug.Log("HP:"+HP);
-
-
+        {
+            //Debug.Log("HP:" + HP);
+        }
+         
         if(HP <= 0)
         {
             
@@ -92,5 +93,11 @@ public class warBuildTest : MonoBehaviour
             effect.transform.localScale = transform.localScale;
             HPBarTest.UpdateBar(Mathf.Clamp01((float)HP / MaxHP));
         }          
+    }
+
+    private void OnDestroy()
+    {
+        if(HPBar != null)
+        Destroy(HPBar);
     }
 }

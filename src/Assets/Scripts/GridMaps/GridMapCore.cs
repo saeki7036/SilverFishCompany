@@ -55,7 +55,21 @@ public class GridMap
     public void SetGridCell(GridCell cell)
     {
         if (IsInBounds(cell.GridPos))
-            gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
+        {
+            if(gridCell[cell.GridPos.x, cell.GridPos.y] == null)
+            {
+                gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
+            }
+            else
+            {
+                TileType tileType = gridCell[cell.GridPos.x, cell.GridPos.y].GetTileType();
+
+                gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
+
+                gridCell[cell.GridPos.x, cell.GridPos.y].SetTileType(tileType);
+            }
+        }
+            
         else
         {
             Debug.LogError("範囲外");
@@ -223,6 +237,9 @@ public class GridCell
         building = null;
     }
 
+    public TileType GetTileType() => tileType;
+
+
     // <summary>
     /// タイルタイプを設定
     /// </summary>
@@ -248,7 +265,7 @@ public class GridCell
     /// <summary>
     /// 建物のサイズを取得
     /// </summary>
-    /// <returns>建物サイズ（建物がない場合は1x1x0）</returns>
+    /// <returns>建物サイズ（建物がない場合は1x1x1）</returns>
     public Vector3 GetBuildingSize()
     {
         if (building == null)
@@ -256,22 +273,22 @@ public class GridCell
 
         return new()
         {
-            x = building.MinBuildingPos.x,
-            y = building.MaxBuildingPos.y,
-            z = 0
+            x = building.MaxBuildingPos.x - building.MinBuildingPos.x + 1,
+            y = building.MaxBuildingPos.y - building.MinBuildingPos.y + 1,
+            z = 1
         };
     }
 
     /// <summary>
-    /// グリッドオブジェクトのスケールを取得
+    /// 建物の中心の位置を取得
     /// </summary>
-    /// <returns>オブジェクトスケール（オブジェクトがない場合は1x1x1）</returns>      
-    public Vector3 GetGridObjectScale()
+    /// <returns>建物の位置（建物がない場合は-99x-99）</returns>      
+    public Vector2 GetBuildingSenterPos()
     {
-        if(GridObject == null)
-            return Vector3.one;
+        if(building == null)
+            return Vector2.one * -99f;
 
-        return GridObject.transform.localScale;
+        return building.GetBuidingPosSenter();
     }  
 }
 
@@ -337,7 +354,7 @@ public struct MapContent
     /// インポート座標のハッシュセットを取得
     /// </summary>
     /// <returns>インポート座標のHashSet</returns>
-    public readonly HashSet<Vector2Int> IｍportGridPos() => ConvertVector2Int(importTransforms);
+    public readonly HashSet<Vector2Int> ImportGridPos() => ConvertVector2Int(importTransforms);
 
     /// <summary>
     /// エクスポート座標のハッシュセットを取得

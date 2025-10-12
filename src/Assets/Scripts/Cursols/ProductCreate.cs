@@ -2,10 +2,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ProductUICreate : MonoBehaviour
+public class ProductCreate : MonoBehaviour
 {
     [SerializeField]
-    SpriteRenderer contentSpriteShadow;// 生成予定オブジェクトの影表示
+    Transform contentSpriteTransform;// スプライトのTransform
+
+    [SerializeField]
+    SpriteRenderer contentSpriteShadow;// 生成予定オブジェクトのスプライト(影表示)
 
     [SerializeField]
     BeltDrawing beltDrawing;// ベルト生成の制御
@@ -19,15 +22,23 @@ public class ProductUICreate : MonoBehaviour
     [SerializeField]
     AudioClip Clip;// 生成時
 
+    [SerializeField]
+    Transform CanRotateSPriteTransform;
+
     GameObject contentPrehab; // 生成対象のPrefab
     GridContent gridContent; // 対象Prefabに付随する内容情報
     bool CreateFlag; // 現在生成モード中かどうか
     bool OnClickUI; // UI上をクリックしているかどうか
     List<ItemRequest> requests; // 生成に必要なアイテムリスト
 
+    int RotatesIndex = 0;
+    static readonly float[] Rotates = { 0f, 270f, 180f, 90f };
+
     float GridAdjustScale => GridMapManager.Instance.GridAdjustScale();
 
     Vector2Int MaxMapSize => GridMapManager.Instance.mapSize;
+
+    bool IsRven => RotatesIndex % 2 == 0;
 
     /// <summary>
     /// 生成可能な状態かを外部が確認するためのフラグ（カーソルの非表示制御などに利用）
@@ -51,6 +62,7 @@ public class ProductUICreate : MonoBehaviour
         contentPrehab = gameObject;
         contentSpriteShadow.sprite = sprite;
 
+        RotatesIndex = 0;
         OnClickUI = false;
 
         if (CreateFlag == false)
@@ -97,6 +109,10 @@ public class ProductUICreate : MonoBehaviour
 
         gridContent = null;// 建物情報初期化
         requests = new List<ItemRequest>();// 消費アイテム内容初期化
+
+        RotatesIndex = 0;
+
+        CanRotateSPriteTransform.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -104,7 +120,7 @@ public class ProductUICreate : MonoBehaviour
     /// </summary>
     void ResetSpritePos()
     {
-        int OutCameraPosValue = -10;
+        int OutCameraPosValue = -99;
 
         transform.position = new Vector3Int()
         {
@@ -112,6 +128,10 @@ public class ProductUICreate : MonoBehaviour
             y = OutCameraPosValue,
             z = 0
         };
+
+        contentSpriteTransform.localPosition = Vector3.zero;
+        contentSpriteTransform.rotation = Quaternion.identity;
+        contentSpriteTransform.localScale = Vector3.one;
     }
 
     public void InputRegister(MouseController input)
@@ -120,6 +140,8 @@ public class ProductUICreate : MonoBehaviour
         input.LeftDownEvent += ClickSpriteRenderer;
         input.LeftClickEvent += SetCreateTransform;
         input.LeftUpEvent += CreateProduct;
+
+        input.RightUpEvent += RightClickRotate;
     }
 
     /// <summary>
@@ -141,8 +163,26 @@ public class ProductUICreate : MonoBehaviour
         y = Mathf.RoundToInt(mouseWorldDownPos.y)
     };
 
+    Vector3 GetLorcalPosition()
+    {
+        var content = gridContent.GetContent();
+
+        float offset = 0.5f;
+
+        float X_ = (float)content.GridSize.x / 2 - offset;
+        float Y_ = (float)content.GridSize.y / 2 - offset;
+
+        return new()
+        {
+            x = IsRven ? X_ : Y_,
+            y = IsRven ? Y_ : X_,
+            z = 0
+        };
+    }
+
+
     // <summary>
-    /// 生成対象がマップ範囲内かどうかを判定する
+    /// マウス入力の位置がマップ範囲内かどうかを判定する
     /// </summary>
     bool IsInGridMap(Vector3 mouseWorldPos)
     {
@@ -190,9 +230,6 @@ public class ProductUICreate : MonoBehaviour
         return true;
     }
 
-
-
-
     /// <summary>
     /// 指定位置に生成可能なタイルが存在するかどうかを判定
     /// </summary>
@@ -231,8 +268,44 @@ public class ProductUICreate : MonoBehaviour
         return true;
     }
 
+    bool CanRotateBuildType()
+    {
+        var CellType = gridContent.GetContent().GridCellType;
+
+        // 特定の建物の種類だけ回転処理を行う
+        return CellType == BuildType.MultiBelt ||
+               CellType == BuildType.Processing ||
+               CellType == BuildType.Production;
+    }
+
+
+
     /// <summary>
-    /// 左クリックドラッグ時、生成スプライトを移動させる
+    /// 右クリックした時、
+    /// </summary>
+    /// <param name="vector3"></param>
+    void RightClickRotate(Vector3 vector3)
+    {
+        if (!CreateFlag || OnClickUI)
+            return;
+
+        // 特定の建物の種類だけ回転処理を行う
+        if(CanRotateBuildType())
+        {
+            RotatesIndex++;
+
+            // 一巡したら戻す
+            if (RotatesIndex >= Rotates.Length)
+                RotatesIndex = 0;
+
+            contentSpriteTransform.localPosition = GetLorcalPosition();
+            contentSpriteTransform.rotation = Quaternion.Euler(0, 0, Rotates[RotatesIndex]);
+        } 
+    }
+
+
+    /// <summary>
+    /// 左クリックをした時、生成スプライトを移動させる
     /// </summary>
     void ClickSpriteRenderer(Vector3 mouseWorldDownPos)
     {
@@ -245,14 +318,28 @@ public class ProductUICreate : MonoBehaviour
             return;
         }
 
-       // マウスのワールド座標を整数グリッドに変換し、スプライト位置を更新
-       Vector2Int cursol2DInt = Cursol2DInt(mouseWorldDownPos);
+        if (CanRotateBuildType())
+        {
+            CanRotateSPriteTransform.gameObject.SetActive(true);
+        }       
+
+        // マウスのワールド座標を整数グリッドに変換し、スプライト位置を更新
+        Vector2Int cursol2DInt = Cursol2DInt(mouseWorldDownPos);
 
         transform.position = new Vector3Int()
         {
             x = cursol2DInt.x,
             y = cursol2DInt.y,
             z = 0
+        };
+
+        contentSpriteTransform.localPosition = GetLorcalPosition();
+        contentSpriteTransform.rotation = Quaternion.identity;
+        contentSpriteTransform.localScale = new Vector3Int()
+        {
+            x = gridContent.GetContent().GridSize.x,
+            y = gridContent.GetContent().GridSize.y,
+            z = 1
         };
     }
 
@@ -298,6 +385,9 @@ public class ProductUICreate : MonoBehaviour
         {
             return;
         }
+
+        CanRotateSPriteTransform.gameObject.SetActive(false);
+
         // マウス位置がグリッドマップの外なら生成できない
         if (!IsInGridMap(mouseWorldUpPos))
         {
@@ -324,17 +414,22 @@ public class ProductUICreate : MonoBehaviour
             z = 0
         };
 
-        // Prefabを生成
-        Instantiate(contentPrehab, transform.position, Quaternion.identity);
+        // Prehabを生成
+        GameObject Prehab = Instantiate(contentPrehab, transform.position, Quaternion.identity);
+
+        Transform child = Prehab.transform.GetChild(0);
+
+        child.rotation = Quaternion.Euler(0, 0, Rotates[RotatesIndex]);
 
         AudioManager.instance.isPlaySE(Clip);// SE再生
+
+        Debug.Log(IsCanCreateTile(cursol2DInt));
+
 
         EmptyContent();// 内部状態クリア
 
         ResetSpritePos();// スプライトを画面外に移動
     }
-
-    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

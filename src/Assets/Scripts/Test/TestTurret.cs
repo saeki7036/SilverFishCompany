@@ -39,6 +39,9 @@ public class TestTurret : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!GamePogressManager.GetPogressFlag())
+            return;
+
         timecount++;
         Target = EnemyManagerTest.Instance.NearestPos(transform.position, Range);
 
@@ -58,15 +61,16 @@ public class TestTurret : MonoBehaviour
             {
                 AudioManager.instance.isPlaySE(ShotClip);
 
-                GameObject bullet = Instantiate(
+                GameObject Prehab = Instantiate(
                     BulletPrehab,
                     FirePosTransform.position, 
                     neckObject.transform.rotation);
 
-                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
+                Bullet bullet = Prehab.GetComponent<Bullet>();
+                
                 Vector2 force = TargetVector2.normalized * speed;
-                rb.linearVelocity = force;
+
+                bullet.AddVelocity(force);
 
                 timecount = 0;
             }

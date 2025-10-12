@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -8,14 +9,8 @@ public class EnemyManagerTest : MonoBehaviour
     // 敵管理するクラスのテスト(シングルトン)
     // wave制のスポーンシステムは本採用予定
 
-    [SerializeField]
-    GamePogressManager gamePogressManager;
-
-    [SerializeField]
-    int[] Spowntime;　// 未使用
-
-    [SerializeField]
-    GameObject[] EnemyPrehab; // 未使用
+    //[SerializeField]
+    //GamePogressManager gamePogressManager;
 
     [SerializeField]
     Vector2 minPos;
@@ -27,7 +22,7 @@ public class EnemyManagerTest : MonoBehaviour
     public UnityEvent ClearIvent;
 
     [SerializeField]
-    Text EnemyCounter;
+    TextMeshProUGUI EnemyCounter;
 
     [SerializeField]
     EnemySpownInformation enemyInformation;
@@ -140,15 +135,30 @@ public class EnemyManagerTest : MonoBehaviour
         BaseCampPos = new HashSet<Vector2Int>();
 
         Vector2Int BaseCampMinPos = new((int)BaseCamp.transform.position.x, (int)BaseCamp.transform.position.y);
+        DebugText.text = BaseCampMinPos.ToString();
 
+        GridBuilding building = GridMapManager.Instance.GetCell(BaseCampMinPos).GetBuilding();
+
+
+        if(building is BaseCampBuilding baseCampBuilding)
+        {
+            DebugText.text = (baseCampBuilding.GetBuidingPosSenter().ToString());
+            BaseCampPosSenter = baseCampBuilding.GetBuidingPosSenter();
+            BaseCampPos = baseCampBuilding.GetVectorIntGridPos();
+
+            // 最初のWave設定
+            SetWave();
+            UpdateText();
+        }
+        /*
         BaseCampBuilding baseCampBuilding = (BaseCampBuilding)GridMapManager.Instance.GetCell(BaseCampMinPos).GetBuilding();
-
+        DebugText.text = (baseCampBuilding.GetBuidingPosSenter().ToString());
         BaseCampPosSenter = baseCampBuilding.GetBuidingPosSenter();
         BaseCampPos = baseCampBuilding.GetVectorIntGridPos();
 
         // 最初のWave設定
         SetWave();
-        UpdateText();
+        UpdateText();*/
     }
 
     /// <summary>
@@ -196,7 +206,7 @@ public class EnemyManagerTest : MonoBehaviour
         //enemyList.RemoveAll(enemy => enemy == null);
         //Debug.Log(enemyList.Count + " : " + index + " : " + Spowntime.Length);
         //Debug表示
-        DebugTextRead();
+        //DebugTextRead();
 
         // 全敵撃破でクリアイベント実行（一度だけ）
         if (IventOneFlag && RemoveCount == enemyInformation.EnemySpownALLValue()) 
@@ -210,37 +220,37 @@ public class EnemyManagerTest : MonoBehaviour
     void FixedUpdate()
     {
         // ゲーム進行が停止中は処理しない
-        if (!gamePogressManager.GetPogressFlag())
-            return;
-
-        timeCount++;
-
-        // 敵スポーン処理
-        if (currentEnemySpownValue > 0 && 
-           timeCount >= nextSpownCount)
+        if (GamePogressManager.GetPogressFlag())
         {
-            // 次のスポーンタイミングをランダムに設定
-            nextSpownCount = UnityEngine.Random.Range(nextSpownCount, nextIndexCount);
+            timeCount++;
 
-            currentEnemySpownValue--;
+            // 敵スポーン処理
+            if (currentEnemySpownValue > 0 &&
+               timeCount >= nextSpownCount)
+            {
+                // 次のスポーンタイミングをランダムに設定
+                nextSpownCount = UnityEngine.Random.Range(nextSpownCount, nextIndexCount);
 
-            SpownEnemy();
-        }
+                currentEnemySpownValue--;
 
-        // Wave進行処理
-        if (currentEnemySpownValue <= 0 && 
-           WaveIndex < enemyInformation.GetWaveCount() && 
-           timeCount >= nextIndexCount)
-        {
-            WaveIndex++;
+                SpownEnemy();
+            }
 
-            // 次のWaveの開始準備
-            int beforeIndexCount = nextIndexCount;
+            // Wave進行処理
+            if (currentEnemySpownValue <= 0 &&
+               WaveIndex < enemyInformation.GetWaveCount() &&
+               timeCount >= nextIndexCount)
+            {
+                WaveIndex++;
 
-            SetWave();
+                // 次のWaveの開始準備
+                int beforeIndexCount = nextIndexCount;
 
-            // Wave間のインターバル考慮して次のスポーンタイミングを設定
-            nextSpownCount = UnityEngine.Random.Range(beforeIndexCount,(beforeIndexCount + nextIndexCount / 2));
+                SetWave();
+
+                // Wave間のインターバル考慮して次のスポーンタイミングを設定
+                nextSpownCount = UnityEngine.Random.Range(beforeIndexCount, (beforeIndexCount + nextIndexCount / 2));
+            }
         }
 
         EnemyListUpdate();
@@ -302,8 +312,11 @@ public class EnemyManagerTest : MonoBehaviour
             }
             else
             {
-                // 生存している敵の更新処理
-                enemyList[i].EnemyUpdate();
+                if (GamePogressManager.GetPogressFlag())
+                    // 生存している敵の更新処理
+                    enemyList[i].EnemyUpdate();
+                else
+                    enemyList[i].StopVelocity();
             }
         }
     }
@@ -314,6 +327,6 @@ public class EnemyManagerTest : MonoBehaviour
     /// </summary>
     void UpdateText()
     { 
-        EnemyCounter.text = RemoveCount.ToString() + "/" + enemyInformation.EnemySpownALLValue().ToString();
+        EnemyCounter.SetText((enemyInformation.EnemySpownALLValue() - RemoveCount).ToString());
     }
 }
