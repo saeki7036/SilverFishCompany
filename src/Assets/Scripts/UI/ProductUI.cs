@@ -53,7 +53,7 @@ public class ProductUI : MonoBehaviour
 
         while (elapsed < duration)
         {
-            elapsed += Time.fixedDeltaTime;
+            elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
 
             thisRectTransform.localScale = Vector3.Lerp(startScale, Vector3.one * targetScale, t);

@@ -152,7 +152,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &8931533468570711592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,10 +166,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyParameter:
-    hp: 60
-    atk: 4
-    Speed: 0.25
-    Intarval: 100
+    hp: 300
+    atk: 10
+    Speed: 0.07
+    Intarval: 500
   AI: 1
   Rigidbody: {fileID: 4166909063945451838}
   BarScale: 0.7

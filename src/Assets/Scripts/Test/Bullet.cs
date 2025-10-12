@@ -17,11 +17,38 @@ public class Bullet : MonoBehaviour
     [SerializeField]
     GameObject EffectPrahab;
 
+    [SerializeField]
+    Rigidbody2D rb2D;
+
+    Vector2 addVelocity;
+    float DestroyCount;
+
+    public void AddVelocity(Vector2 velocity)
+    {
+        addVelocity = velocity;  
+    }
+
+
     void Start()
     {
-        Destroy(gameObject, DastroyTime);
-
         Instantiate(BulletLinePrehab, transform);
+    }
+
+    private void FixedUpdate()
+    {
+        if (!GamePogressManager.GetPogressFlag())
+            rb2D.linearVelocity = Vector2.zero;
+        else
+        {
+            rb2D.linearVelocity = addVelocity;
+
+            DestroyCount += Time.fixedDeltaTime;
+            
+            if(DestroyCount >= DastroyTime)
+            {
+                Destroy(gameObject);
+            }
+        }          
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

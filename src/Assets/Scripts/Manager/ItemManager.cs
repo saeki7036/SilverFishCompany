@@ -5,8 +5,8 @@ public class ItemManager : MonoBehaviour
 {
     // アイテムシステム全体を統括管理するマネージャークラス（シングルトン）
 
-    [SerializeField]
-    GamePogressManager gamePogressManager; // ゲーム進行状態を管理するマネージャー
+    //[SerializeField]
+    //GamePogressManager gamePogressManager; // ゲーム進行状態を管理するマネージャー
 
     [SerializeField]
     ItemConfig itemConfig; // アイテムの設定情報
@@ -160,7 +160,7 @@ public class ItemManager : MonoBehaviour
     void FixedUpdate()
     {
         // アイテム輸送の更新処理
-        if (gamePogressManager.GetPogressFlag())// ゲーム進行中のみ
+        if (GamePogressManager.GetPogressFlag())// ゲーム進行中のみ
             itemTransporter.ItemMovingCheck();// 移動チェックを実行
     }
 

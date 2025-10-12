@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7786167935615611185}
   - component: {fileID: 4166909063945451838}
   - component: {fileID: 8931533468570711592}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Enemy_Float
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,7 +152,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &8931533468570711592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyParameter:
     hp: 12
-    atk: 4
+    atk: 2
     Speed: 0.8
     Intarval: 100
   AI: 2

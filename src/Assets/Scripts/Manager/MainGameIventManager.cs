@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainGameIventManager : MonoBehaviour
 {
@@ -36,5 +37,27 @@ public class MainGameIventManager : MonoBehaviour
 
         productCreate.InputRegister(mouseController);     // 建物生成の入力登録
         productDestroy.InputRegister(mouseController);     // 建物破壊の入力登録
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            isEndGame(); // 実際のゲームを終了
+        }
+        if (Input.GetKeyUp(KeyCode.F4))
+        {
+            SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+        }
+
+    }
+
+    void isEndGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // Unityエディター内で再生を停止
+#else
+        Application.Quit(); // 実際のゲームを終了
+#endif
     }
 }

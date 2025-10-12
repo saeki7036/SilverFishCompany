@@ -141,7 +141,7 @@ public class ProductCreate : MonoBehaviour
         input.LeftClickEvent += SetCreateTransform;
         input.LeftUpEvent += CreateProduct;
 
-        input.RightDownEvent += RightClickRotate;
+        input.RightUpEvent += RightClickRotate;
     }
 
     /// <summary>
@@ -422,6 +422,9 @@ public class ProductCreate : MonoBehaviour
         child.rotation = Quaternion.Euler(0, 0, Rotates[RotatesIndex]);
 
         AudioManager.instance.isPlaySE(Clip);// SE再生
+
+        Debug.Log(IsCanCreateTile(cursol2DInt));
+
 
         EmptyContent();// 内部状態クリア
 

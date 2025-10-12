@@ -55,7 +55,21 @@ public class GridMap
     public void SetGridCell(GridCell cell)
     {
         if (IsInBounds(cell.GridPos))
-            gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
+        {
+            if(gridCell[cell.GridPos.x, cell.GridPos.y] == null)
+            {
+                gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
+            }
+            else
+            {
+                TileType tileType = gridCell[cell.GridPos.x, cell.GridPos.y].GetTileType();
+
+                gridCell[cell.GridPos.x, cell.GridPos.y] = cell;
+
+                gridCell[cell.GridPos.x, cell.GridPos.y].SetTileType(tileType);
+            }
+        }
+            
         else
         {
             Debug.LogError("範囲外");
@@ -222,6 +236,9 @@ public class GridCell
         GridObject = null;
         building = null;
     }
+
+    public TileType GetTileType() => tileType;
+
 
     // <summary>
     /// タイルタイプを設定

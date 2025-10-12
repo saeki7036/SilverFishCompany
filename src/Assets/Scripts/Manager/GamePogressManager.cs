@@ -9,7 +9,7 @@ public class GamePogressManager : MonoBehaviour
     /// ゲーム進行フラグ
     /// true: ゲーム進行可能, false: ゲーム進行停止
     /// </summary>
-    bool pogressFlag;
+    static bool pogressFlag = true;
 
     private void Start()
     {
@@ -27,5 +27,5 @@ public class GamePogressManager : MonoBehaviour
     /// ゲーム進行フラグを取得
     /// </summary>
     /// <returns>現在の進行フラグ値 (true: 進行可能, false: 進行停止)</returns>
-    public bool GetPogressFlag() => pogressFlag;
+    public static bool GetPogressFlag() => pogressFlag;
 }

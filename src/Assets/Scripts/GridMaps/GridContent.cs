@@ -43,11 +43,13 @@ public class GridContent : MonoBehaviour
     }
 
     // Transform位置からグリッド座標を計算し、GridMapManagerに登録する
+    //void OnEnable()
     void Start()
     {
         // Transform位置をグリッド座標に変換
         Vector2Int GridPos = CrampGridPos();
 
+        Debug.Log(GridMapManager.Instance.GetCell(GridPos).GetTileType());
         // MapContentに最小グリッド位置を設定
         content.SetMinGridPos(GridPos);
 
@@ -56,5 +58,7 @@ public class GridContent : MonoBehaviour
 
         // 生成した建物は親に登録する
         transform.parent = DestroyProductGC.GetProductParent();
+
+        //Debug.Log(GridMapManager.Instance.GetCell(GridPos).GetTileType());
     }
 }
