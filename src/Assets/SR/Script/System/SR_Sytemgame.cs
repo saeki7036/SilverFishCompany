@@ -24,6 +24,7 @@ public class SR_Sytemgame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (Strat || Exit) 
         {
             StarAnimator.Play("暗転");
