@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbac78aefd3560144867c981669f48e5, type: 3}
-  m_Name: EnemySpownInformation 1
+  m_Name: EnemySpownInformation 2
   m_EditorClassIdentifier: 
   EnemyPrehabList:
   - {fileID: 2959811036750138740, guid: a08fb2d0dec77064faf13cc13d3e62e9, type: 3}
@@ -24,30 +24,24 @@ MonoBehaviour:
     EnemySpownValue: 2
     SpownIDList: 00000000
   - WaveTimeValue: 2500
-    EnemySpownValue: 3
+    EnemySpownValue: 2
     SpownIDList: 0000000001000000
   - WaveTimeValue: 100
     EnemySpownValue: 1
     SpownIDList: 05000000
-  - WaveTimeValue: 1000
-    EnemySpownValue: 3
-    SpownIDList: 000000000100000003000000
-  - WaveTimeValue: 1000
-    EnemySpownValue: 10
-    SpownIDList: 0300000001000000
-  - WaveTimeValue: 1000
+  - WaveTimeValue: 500
     EnemySpownValue: 2
-    SpownIDList: 04000000
-  - WaveTimeValue: 1000
-    EnemySpownValue: 12
+    SpownIDList: 000000000100000003000000
+  - WaveTimeValue: 500
+    EnemySpownValue: 4
+    SpownIDList: 0300000001000000
+  - WaveTimeValue: 500
+    EnemySpownValue: 3
     SpownIDList: 00000000010000000200000003000000
-  - WaveTimeValue: 1000
-    EnemySpownValue: 10
+  - WaveTimeValue: 500
+    EnemySpownValue: 4
     SpownIDList: 0100000002000000
-  - WaveTimeValue: 1000
-    EnemySpownValue: 12
-    SpownIDList: 01000000
-  - WaveTimeValue: 1000
+  - WaveTimeValue: 500
     EnemySpownValue: 40
     SpownIDList: 00000000
   - WaveTimeValue: 500
@@ -55,7 +49,10 @@ MonoBehaviour:
     SpownIDList: 030000000200000001000000
   - WaveTimeValue: 800
     EnemySpownValue: 15
-    SpownIDList: 020000000300000004000000
-  - WaveTimeValue: 500
-    EnemySpownValue: 80
+    SpownIDList: 0200000003000000
+  - WaveTimeValue: 100
+    EnemySpownValue: 3
+    SpownIDList: 04000000
+  - WaveTimeValue: 200
+    EnemySpownValue: 120
     SpownIDList: 00000000

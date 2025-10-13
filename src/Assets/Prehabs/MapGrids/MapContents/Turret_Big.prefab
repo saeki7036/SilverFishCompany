@@ -57,7 +57,7 @@ Transform:
   m_GameObject: {fileID: 805912054779806844}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.84, z: 0}
+  m_LocalPosition: {x: -0, y: 0.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -88,8 +88,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6031648726342332881}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -140,12 +140,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: ff78771acc8cd134d8858e162611effd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3da5b52719d7b984b8601ddda56da3cb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 6341043669997726002}
   - component: {fileID: 2375331882748905673}
   m_Layer: 0
-  m_Name: Test_Turret
+  m_Name: Turret_Big
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -306,10 +306,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e159a1140baa804f8bc39066c769fa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interval: 180
+  interval: 150
   FirePosTransform: {fileID: 3406083387305837169}
   neckObject: {fileID: 769001556254622113}
-  BulletPrehab: {fileID: 1385668542543310216, guid: 21563440535732949bf62abe156442ea, type: 3}
+  BulletPrehab: {fileID: 1385668542543310216, guid: 0d8a50086319389469094e5b8eb228de, type: 3}
   speed: 8
-  Range: 4
+  Range: 6
   ShotClip: {fileID: 8300000, guid: c416b2df27b8f774e8ca0e1404d5467c, type: 3}

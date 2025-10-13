@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -55,6 +56,7 @@ public class ProductCreate : MonoBehaviour
     /// </summary>
     public void SetCreateContent(List<ItemRequest> list,GameObject gameObject = null, Sprite sprite = null)
     {
+        EmptyContent();
         // プレハブとスプライトが揃っていれば生成準備
         CreateFlag = (gameObject != null && sprite != null);
 
@@ -90,6 +92,14 @@ public class ProductCreate : MonoBehaviour
         {
             beltDrawing.SetDrawFlag(false);
             contentSpriteShadow.enabled = true;
+
+            contentSpriteTransform.localPosition = GetLorcalPosition();
+            contentSpriteTransform.localScale = new Vector3Int()
+            {
+                x = gridContent.GetContent().GridSize.x,
+                y = gridContent.GetContent().GridSize.y,
+                z = 1
+            };
         }   
     }
 
@@ -318,6 +328,8 @@ public class ProductCreate : MonoBehaviour
             return;
         }
 
+        OnClickUI = false;
+
         if (CanRotateBuildType())
         {
             CanRotateSPriteTransform.gameObject.SetActive(true);
@@ -334,7 +346,7 @@ public class ProductCreate : MonoBehaviour
         };
 
         contentSpriteTransform.localPosition = GetLorcalPosition();
-        contentSpriteTransform.rotation = Quaternion.identity;
+        //contentSpriteTransform.rotation = Quaternion.identity;
         contentSpriteTransform.localScale = new Vector3Int()
         {
             x = gridContent.GetContent().GridSize.x,

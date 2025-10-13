@@ -4,9 +4,10 @@ using UnityEngine.Rendering;
 public class Bullet : MonoBehaviour
 {
     //　弾クラス
-
+    [Header("Bullet")]
+    [Space]
     [SerializeField]
-    int damege = 2;//ダメージ
+    protected int damege = 2;//ダメージ
 
     [SerializeField]
     float DastroyTime = 6f;//消えるまでの時間
@@ -15,7 +16,7 @@ public class Bullet : MonoBehaviour
     GameObject BulletLinePrehab;
 
     [SerializeField]
-    GameObject EffectPrahab;
+    protected GameObject EffectPrahab;
 
     [SerializeField]
     Rigidbody2D rb2D;
@@ -53,7 +54,12 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.transform.TryGetComponent<EnemyBase>(out var component))
+        TriggerAction(collision);
+    }
+
+    protected virtual void TriggerAction(Collider2D collision = null)
+    {
+        if (collision.transform.TryGetComponent<EnemyBase>(out var component))
         {
             component.Hit(damege);
         }

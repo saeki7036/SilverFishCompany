@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemCategory: 2
   itemLevel: 2
-  itemPrehab: {fileID: 6142362104339745825, guid: 3994c52eba742ba4fa8937c00cd420fa, type: 3}
+  itemPrehab: {fileID: 6142362104339745825, guid: caccc6178459b06499cc34578043859d, type: 3}
