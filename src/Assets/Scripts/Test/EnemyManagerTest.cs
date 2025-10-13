@@ -96,6 +96,41 @@ public class EnemyManagerTest : MonoBehaviour
     }
 
     /// <summary>
+    /// 指定位置から範囲内にいる敵のクラスを全て取得
+    /// 爆発の攻撃対象選定などで使用
+    /// </summary>
+    /// <param name="basePos">基準位置</param>
+    /// <param name="range">検索範囲</param>
+    /// <returns>近い敵全てのクラス、見つからない場合は空</returns>
+    public List<EnemyBase> NearEnemyList(Vector2 basePos, float range)
+    {
+        List<EnemyBase> list = new List<EnemyBase>();
+
+        float DistanceRange = range * range;
+
+        for (int i = enemyList.Count - 1; i >= 0; i--)
+        {
+            if (enemyList[i] == null)
+            {
+                continue;
+            }
+            else
+            {
+                // 距離の二乗を計算
+                float distancePow = DistancePow(enemyList[i].transform.position, basePos);
+
+                if (distancePow < DistanceRange)
+                {
+                    list.Add(enemyList[i]);
+                }
+            }
+        }
+
+        return list;
+    }
+
+
+    /// <summary>
     /// 2点間の距離の二乗を計算
     /// 平方根計算を省略して処理を高速化
     /// </summary>
@@ -142,7 +177,6 @@ public class EnemyManagerTest : MonoBehaviour
 
         if(building is BaseCampBuilding baseCampBuilding)
         {
-            DebugText.text = (baseCampBuilding.GetBuidingPosSenter().ToString());
             BaseCampPosSenter = baseCampBuilding.GetBuidingPosSenter();
             BaseCampPos = baseCampBuilding.GetVectorIntGridPos();
 
@@ -205,8 +239,9 @@ public class EnemyManagerTest : MonoBehaviour
     {
         //enemyList.RemoveAll(enemy => enemy == null);
         //Debug.Log(enemyList.Count + " : " + index + " : " + Spowntime.Length);
+
         //Debug表示
-        //DebugTextRead();
+        DebugTextRead();
 
         // 全敵撃破でクリアイベント実行（一度だけ）
         if (IventOneFlag && RemoveCount == enemyInformation.EnemySpownALLValue()) 

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4166909063945451838}
   - component: {fileID: 8931533468570711592}
   m_Layer: 7
-  m_Name: Enemy_Boss
+  m_Name: Enemy_FlontShield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,8 +30,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.2, y: 2.2, z: 2.2}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 7
-  m_Sprite: {fileID: 21300000, guid: eb61f38eb28d31445abca13d048cd08f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6fd0e23fb44b6f44aa88ee2aea0ce722, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -125,7 +125,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.3
+  m_Radius: 0.5
 --- !u!50 &4166909063945451838
 Rigidbody2D:
   serializedVersion: 5
@@ -166,10 +166,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyParameter:
-    hp: 100
-    atk: 5
-    Speed: 0.5
-    Intarval: 50
+    hp: 500
+    atk: 6
+    Speed: 0.05
+    Intarval: 25
   AI: 1
   Rigidbody: {fileID: 4166909063945451838}
   BarScale: 0.7

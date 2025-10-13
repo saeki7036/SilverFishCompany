@@ -45,7 +45,7 @@ public class HPBarTest : MonoBehaviour
     {
         HPGreenBar.anchoredPosition = new Vector2()
         { 
-            x = (backGround.sizeDelta.x / 2) - (backGround.sizeDelta.x /2) * ratio,
+            x = ((backGround.sizeDelta.x / 2) - (backGround.sizeDelta.x /2) * ratio) * -1,
             y = HPGreenBar.anchoredPosition.y,
         };
 

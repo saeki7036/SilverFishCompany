@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -125,7 +125,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.4
+  m_Radius: 0.25
 --- !u!50 &4166909063945451838
 Rigidbody2D:
   serializedVersion: 5
@@ -168,7 +168,7 @@ MonoBehaviour:
   enemyParameter:
     hp: 4
     atk: 4
-    Speed: 1
+    Speed: 2.5
     Intarval: 100
   AI: 2
   Rigidbody: {fileID: 4166909063945451838}
